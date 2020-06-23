@@ -5,22 +5,7 @@ from shapely.affinity import translate
 from math import sqrt
 
 class Donut(Base):
-    """
-    Summary line for donut
 
-    Extended description of function.
-
-    Parameters
-    ----------
-    sensitive_gdf : GeoDataFrame
-        A GeoDataFrame of the sensitive points that are to be masked.
-
-    Returns
-    -------
-    Object 
-        An object for donut geomasking
-
-    """
     def __init__(
                 self, 
                 sensitive_gdf, 
