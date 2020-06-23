@@ -1,0 +1,10 @@
+README.md
+setup.py
+maskmypy/__init__.py
+maskmypy/donut.py
+maskmypy/mask.py
+maskmypy/street.py
+maskmypy.egg-info/PKG-INFO
+maskmypy.egg-info/SOURCES.txt
+maskmypy.egg-info/dependency_links.txt
+maskmypy.egg-info/top_level.txt
