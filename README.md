@@ -5,6 +5,16 @@ MaskMyPy also supports k-anonymity estimation using population data and k-anonym
 
 **Disclaimer**: *MaskMyPy is offered as-is, without warranty of any kind. Geographic masking is a hard problem that requires informed decisions and validation. MaskMyPy provides helpful tools for geographic masking, but does not replace expertise.*
 
+## Installation
+MaskmyPy is pip-installable, but relies on [osmnx](https://anaconda.org/conda-forge/osmnx). If you do not have it installed, first get it using Anaconda:
+```
+conda install -c conda-forge osmnx
+```
+Then, install MaskMyPy using pip:
+```
+pip install maskmypy
+```
+
 ## Street Masking
 Street masking automatically downloads OpenStreetMap road network data and uses it to geographically mask your sensitive points. It works by first downloading the road network data, snapping each sensitive point to the nearest node on the network (an intersection or dead end), and then calculating the average network-distance between that node and a pool of the closest x number of nodes (e.g. the clsoest 20 nodes on the network, known as the search depth). This average distance is the target displacement distance. Finally, it selects a node from the pool whose network-distance from the starting node is closest to the target displacement distance. 
 
