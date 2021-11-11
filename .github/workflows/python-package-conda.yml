@@ -16,7 +16,7 @@ jobs:
         echo $CONDA/bin >> $GITHUB_PATH
     - name: Install conda dependencies
       run: |
-        conda env update --file environment.yml --name base
+        conda env update --file maskmypy/environment.yml --name base
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
