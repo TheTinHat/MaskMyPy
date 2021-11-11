@@ -1,18 +1,19 @@
-from osmnx import graph_from_xml, graph_from_bbox, graph_to_gdfs
-from osmnx import save_graph_xml
-from osmnx.distance import get_nearest_node
-from osmnx.utils_graph import  add_edge_lengths, remove_isolated_nodes
+from osmnx import graph_from_bbox, graph_to_gdfs
+from osmnx.distance import nearest_nodes,  add_edge_lengths
+from osmnx.utils_graph import  remove_isolated_nodes
 from geopandas import GeoDataFrame
 from pandas import concat
 from networkx import single_source_dijkstra_path_length
-from random import choice
 from .mask import Base
 from multiprocessing import Pool, cpu_count
-from hashlib import md5
-from copy import deepcopy
-from os.path import exists
 from numpy import array_split
+import logging
 
+
+logging.basicConfig(filename='.maskmypy.log', \
+                    filemode='w', \
+                    level=logging.INFO, \
+                    format='%(name)s - %(levelname)s - %(asctime)s - %(message)s')
 
 class Street(Base):
     def __init__(
@@ -38,21 +39,15 @@ class Street(Base):
 
 
     def _get_osm(self):
+        logging.info('Retrieving OSMnx Graph')
         selection = self.masked.buffer(self.buffer_dist)
         selection = selection.to_crs(epsg=4326)
         bb = selection.total_bounds
-
-        '''
-        graph_filename = "osm_" + str(md5(bb).hexdigest()[0:9]) + ".xml"
+        logging.info('Bounding box: %s', str(bb))
     
-        if exists("data/" + graph_filename):
-            self.graph = graph_from_xml("data/" + graph_filename)
-        else:
-        '''
         self.graph = graph_from_bbox(
             north=bb[3], south=bb[1], east=bb[2], west=bb[0],
-            network_type="drive", truncate_by_edge=True)
-        #save_graph_xml(self.graph, filepath=graph_filename)
+            network_type="drive", simplify=True, truncate_by_edge=True)
     
         self.graph = remove_isolated_nodes(self.graph)
         self.graph = add_edge_lengths(self.graph)
@@ -63,27 +58,30 @@ class Street(Base):
 
     def _nearest_node(self, graph_temporary, geometry):
         neighbor_count = 0
-
         while neighbor_count < 1:
-            node = get_nearest_node(
-                graph_temporary, (geometry.centroid.y, geometry.centroid.x))
+            node = nearest_nodes(
+                graph_temporary, geometry.centroid.x, geometry.centroid.y)
+            
             
             neighbor_count = len(self._find_neighbors(node))
-        
+            logging.info('Finding nearest node to %s ', (str(node)))
             if neighbor_count == 0:
+                logging.info('Removing node %s from pool', str(node))
                 graph_temporary.remove_node(node)
         
+        logging.info("Nearest node is %s", str(node))
+        logging.info("Node has %s neighbors", str(neighbor_count))
         return node
 
 
     def _find_neighbors(self, node):
         neighbors = list(self.graph.neighbors(node))
-    
         for neighbor in neighbors:
             length = self.graph.get_edge_data(node, neighbor)[0]['length']
     
             if length > self.max_street_length:
                 neighbors = [n for n in neighbors if n != neighbor]
+                logging.info('Removing %s from neighbors', str(neighbor))
 
         return neighbors
 
@@ -96,6 +94,7 @@ class Street(Base):
         while node_count < threshold:
             paths = single_source_dijkstra_path_length(self.graph, node, distance, 'length')
             node_count = len(paths)
+            logging.info('Node count: %s', str(node_count))
             distance += 250
 
         nodes = []
@@ -116,7 +115,8 @@ class Street(Base):
         idx = distances.index(min(distances, key=lambda x:abs(x-candidate_distance)))
 
         node = nodes[idx]
-
+        logging.info('Candidate distance is %s', str(candidate_distance))
+        logging.info('Closest node to candidate distance is %s', str(node))
         return node
 
 
@@ -134,7 +134,7 @@ class Street(Base):
             lambda x: self.graph_gdf[0].at[x['node_new'], 'geometry'], axis=1)
         
         masked_gdf = masked_gdf.drop(['node', 'node_new'], axis=1)
-    
+
         return masked_gdf
 
 
@@ -151,13 +151,13 @@ class Street(Base):
             self.masked = self._apply_street_mask(self.masked)
 
         self.masked = self.masked.to_crs(self.crs)
-
         return self.masked
 
 
     def execute_parallel(self):
-        cpus = cpu_count()
-        pool = Pool(processes=8)
+        cpus = cpu_count() - 1
+        logging.info('Executing in parallel with %s cpus', str(cpus))
+        pool = Pool(processes=cpus)
         chunks = array_split(self.masked, cpus)
 
         processes = [pool.apply_async(
@@ -166,6 +166,6 @@ class Street(Base):
             for chunk in chunks]
 
         masked_chunks = [chunk.get() for chunk in processes]
-
-        return GeoDataFrame(
-            concat(masked_chunks), crs={'init': 'epsg:4326'}) 
+        gdf = GeoDataFrame(concat(masked_chunks))
+        gdf = gdf.set_crs(epsg=4326)
+        return gdf

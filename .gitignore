@@ -1,0 +1,4 @@
+tests/.maskmypy.log
+workspace.code-workspace
+cache
+__pycache__

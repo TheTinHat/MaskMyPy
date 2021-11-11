@@ -1,4 +1,13 @@
 from geopandas import GeoDataFrame, sjoin
+import logging
+
+
+logging.basicConfig(filename='.maskmypy.log', \
+                    filemode='w', \
+                    level=logging.CRITICAL, \
+                    format='%(name)s - %(levelname)s - %(asctime)s - %(message)s')
+
+
 
 class Base():
     ''' Base class for masking methods '''

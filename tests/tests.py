@@ -1,7 +1,5 @@
 from maskmypy import Donut, Street, Donut_MaxK, Donut_Multiply
 import geopandas as gpd
-import pandas as pd
-import random
 
 
 points = gpd.read_file('test_data/test_points.shp')
@@ -77,7 +75,7 @@ def test_donut_mask_contained():
 
 def test_street_mask():
     StreetMasker = Street(
-        sensitive_gdf=points[0:20], 
+        sensitive_gdf=points, 
         population_gdf=populations, 
         population_column='POP', 
         address_points_gdf=addresses)
@@ -88,7 +86,7 @@ def test_street_mask():
 
 def test_street_mask_parallel():
     StreetMasker = Street(
-        sensitive_gdf=points[0:80], 
+        sensitive_gdf=points, 
         population_gdf=populations, 
         population_column='POP', 
         address_points_gdf=addresses)
