@@ -3,7 +3,7 @@ site_description: Geographic Masking Python Package
 site_url: https://github.com/thetinhat/maskmypy
 
 theme:
-    # name: 'material'
+    name: 'material'
     # logo: assets/logo.png
     # favicon: assets/favicon.ico
     # site_url: github.com/thetinhat/maskmypy
