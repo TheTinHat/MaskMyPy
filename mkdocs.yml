@@ -7,7 +7,7 @@ theme:
     # logo: assets/logo.png
     # favicon: assets/favicon.ico
     # site_url: github.com/thetinhat/maskmypy
-    # palette:
+    palette:
 
     # Light mode
     - media: "(prefers-color-scheme: light)"
