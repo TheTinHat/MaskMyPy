@@ -4,6 +4,9 @@ from shapely.errors import ShapelyDeprecationWarning
 
 from .donut import Donut, Donut_MaxK, Donut_Multiply
 from .street import Street
+from shapely.errors import ShapelyDeprecationWarning
+import warnings
+warnings.filterwarnings("ignore", category=ShapelyDeprecationWarning)
 
 warnings.filterwarnings("ignore", category=ShapelyDeprecationWarning)
 
