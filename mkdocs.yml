@@ -1,0 +1,56 @@
+site_name: MaskMyPy Documentation
+site_description: Geographic Masking Python Package
+site_url: https://github.com/thetinhat/maskmypy
+
+theme:
+    name: 'material'
+    logo: assets/logo.png
+    favicon: assets/favicon.ico
+    site_url: github.com/thetinhat/maskmypy
+    palette:
+
+    # Light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: deep orange
+      # accent:
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+
+    # Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: deep orange
+      # accent: blue
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
+
+# Extensions
+markdown_extensions:
+  - footnotes
+  # - attr_list
+  # - pymdownx.arithmatex
+  # - pymdownx.superfences
+  # - pymdownx.details
+  # - pymdownx.magiclink
+  # - pymdownx.tasklist:
+  #     custom_checkbox: true
+#  - pymdownx.emoji:
+#      emoji_generator: !!python/name:pymdownx.emoji.to_svg
+  # - admonition
+  - toc:
+      permalink: true
+
+plugins:
+  - search
+  - roamlinks
+  - git-revision-date-localized:
+      timezone: America/Vancouver
+
+
+
+
+extra_css:
+  - assets/css/extra.css
