@@ -1,0 +1,532 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Geographic Masking Python Package">
+      
+      
+      
+        <link rel="canonical" href="https://github.com/thetinhat/maskmypy/">
+      
+      <link rel="icon" href="assets/favicon.ico">
+      <meta name="generator" content="mkdocs-1.3.1, mkdocs-material-8.3.9">
+    
+    
+      
+        <title>MaskMyPy Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/main.1d29e8d0.min.css">
+      
+        
+        <link rel="stylesheet" href="assets/stylesheets/palette.cbb835fc.min.css">
+        
+      
+      
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="assets/css/extra.css">
+    
+    <script>__md_scope=new URL(".",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-orange" data-md-color-accent="">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#maskmypy" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="." title="MaskMyPy Documentation" class="md-header__button md-logo" aria-label="MaskMyPy Documentation" data-md-component="logo">
+      
+  <img src="assets/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            MaskMyPy Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              MaskMyPy
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      <form class="md-header__option" data-md-component="palette">
+        
+          
+          
+          <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="deep-orange" data-md-color-accent=""  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+          
+            <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6zm0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4zM7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+            </label>
+          
+        
+          
+          
+          <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="deep-orange" data-md-color-accent=""  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+          
+            <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+            </label>
+          
+        
+      </form>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="." title="MaskMyPy Documentation" class="md-nav__button md-logo" aria-label="MaskMyPy Documentation" data-md-component="logo">
+      
+  <img src="assets/logo.png" alt="logo">
+
+    </a>
+    MaskMyPy Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          MaskMyPy
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="." class="md-nav__link md-nav__link--active">
+        MaskMyPy
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    Installation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#street-masking" class="md-nav__link">
+    Street Masking
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#donut-masking" class="md-nav__link">
+    Donut Masking
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#k-anonymity" class="md-nav__link">
+    K-Anonymity
+  </a>
+  
+    <nav class="md-nav" aria-label="K-Anonymity">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#estimate-k-anonymity" class="md-nav__link">
+    Estimate K-Anonymity
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#calculate-k-anonymity" class="md-nav__link">
+    Calculate K-Anonymity
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#displacement-distance" class="md-nav__link">
+    Displacement Distance
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    Installation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#street-masking" class="md-nav__link">
+    Street Masking
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#donut-masking" class="md-nav__link">
+    Donut Masking
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#k-anonymity" class="md-nav__link">
+    K-Anonymity
+  </a>
+  
+    <nav class="md-nav" aria-label="K-Anonymity">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#estimate-k-anonymity" class="md-nav__link">
+    Estimate K-Anonymity
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#calculate-k-anonymity" class="md-nav__link">
+    Calculate K-Anonymity
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#displacement-distance" class="md-nav__link">
+    Displacement Distance
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+
+
+<h1 id="maskmypy">MaskMyPy<a class="headerlink" href="#maskmypy" title="Permanent link">&para;</a></h1>
+<p>MaskMyPy is a (very alpha) Python package that performs geographic masking on <a href="http://geopandas.org/data_structures.html">GeoPandas geodataframes</a>. It offers two main methods: street masking and donut masking.</p>
+<p>MaskMyPy also supports k-anonymity estimation using population data and k-anonymity calculation using address data, as well as the calculation of displacement distance between sensitive and masked points.</p>
+<p><a href="https://pepy.tech/project/maskmypy"><img alt="Downloads" src="https://pepy.tech/badge/maskmypy" /></a></p>
+<p><strong>Disclaimer</strong>: <em>MaskMyPy is offered as-is, without warranty of any kind. Geographic masking is a hard problem that requires informed decisions and validation. MaskMyPy provides helpful tools for geographic masking, but does not replace expertise.</em></p>
+<h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
+<p>MaskmyPy is pip-installable, but relies on <a href="https://anaconda.org/conda-forge/osmnx">osmnx</a>. If you do not have it installed, first get it using Anaconda:</p>
+<pre><code>conda install -c conda-forge osmnx
+</code></pre>
+<p>Then, install MaskMyPy using pip:</p>
+<pre><code>pip install maskmypy
+</code></pre>
+<h2 id="street-masking">Street Masking<a class="headerlink" href="#street-masking" title="Permanent link">&para;</a></h2>
+<p>Street masking automatically downloads OpenStreetMap road network data and uses it to geographically mask your sensitive points. It works by first downloading the road network data, snapping each sensitive point to the nearest node on the network (an intersection or dead end), and then calculating the average network-distance between that node and a pool of the closest x number of nodes (e.g. the clsoest 20 nodes on the network, known as the search depth). This average distance is the target displacement distance. Finally, it selects a node from the pool whose network-distance from the starting node is closest to the target displacement distance.</p>
+<p><strong>Usage:</strong> To street mask a geodataframe containing sensitive points with a search-depth value of 20, the code would be as follows:</p>
+<pre><code>from maskmypy import Street
+
+streetmask = Street(
+    sensitive_gdf, # Name of the sensitive geodataframe
+    depth=20, # The search depth value used to calculate displacement distances.
+    extent_expansion_distance=2000, # Used to download road network data surrounding the study area. Needs to be sufficiently large to reduce edge effects. Increasing reduces edge effects, but uses more memory.
+    max_street_length=500) # Optional, but recommended that you read below for full explanation of what this does.
+
+
+streetmask.execute() # Single threaded by default. Add `parallel=True` as parameter to run on all CPU cores, drastically increasing performance.
+
+masked_gdf = streetmask.masked
+</code></pre>
+<p><strong>About max_street_length</strong>: when snapping points to the street network, the algorithm checks to make sure that the nearest node is actually connected to the network and has neighbors that are no more than max_street_length away (in meters). If it does not, then the next closest viable node is selected, checked, and so on. This acts as a sanity check to prevent extremely large masking distances. Feel free to change this to whatever you feel is appropriate.</p>
+<h2 id="donut-masking">Donut Masking<a class="headerlink" href="#donut-masking" title="Permanent link">&para;</a></h2>
+<p><strong>Usage:</strong>
+To perform basic donut geomasking on a geodataframe containing sensitive points, with a maximum displacement distance of 500 meters and an minimum displacement distance of 20% of the maximum distance (i.e. 100 meters), the code would look like this:</p>
+<pre><code>from maskmypy import Donut
+
+donutmask = Donut(
+    sensitive_gdf=sensitive_gdf, # Name of the sensitive geodataframe
+    max_distance=250, # The maximum possible distance that points are displaced
+    donut_ratio=0.1, # The ratio used to define the minimum distance points are displaced
+    distribution='uniform', # The distribution to use when displacing points. Other options include 'gaussian' and 'areal'. 'Areal' distribution means points are more likely to be displaced further within the range.
+    container_gdf=container_gdf) # Optional, a geodataframe used to ensure that points do not leave a particular area.
+
+donutmask.execute()
+
+masked_gdf = donutmask.masked
+</code></pre>
+<p>To perform full donut geomasking (i.e. using census data and a target k-anonymity range rather than distance range) with a maximum k-anonymity of 1000 and minimum of 200, and a census geodataframe called population_gdf, the code would appear as follows:</p>
+<pre><code>from maskmypy import Donut_MaxK
+
+donutmask = Donut_MaxK(
+    sensitive_gdf, # Name of the sensitive geodataframe
+    population_gdf=population_gdf, # Name of the census geodataframe
+    population_column='pop', # Name of the column containing the population field
+    max_k_anonymity=1000, # The maximum possible k-anonymity value
+    donut_ratio=0.2, # The ratio used to define the minimum possible k-anonymity value.
+    distribution='uniform', # The distribution to use when displacing points. Other options include 'gaussian' and 'areal'. 'Areal' distribution means points are more likely to be displaced further within the range.
+    container_gdf=container_gdf) # Optional, a geodataframe used to ensure that points do not leave a particular area.
+
+donutmask.execute()
+
+masked_gdf = donutmask.masked
+</code></pre>
+<h2 id="k-anonymity">K-Anonymity<a class="headerlink" href="#k-anonymity" title="Permanent link">&para;</a></h2>
+<p>Maskmypy is able to calculate the k-anonymity of each point after masking. Two methods are available for this: estimates, and exact calculations. Estimates of k-anoynmity are inferred from census data, and assume a homogeneously distributed population within each census polygon. Address-based k-anonymity is more accurate and uses actual home address data to calculate k-anonymity.</p>
+<h3 id="estimate-k-anonymity">Estimate K-Anonymity<a class="headerlink" href="#estimate-k-anonymity" title="Permanent link">&para;</a></h3>
+<p><strong>Usage:</strong>
+After the data has been masked, estimating k-anoynmity using census data would look like this and will add a column to the masked geodataframe:</p>
+<pre><code>mask.k_anonymity_estimate(
+    population_gdf=population_gdf, # Name of the census geodataframe. Not necessary if you already included this parameter in the original masking steps.
+    population_column='pop') # Name of the column containing the population field. Not necessary if you already included this parameter in the original masking steps.
+</code></pre>
+<h3 id="calculate-k-anonymity">Calculate K-Anonymity<a class="headerlink" href="#calculate-k-anonymity" title="Permanent link">&para;</a></h3>
+<p><strong>Usage:</strong>
+After the data has been masked, calcualting address-based k-anoynmity would look like this and will add a column to the masked geodataframe:</p>
+<pre><code>mask.k_anonymity_actual(address_points_gdf='') # Name of the geodataframe including address points.
+</code></pre>
+<h2 id="displacement-distance">Displacement Distance<a class="headerlink" href="#displacement-distance" title="Permanent link">&para;</a></h2>
+<p><strong>Usage:</strong>
+To add a column to the masked geodataframe that includes the actual displacement distances (in meters), one can just execute:</p>
+<pre><code>mask.displacement_distance()
+</code></pre>
+
+  <hr>
+<div class="md-source-file">
+  <small>
+    
+      Last update:
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 28, 2022</span>
+      
+    
+  </small>
+</div>
+
+              
+            </article>
+            
+          </div>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": ".", "features": [], "search": "assets/javascripts/workers/search.b97dbffb.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="assets/javascripts/bundle.6c7ad80a.min.js"></script>
+      
+    
+  </body>
+</html>
