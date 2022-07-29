@@ -34,7 +34,7 @@ class Base:
         and/or k-anonymity estimation."""
         if isinstance(population_gdf, GeoDataFrame):
             assert population_gdf.crs == self.crs, (
-                "Population CRS does " "not match points CRS"
+                "Population CRS does not match points CRS"
             )
             self.population = self._crop_gdf(population_gdf, self.sensitive)
             self.pop_column = population_column
@@ -48,7 +48,7 @@ class Base:
         """Loads a geodataframe of polygons to contain points while donut masking"""
         if isinstance(container_gdf, GeoDataFrame):
             assert container_gdf.crs == self.crs, (
-                "Container CRS does " "not match points CRS"
+                "Container CRS does not match points CRS"
             )
             self.container = self._crop_gdf(container_gdf, self.sensitive)
             self.container = self.container.loc[:, ["geometry"]]
@@ -62,7 +62,7 @@ class Base:
         """Loads geodataframe containing address data for k-anonymity calculation"""
         if isinstance(address_points_gdf, GeoDataFrame):
             assert address_points_gdf.crs == self.crs, (
-                "Address points " "CRS does not match points CRS"
+                "Address points CRS does not match points CRS"
             )
             self.addresses = self._crop_gdf(address_points_gdf, self.sensitive)
             self.addresses = self.addresses.loc[:, ["geometry"]]

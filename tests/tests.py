@@ -12,16 +12,16 @@ def basic_assertions(masking_class):
     masked_length = len(masking_class.masked)
 
     assert sensitive_length == masked_length, (
-        "Masked data not same length " "as sensitive data"
+        "Masked data not same length as sensitive data"
     )
 
     for i in range(int(masked_length / 10)):
         assert not masking_class.sensitive.at[i, "geometry"].intersects(
             masking_class.masked.at[i, "geometry"]
-        ), ("Sensitive and masked " "geometries intersect")
+        ), ("Sensitive and masked geometries intersect")
 
         assert masking_class.masked.at[i, "distance"] > 0, (
-            "Displacement " "distance is zero"
+            "Displacement distance is zero"
         )
 
 
@@ -63,7 +63,7 @@ def test_donut_mask_pop_multiplier():
     DonutMasker.displacement_distance()
     basic_assertions(DonutMasker)
     assert max(DonutMasker.masked["radius_max"]) == 500, (
-        "Max radius " "not scaling with population properly"
+        "Max radius not scaling with population properly"
     )
 
 
