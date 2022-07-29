@@ -1,7 +1,9 @@
-tests/.maskmypy.log
 workspace.code-workspace
-cache
-__pycache__
 .vscode
 env
-site/*
+site
+cache
+build
+dist
+*/__pycache__
+*.pyc
