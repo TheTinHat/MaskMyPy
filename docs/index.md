@@ -1,4 +1,5 @@
-# MaskMyPy
+# [MaskMyPy](https://github.com/TheTinHat/MaskMyPy)
+
 MaskMyPy is a (very alpha) Python package that performs geographic masking on [GeoPandas geodataframes](http://geopandas.org/data_structures.html). It offers two main methods: street masking and donut masking.
 
 MaskMyPy also supports k-anonymity estimation using population data and k-anonymity calculation using address data, as well as the calculation of displacement distance between sensitive and masked points.
@@ -8,11 +9,6 @@ MaskMyPy also supports k-anonymity estimation using population data and k-anonym
 **Disclaimer**: *MaskMyPy is offered as-is, without warranty of any kind. Geographic masking is a hard problem that requires informed decisions and validation. MaskMyPy provides helpful tools for geographic masking, but does not replace expertise.*
 
 ## Installation
-MaskmyPy is pip-installable, but relies on [osmnx](https://anaconda.org/conda-forge/osmnx). If you do not have it installed, first get it using Anaconda:
-```
-conda install -c conda-forge osmnx
-```
-Then, install MaskMyPy using pip:
 ```
 pip install maskmypy
 ```

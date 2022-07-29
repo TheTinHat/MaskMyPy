@@ -6,7 +6,7 @@ theme:
     name: 'material'
     # logo: assets/logo.png
     # favicon: assets/favicon.ico
-    # site_url: github.com/thetinhat/maskmypy
+    site_url: https://swanlund.space/MaskMyPy/
     palette:
 
     # Light mode
@@ -21,7 +21,7 @@ theme:
     # Dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
-      primary: deep orange
+      primary: deep gray
       # accent: blue
       toggle:
         icon: material/toggle-switch
