@@ -30,12 +30,11 @@ class Base:
         self.max_tries = max_tries
 
     def _load_population(self, population_gdf="", population_column="pop"):
-        """Loads a geodataframe of population data for donut masking
-        and/or k-anonymity estimation."""
+        """Loads a geodataframe of population data for donut masking and/or k-anonymity estimation."""
         if isinstance(population_gdf, GeoDataFrame):
-            assert population_gdf.crs == self.crs, (
-                "Population CRS does not match points CRS"
-            )
+            assert (
+                population_gdf.crs == self.crs
+            ), "Population CRS does not match points CRS"
             self.population = self._crop_gdf(population_gdf, self.sensitive)
             self.pop_column = population_column
             self.population = self.population.loc[:, ["geometry", self.pop_column]]
@@ -47,9 +46,9 @@ class Base:
     def _load_container(self, container_gdf):
         """Loads a geodataframe of polygons to contain points while donut masking"""
         if isinstance(container_gdf, GeoDataFrame):
-            assert container_gdf.crs == self.crs, (
-                "Container CRS does not match points CRS"
-            )
+            assert (
+                container_gdf.crs == self.crs
+            ), "Container CRS does not match points CRS"
             self.container = self._crop_gdf(container_gdf, self.sensitive)
             self.container = self.container.loc[:, ["geometry"]]
             self.container_filtered = self.container.copy()
@@ -61,9 +60,9 @@ class Base:
     def _load_addresses(self, address_points_gdf):
         """Loads geodataframe containing address data for k-anonymity calculation"""
         if isinstance(address_points_gdf, GeoDataFrame):
-            assert address_points_gdf.crs == self.crs, (
-                "Address points CRS does not match points CRS"
-            )
+            assert (
+                address_points_gdf.crs == self.crs
+            ), "Address points CRS does not match points CRS"
             self.addresses = self._crop_gdf(address_points_gdf, self.sensitive)
             self.addresses = self.addresses.loc[:, ["geometry"]]
             return True
@@ -72,8 +71,8 @@ class Base:
             return False
 
     def _crop_gdf(self, target_gdf, reference_gdf):
-        """Uses spatial index to reduce an input (target) geodataframe to only that which
-        intersects with a reference geodataframe"""
+        """Uses spatial index to reduce an input (target) geodataframe to only
+        that which intersects with a reference geodataframe"""
         bb = reference_gdf.total_bounds
         x = (bb[2] - bb[0]) / 10
         y = (bb[3] - bb[1]) / 10
