@@ -82,18 +82,16 @@ class Donut(Base):
         self.masked.loc[:, "contain"] = 0
 
         while min(self.masked["contain"]) == 0:
-
             uncontained = self.masked.loc[self.masked["contain"] == 0, :]
 
             for index, row in uncontained.iterrows():
                 x, y = self._random_xy(row["radius_min"], row["radius_max"])
 
                 self.masked.at[index, "geometry"] = translate(
-                    row["geometry"], xoff=x, yoff=y
+                    self.sensitive.at[index, "geometry"], xoff=x, yoff=y
                 )
 
             self._containment(uncontained)
-
         return True
 
     def execute(self):
