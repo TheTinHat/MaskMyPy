@@ -12,7 +12,7 @@ theme:
     # Light mode
     - media: "(prefers-color-scheme: light)"
       scheme: default
-      primary: deep orange
+      primary: deep gray
       # accent:
       toggle:
         icon: material/toggle-switch-off-outline
