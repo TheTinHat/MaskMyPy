@@ -25,7 +25,7 @@ def basic_assertions(masking_class):
         ), "Displacement distance is zero"
 
         assert (
-            masking_class.masked.at[i, "distance"] < 100000
+            masking_class.masked.at[i, "distance"] < 10000
         ), "Displacement distance is extremely large"
 
 
