@@ -126,7 +126,6 @@ def test_street_mask():
     StreetMasker.execute()
     StreetMasker.displacement_distance()
     basic_assertions(StreetMasker)
-    StreetMasker.masked.to_file("street_output.shp")
 
 
 def test_street_mask_parallel():
