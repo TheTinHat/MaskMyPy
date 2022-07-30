@@ -24,6 +24,31 @@ def basic_assertions(masking_class):
             masking_class.masked.at[i, "distance"] > 0
         ), "Displacement distance is zero"
 
+        assert (
+            masking_class.masked.at[i, "distance"] < 100000
+        ), "Displacement distance is extremely large"
+
+
+def test_donut_random_xy():
+    modes = ["areal", "uniform"]
+    i = 500
+    for mode in modes:
+        for i in range(i):
+            DonutMasker = Donut(sensitive_gdf=points, distribution=mode)
+            offset_coords = DonutMasker._random_xy(1, 100)
+            assert isinstance(
+                offset_coords[0], float
+            ), "Random XY offsets are not valid floats"
+            assert isinstance(
+                offset_coords[1], float
+            ), "Random XY offsets are not valid floats"
+            assert (
+                offset_coords[0] > -100 and offset_coords[1] > -100
+            ), "Random XY offsets are outside input range"
+            assert (
+                offset_coords[0] < 100 and offset_coords[1] < 100
+            ), "Random XY offsets are outside input range"
+
 
 def test_donut_mask_normal():
     DonutMasker = Donut(
@@ -67,23 +92,6 @@ def test_donut_mask_pop_multiplier():
     ), "Max radius not scaling with population properly"
 
 
-# def test_donut_mask_contained():
-#     DonutMasker = Donut(
-#         sensitive_gdf=points, container_gdf=populations, max_distance=1000, max_tries=1000
-#     )
-#     DonutMasker.execute()
-#     DonutMasker.displacement_distance()
-#     basic_assertions(DonutMasker)
-
-#     masked_join = gpd.sjoin(DonutMasker.masked, populations, how="left")
-#     for index, row in DonutMasker.sensitive.iterrows():
-#         print(row)
-#         assert (
-#             row["index_right"]
-#             == masked_join.at[index, "index_right"]
-#         ), "Containment error. Sensitive and masked containment areas do not match."
-
-
 def test_street_mask():
     StreetMasker = Street(
         sensitive_gdf=points,
@@ -110,6 +118,7 @@ def test_street_mask_parallel():
 
 
 if __name__ == "__main__":
+    test_donut_random_xy()
     test_street_mask()
     test_street_mask_parallel()
     test_donut_mask_max_k()
