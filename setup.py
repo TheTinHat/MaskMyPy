@@ -21,15 +21,10 @@ setup(
     install_requires=[
         "osmnx>=1.2.0",
         "geopandas>=0.10",
-        "matplotlib>=3.5",
-        "networkx>=2.8",
-        "numpy>=1.21",
-        "pandas>=1.4",
-        "pyproj>=3.3",
-        "requests>=2.27",
-        "Rtree>=1.0",
-        "Shapely>=1.8,<2.0",
         "scikit-learn>=1.1.1",
     ],
     python_requires=">=3.8",
+    entry_points = {
+        'console_scripts': ['maskmypy=maskmypy.command_line:cli'],
+    },
 )

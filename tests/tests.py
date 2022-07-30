@@ -31,7 +31,7 @@ def basic_assertions(masking_class):
 
 def test_donut_random_xy():
     modes = ["uniform", "areal"]
-    i = 100
+    i = 1000
     for mode in modes:
         for i in range(i):
             DonutMasker = Donut(sensitive_gdf=points, distribution=mode)
@@ -51,7 +51,7 @@ def test_donut_random_xy():
 
 
 def test_seed_reproducibility():
-    i = 100
+    i = 1000
     numbers = []
     for i in range(i):
         DonutMasker = Donut(sensitive_gdf=points, seed=123456789)
@@ -144,8 +144,8 @@ if __name__ == "__main__":
     test_donut_random_xy()
     test_seed_reproducibility()
     test_seed_randomness()
-    # test_street_mask()
-    # test_street_mask_parallel()
-    # test_donut_mask_max_k()
-    # test_donut_mask_normal()
-    # test_donut_mask_pop_multiplier()
+    test_street_mask()
+    test_street_mask_parallel()
+    test_donut_mask_max_k()
+    test_donut_mask_normal()
+    test_donut_mask_pop_multiplier()
