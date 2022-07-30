@@ -30,8 +30,8 @@ def basic_assertions(masking_class):
 
 
 def test_donut_random_xy():
-    modes = ["areal", "uniform"]
-    i = 500
+    modes = ["uniform", "areal"]
+    i = 100
     for mode in modes:
         for i in range(i):
             DonutMasker = Donut(sensitive_gdf=points, distribution=mode)
@@ -50,12 +50,36 @@ def test_donut_random_xy():
             ), "Random XY offsets are outside input range"
 
 
+def test_seed_reproducibility():
+    i = 100
+    numbers = []
+    for i in range(i):
+        DonutMasker = Donut(sensitive_gdf=points, seed=123456789)
+        offset_coords = DonutMasker._random_xy(1, 100)
+        numbers.append(offset_coords)
+    assert (
+        len(set(numbers)) == 1
+    ), "Random numbers are not deterministic given same seed"
+
+
+def test_seed_randomness():
+    i = 1000
+    numbers = []
+    for n in range(i):
+        DonutMasker = Donut(sensitive_gdf=points, seed=n)
+        offset_coords = DonutMasker._random_xy(1, 100)
+        numbers.append(offset_coords)
+    assert len(set(numbers)) == i, "Random numbers are not unique across seeds"
+
+
 def test_donut_mask_normal():
     DonutMasker = Donut(
         sensitive_gdf=points,
         population_gdf=populations,
         population_column="POP",
         address_points_gdf=addresses,
+        seed=1235151512515,
+        distribution="gaussian",
     )
     DonutMasker.execute()
     DonutMasker.displacement_distance()
@@ -118,8 +142,10 @@ def test_street_mask_parallel():
 
 if __name__ == "__main__":
     test_donut_random_xy()
-    test_street_mask()
-    test_street_mask_parallel()
-    test_donut_mask_max_k()
-    test_donut_mask_normal()
-    test_donut_mask_pop_multiplier()
+    test_seed_reproducibility()
+    test_seed_randomness()
+    # test_street_mask()
+    # test_street_mask_parallel()
+    # test_donut_mask_max_k()
+    # test_donut_mask_normal()
+    # test_donut_mask_pop_multiplier()
