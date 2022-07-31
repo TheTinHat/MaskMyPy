@@ -4,10 +4,10 @@ on:
   push:
     branches: ['**']
     paths:
-    - maskmypy
-    - tests
-    - requirements.txt
-    - setup.py
+    - 'maskmypy'
+    - 'tests'
+    - 'requirements.txt'
+    - 'setup.py'
 
 jobs:
   deploy:
