@@ -6,7 +6,7 @@ theme:
     name: 'material'
     # logo: assets/logo.png
     # favicon: assets/favicon.ico
-    site_url: https://swanlund.space/MaskMyPy/
+    site_url: https://swanlund.dev/maskmypy
     palette:
 
     # Light mode
