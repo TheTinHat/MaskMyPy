@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="maskmypy",
-    version="0.0.5",
+    version="0.0.7",
     author="David Swanlund",
     author_email="david.swanlund@gmail.com",
     description="Geographic masking tools for spatial data anonymization",
@@ -18,4 +18,13 @@ setup(
         "Operating System :: OS Independent",
         "Topic :: Scientific/Engineering :: GIS",
     ],
-    python_requires='>=3.6',)
+    install_requires=[
+        "osmnx>=1.2.0",
+        "geopandas>=0.10",
+        "scikit-learn>=1.1.1",
+    ],
+    python_requires=">=3.8",
+    entry_points = {
+        'console_scripts': ['maskmypy=maskmypy.command_line:cli'],
+    },
+)

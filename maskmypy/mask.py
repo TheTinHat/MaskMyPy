@@ -1,13 +1,4 @@
 from geopandas import GeoDataFrame, sjoin
-import logging
-
-
-logging.basicConfig(
-    filename=".maskmypy.log",
-    filemode="w",
-    level=logging.CRITICAL,
-    format="%(name)s - %(levelname)s - %(asctime)s - %(message)s",
-)
 
 
 class Base:
@@ -51,7 +42,6 @@ class Base:
             ), "Container CRS does not match points CRS"
             self.container = self._crop_gdf(container_gdf, self.sensitive)
             self.container = self.container.loc[:, ["geometry"]]
-            self.container_filtered = self.container.copy()
             return True
         else:
             self.container = ""
@@ -74,8 +64,8 @@ class Base:
         """Uses spatial index to reduce an input (target) geodataframe to only
         that which intersects with a reference geodataframe"""
         bb = reference_gdf.total_bounds
-        x = (bb[2] - bb[0]) / 10
-        y = (bb[3] - bb[1]) / 10
+        x = (bb[2] - bb[0]) / 5
+        y = (bb[3] - bb[1]) / 5
         bb[0] = bb[0] - x
         bb[1] = bb[1] - y
         bb[2] = bb[2] + x
@@ -86,10 +76,9 @@ class Base:
     def displacement_distance(self):
         """Calculate dispalcement distance for each point after masking."""
         assert isinstance(self.masked, GeoDataFrame), "Data has not yet been masked"
-        for index, row in self.masked.iterrows():
-            old_coords = self.sensitive.at[index, "geometry"]
-            distance = row.geometry.distance(old_coords)
-            self.masked.at[index, "distance"] = distance
+        self.masked["distance"] = self.masked.geometry.distance(
+            self.sensitive["geometry"]
+        )
         return self.masked
 
     def k_anonymity_estimate(self, population_gdf="", population_column="pop"):
@@ -191,21 +180,21 @@ class Base:
     def _containment(self, uncontained):
         """If a container geodataframe is loaded, checks whether or not masked
         points are within the same containment polygon as their original locations."""
+
         if "index_right" not in self.sensitive.columns:
             self.sensitive = sjoin(self.sensitive, self.container, how="left")
             self.tries = 0
 
-        self.container_filtered = self._crop_gdf(self.container_filtered, uncontained)
-
-        uncontained = sjoin(uncontained, self.container_filtered, how="left")
+        uncontained = sjoin(uncontained, self.container, how="left")
 
         for index, row in uncontained.iterrows():
-            if row["index_right"] == self.sensitive.iat[index, -1]:
+            if row["index_right"] == self.sensitive.at[index, "index_right"]:
                 self.masked.at[index, "contain"] = 1
 
         self.tries += 1
 
         if self.tries > self.max_tries:
+
             for index, row in uncontained.iterrows():
                 self.masked.loc[index, "contain"] = 999
 

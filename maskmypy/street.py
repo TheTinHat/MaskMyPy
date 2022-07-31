@@ -7,15 +7,6 @@ from networkx import single_source_dijkstra_path_length
 from .mask import Base
 from multiprocessing import Pool, cpu_count
 from numpy import array_split
-import logging
-
-
-logging.basicConfig(
-    filename=".maskmypy.log",
-    filemode="w",
-    level=logging.INFO,
-    format="%(name)s - %(levelname)s - %(asctime)s - %(message)s",
-)
 
 
 class Street(Base):
@@ -42,11 +33,9 @@ class Street(Base):
         self.depth = depth
 
     def _get_osm(self):
-        logging.info("Retrieving OSMnx Graph")
         selection = self.masked.buffer(self.buffer_dist)
         selection = selection.to_crs(epsg=4326)
         bb = selection.total_bounds
-        logging.info("Bounding box: %s", str(bb))
 
         self.graph = graph_from_bbox(
             north=bb[3],
@@ -72,13 +61,10 @@ class Street(Base):
             )
 
             neighbor_count = len(self._find_neighbors(node))
-            logging.info("Finding nearest node to %s ", (str(node)))
+
             if neighbor_count == 0:
-                logging.info("Removing node %s from pool", str(node))
                 graph_temporary.remove_node(node)
 
-        logging.info("Nearest node is %s", str(node))
-        logging.info("Node has %s neighbors", str(neighbor_count))
         return node
 
     def _find_neighbors(self, node):
@@ -88,7 +74,6 @@ class Street(Base):
 
             if length > self.max_street_length:
                 neighbors = [n for n in neighbors if n != neighbor]
-                logging.info("Removing %s from neighbors", str(neighbor))
 
         return neighbors
 
@@ -102,7 +87,6 @@ class Street(Base):
                 self.graph, node, distance, "length"
             )
             node_count = len(paths)
-            logging.info("Node count: %s", str(node_count))
             distance += 250
 
         nodes = []
@@ -123,8 +107,7 @@ class Street(Base):
         idx = distances.index(min(distances, key=lambda x: abs(x - candidate_distance)))
 
         node = nodes[idx]
-        logging.info("Candidate distance is %s", str(candidate_distance))
-        logging.info("Closest node to candidate distance is %s", str(node))
+
         return node
 
     def _apply_street_mask(self, masked_gdf):
@@ -164,7 +147,6 @@ class Street(Base):
 
     def execute_parallel(self):
         cpus = cpu_count() - 1
-        logging.info("Executing in parallel with %s cpus", str(cpus))
         pool = Pool(processes=cpus)
         chunks = array_split(self.masked, cpus)
 
