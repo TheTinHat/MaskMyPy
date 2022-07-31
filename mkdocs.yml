@@ -20,7 +20,7 @@ theme:
     # Dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
-      primary: deep gray
+      primary: light gray
       accent: light blue
       toggle:
         icon: material/toggle-switch
@@ -47,9 +47,6 @@ plugins:
   - roamlinks
   - git-revision-date-localized:
       timezone: America/Vancouver
-
-
-
 
 extra_css:
   - assets/css/extra.css
