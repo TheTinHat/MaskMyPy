@@ -1,8 +1,9 @@
 from geopandas import GeoDataFrame, sjoin
-from random import random, gauss, uniform
+from random import random, uniform, SystemRandom
 from .mask import Base
 from shapely.affinity import translate
 from math import sqrt
+from numpy import random
 
 
 class Donut(Base):
@@ -17,6 +18,7 @@ class Donut(Base):
         container_gdf="",
         address_points_gdf="",
         max_tries=1000,
+        seed="",
     ):
 
         super().__init__(
@@ -32,32 +34,39 @@ class Donut(Base):
         self.distribution = distribution
         self.donut_ratio = donut_ratio
 
+        if not seed:
+            self.seed=int(SystemRandom().random() * (10**10))
+        elif seed:
+            self.seed = seed
+
+        self.rng = random.default_rng(seed=self.seed)
+
     def _random_xy(self, min, max):
         if self.distribution == "uniform":
-            hypotenuse = uniform(min, max)
-            x = uniform(0, hypotenuse)
+            hypotenuse = self.rng.uniform(min, max)
+            x = self.rng.uniform(0, hypotenuse)
 
         elif self.distribution == "gaussian":
             mean = ((max - min) / 2) + min
             sigma = ((max - min) / 2) / 2.5
-            hypotenuse = gauss(mean, sigma)
-            x = uniform(0, hypotenuse)
+            hypotenuse = self.rng.normal(mean, sigma)
+            x = self.rng.uniform(0, hypotenuse)
 
         elif self.distribution == "areal":
             hypotenuse = 0
             while hypotenuse == 0:
-                r1 = uniform(min, max)
-                r2 = uniform(min, max)
+                r1 = self.rng.uniform(min, max)
+                r2 = self.rng.uniform(min, max)
                 if r1 > r2:
                     hypotenuse = r1
-            x = uniform(0, hypotenuse)
+            x = self.rng.uniform(0, hypotenuse)
 
         else:
             raise Exception("Unknown distribution")
 
         y = sqrt(hypotenuse**2 - x**2)
 
-        direction = random()
+        direction = self.rng.random()
 
         if direction < 0.25:
             x = x * -1
@@ -82,18 +91,16 @@ class Donut(Base):
         self.masked.loc[:, "contain"] = 0
 
         while min(self.masked["contain"]) == 0:
-
             uncontained = self.masked.loc[self.masked["contain"] == 0, :]
 
             for index, row in uncontained.iterrows():
                 x, y = self._random_xy(row["radius_min"], row["radius_max"])
 
                 self.masked.at[index, "geometry"] = translate(
-                    row["geometry"], xoff=x, yoff=y
+                    self.sensitive.at[index, "geometry"], xoff=x, yoff=y
                 )
 
             self._containment(uncontained)
-
         return True
 
     def execute(self):
