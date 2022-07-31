@@ -7,9 +7,6 @@ theme:
     # favicon: assets/favicon.ico
     site_url: https://maskmypy.swanlund.dev/
     palette:
-
-    # Light mode
-    - media: "(prefers-color-scheme: light)"
       scheme: default
       primary: teal
       accent: teal
