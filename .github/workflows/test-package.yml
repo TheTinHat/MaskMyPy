@@ -4,8 +4,8 @@ on:
   push:
     branches: ['**']
     paths:
-    - 'maskmypy'
-    - 'tests'
+    - 'maskmypy/**'
+    - 'tests/**'
     - 'requirements.txt'
     - 'setup.py'
 
