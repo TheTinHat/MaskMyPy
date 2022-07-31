@@ -3,6 +3,11 @@ name: Test Package
 on:
   push:
     branches: ['**']
+    paths:
+    - maskmypy
+    - tests
+    - requirements.txt
+    - setup.py
 
 jobs:
   deploy:
