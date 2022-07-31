@@ -3,9 +3,14 @@ name: Test Package
 on:
   push:
     branches: ['**']
+    paths:
+    - 'maskmypy/**'
+    - 'tests/**'
+    - 'requirements.txt'
+    - 'setup.py'
 
 jobs:
-  deploy:
+  test:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2

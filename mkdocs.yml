@@ -7,24 +7,10 @@ theme:
     # favicon: assets/favicon.ico
     site_url: https://maskmypy.swanlund.dev/
     palette:
-
-    # Light mode
-    - media: "(prefers-color-scheme: light)"
       scheme: default
-      primary: deep gray
-      # accent:
-      toggle:
-        icon: material/toggle-switch-off-outline
-        name: Switch to dark mode
+      primary: teal
+      accent: teal
 
-    # Dark mode
-    - media: "(prefers-color-scheme: dark)"
-      scheme: slate
-      primary: deep gray
-      accent: light blue
-      toggle:
-        icon: material/toggle-switch
-        name: Switch to light mode
 
 # Extensions
 markdown_extensions:
@@ -47,9 +33,6 @@ plugins:
   - roamlinks
   - git-revision-date-localized:
       timezone: America/Vancouver
-
-
-
 
 extra_css:
   - assets/css/extra.css

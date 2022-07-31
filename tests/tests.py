@@ -1,7 +1,7 @@
 from maskmypy import Donut, Street, Donut_MaxK, Donut_Multiply
 import geopandas as gpd
 
-
+# Load base data
 points = gpd.read_file("tests/test_data/test_points.shp")
 populations = gpd.read_file("tests/test_data/test_population.shp")
 addresses = gpd.read_file("tests/test_data/test_addresses.shp")
@@ -13,20 +13,20 @@ def basic_assertions(masking_class):
 
     assert (
         sensitive_length == masked_length
-    ), "Masked data not same length as sensitive data"
+    ), "Masked data not same length as sensitive data."
 
     for i in range(int(masked_length / 10)):
         assert not masking_class.sensitive.at[i, "geometry"].intersects(
             masking_class.masked.at[i, "geometry"]
-        ), "Sensitive and masked geometries intersect"
+        ), "Sensitive and masked geometries intersect."
 
         assert (
             masking_class.masked.at[i, "distance"] > 0
-        ), "Displacement distance is zero"
+        ), "Displacement distance is zero."
 
         assert (
             masking_class.masked.at[i, "distance"] < 10000
-        ), "Displacement distance is extremely large"
+        ), "Displacement distance is extremely large."
 
 
 def test_donut_random_xy():
@@ -38,16 +38,16 @@ def test_donut_random_xy():
             offset_coords = DonutMasker._random_xy(1, 100)
             assert isinstance(
                 offset_coords[0], float
-            ), "Random XY offsets are not valid floats"
+            ), "Random XY offsets are not valid floats."
             assert isinstance(
                 offset_coords[1], float
-            ), "Random XY offsets are not valid floats"
+            ), "Random XY offsets are not valid floats."
             assert (
                 offset_coords[0] > -100 and offset_coords[1] > -100
-            ), "Random XY offsets are outside input range"
+            ), "Random XY offsets are outside input range."
             assert (
                 offset_coords[0] < 100 and offset_coords[1] < 100
-            ), "Random XY offsets are outside input range"
+            ), "Random XY offsets are outside input range."
 
 
 def test_seed_reproducibility():
@@ -59,7 +59,7 @@ def test_seed_reproducibility():
         numbers.append(offset_coords)
     assert (
         len(set(numbers)) == 1
-    ), "Random numbers are not deterministic given same seed"
+    ), "Random numbers are not deterministic given same seed."
 
 
 def test_seed_randomness():
@@ -69,7 +69,7 @@ def test_seed_randomness():
         DonutMasker = Donut(sensitive_gdf=points, seed=n)
         offset_coords = DonutMasker._random_xy(1, 100)
         numbers.append(offset_coords)
-    assert len(set(numbers)) == i, "Random numbers are not unique across seeds"
+    assert len(set(numbers)) == i, "Random numbers are not unique across seeds."
 
 
 def test_donut_mask_normal():
@@ -113,7 +113,7 @@ def test_donut_mask_pop_multiplier():
     basic_assertions(DonutMasker)
     assert (
         max(DonutMasker.masked["radius_max"]) == 500
-    ), "Max radius not scaling with population properly"
+    ), "Max radius not scaling with population properly."
 
 
 def test_street_mask():
