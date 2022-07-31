@@ -4,7 +4,7 @@
 
 MaskMyPy also supports k-anonymity estimation using population data and k-anonymity calculation using address data, as well as the calculation of displacement distance between sensitive and masked points.
 
-[![Downloads](https://pepy.tech/badge/maskmypy)](https://pepy.tech/project/maskmypy)
+![Master Tests](https://img.shields.io/github/checks-status/TheTinHat/maskmyxyz/master)
 
 **Disclaimer**: *MaskMyPy is offered as-is, without warranty of any kind. Geographic masking is a hard problem that requires informed decisions and validation. MaskMyPy provides helpful tools for geographic masking, but does not replace expertise.*
 
