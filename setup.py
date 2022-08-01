@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="maskmypy",
-    version="0.0.7",
+    version="0.0.8",
     author="David Swanlund",
     author_email="david.swanlund@gmail.com",
     description="Geographic masking tools for spatial data anonymization",
