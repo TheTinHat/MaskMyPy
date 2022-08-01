@@ -1,5 +1,5 @@
 from geopandas import GeoDataFrame, sjoin
-from random import random, uniform, SystemRandom
+from random import random, SystemRandom
 from .mask import Base
 from shapely.affinity import translate
 from math import sqrt
