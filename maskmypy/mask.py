@@ -37,7 +37,9 @@ class Base:
     def _load_container(self, container):
         """Loads a geodataframe of polygons to contain points while donut masking"""
         if isinstance(container, GeoDataFrame):
-            assert container.crs == self.crs, "Container CRS does not match points CRS"
+            assert (
+                container.crs == self.crs
+            ), "Container CRS does not match points CRS"
             self.container = self._crop(container, self.sensitive)
             self.container = self.container.loc[:, ["geometry"]]
             return True
@@ -74,7 +76,7 @@ class Base:
     def displacement_distance(self):
         """Calculate dispalcement distance for each point after masking."""
         assert isinstance(self.masked, GeoDataFrame), "Data has not yet been masked"
-        self.masked["distance"] = self.masked.geometry.distance(
+        self.masked["displace_dist"] = self.masked.geometry.distance(
             self.sensitive["geometry"]
         )
         return self.masked
@@ -94,13 +96,13 @@ class Base:
 
         self.population["pop_area"] = self.population.area
 
-        if "distance" not in self.masked.columns:
+        if "displace_dist" not in self.masked.columns:
             self.displacement_distance()
 
         masked_temp = self.masked.copy()
 
         masked_temp["geometry"] = masked_temp.apply(
-            lambda x: x.geometry.buffer(x["distance"]), axis=1
+            lambda x: x.geometry.buffer(x["displace_dist"]), axis=1
         )
 
         masked_temp = self._disaggregate_population(masked_temp)
@@ -129,13 +131,13 @@ class Base:
         if isinstance(self.addresses, GeoDataFrame) is False:
             raise Exception("Error: missing address point geodataframe.")
 
-        if "distance" not in self.masked.columns:
+        if "displace_dist" not in self.masked.columns:
             self.displacement_distance()
 
         masked_temp = self.masked.copy()
 
         masked_temp["geometry"] = masked_temp.apply(
-            lambda x: x.geometry.buffer(x["distance"]), axis=1
+            lambda x: x.geometry.buffer(x["displace_dist"]), axis=1
         )
 
         join = sjoin(self.addresses, masked_temp, how="left")

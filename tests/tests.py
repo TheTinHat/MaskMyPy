@@ -21,11 +21,11 @@ def basic_assertions(masking_class):
         ), "Sensitive and masked geometries intersect."
 
         assert (
-            masking_class.masked.at[i, "distance"] > 0
+            masking_class.masked.at[i, "displace_dist"] > 0
         ), "Displacement distance is zero."
 
         assert (
-            masking_class.masked.at[i, "distance"] < 10000
+            masking_class.masked.at[i, "displace_dist"] < 10000
         ), "Displacement distance is extremely large."
 
 
