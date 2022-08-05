@@ -1,4 +1,5 @@
 from geopandas import GeoDataFrame, sjoin
+from faker import Faker
 
 
 class Base:
@@ -11,13 +12,13 @@ class Base:
         population_column="pop",
         container="",
         max_tries=1000,
-        address_points="",
+        addresses="",
     ):
         self.sensitive = sensitive.copy()
         self.crs = self.sensitive.crs
         self._load_population(population, population_column)
         self._load_container(container)
-        self._load_addresses(address_points)
+        self._load_addresses(addresses)
         self.max_tries = max_tries
 
     def _load_population(self, population="", population_column="pop"):
@@ -43,11 +44,11 @@ class Base:
             self.container = ""
             return False
 
-    def _load_addresses(self, address_points):
+    def _load_addresses(self, addresses):
         """Loads geodataframe containing address data for k-anonymity calculation"""
-        if isinstance(address_points, GeoDataFrame):
-            assert address_points.crs == self.crs, "Address points CRS does not match points CRS"
-            self.addresses = self._crop(address_points, self.sensitive)
+        if isinstance(addresses, GeoDataFrame):
+            assert addresses.crs == self.crs, "Address points CRS does not match points CRS"
+            self.addresses = self._crop(addresses, self.sensitive)
             self.addresses = self.addresses.loc[:, ["geometry"]]
             return True
         else:
@@ -89,16 +90,16 @@ class Base:
         )
         masked_temp = self._disaggregate_population(masked_temp)
         for i in range(len(self.masked.index)):
-            self.masked.at[i, "_k_est"] = int(
+            self.masked.at[i, "k_est"] = int(
                 masked_temp.loc[masked_temp["_index_2"] == i, "_pop_adjusted"].sum() - 1
             )
         return self.masked
 
-    def k_anonymity_actual(self, address_points=""):
+    def k_anonymity_actual(self, addresses=""):
         """Calculates k-anonymity based on the number of addresses closer
         to the masked point than sensitive point"""
         if not isinstance(self.addresses, GeoDataFrame):
-            self._load_addresses(address_points)
+            self._load_addresses(addresses)
         assert isinstance(self.sensitive, GeoDataFrame), "Sensitive points geodataframe is missing"
         assert isinstance(self.masked, GeoDataFrame), "Data has not yet been masked"
         assert isinstance(self.addresses, GeoDataFrame), "Address points geodataframe is missing"
@@ -113,7 +114,7 @@ class Base:
         join = sjoin(self.addresses, masked_temp, how="left", rsuffix="_index_right")
         for i in range(len(self.masked)):
             subset = join.loc[join["_index_right"] == i, :]
-            self.masked.at[i, "_k_actual"] = len(subset)
+            self.masked.at[i, "k_actual"] = len(subset)
         return self.masked
 
     def _disaggregate_population(self, target):
@@ -148,13 +149,13 @@ class Base:
         uncontained = sjoin(uncontained, self.container, how="left")
         for index, row in uncontained.iterrows():
             if row["_index_right"] == self.sensitive.at[index, "_index_right"]:
-                self.masked.at[index, "_contain"] = 1
+                self.masked.at[index, "CONTAINED"] = 1
         self.tries += 1
         if self.tries > self.max_tries:
             for index, row in uncontained.iterrows():
-                self.masked.loc[index, "_contain"] = 999
+                self.masked.loc[index, "CONTAINED"] = 0
             print(
                 str(len(uncontained)) + " points were masked but could not be"
-                "contained. Uncontained points are listed as 999 in the 'contain' field"
+                "contained. Uncontained points are listed as 0 in the 'CONTAINED' field"
             )
         return True

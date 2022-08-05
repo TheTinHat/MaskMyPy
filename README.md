@@ -93,7 +93,7 @@ mask.k_anonymity_estimate(
 **Usage:**
 After the data has been masked, calcualting address-based k-anoynmity would look like this and will add a column to the masked geodataframe:
 ```
-mask.k_anonymity_actual(address_points='') # Name of the geodataframe including address points.
+mask.k_anonymity_actual(addresses='') # Name of the geodataframe including address points.
 ```
 
 ## Displacement Distance

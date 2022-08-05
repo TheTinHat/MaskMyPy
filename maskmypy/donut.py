@@ -62,9 +62,9 @@ class Donut(Base):
         self.masked.loc[:, "_radius_max"] = self.max
 
     def _mask_within_container(self):
-        self.masked.loc[:, "_contain"] = 0
-        while min(self.masked["_contain"]) == 0:
-            uncontained = self.masked.loc[self.masked["_contain"] == 0, :]
+        self.masked.loc[:, "CONTAINED"] = 0
+        while min(self.masked["CONTAINED"]) == 0:
+            uncontained = self.masked.loc[self.masked["CONTAINED"] == 0, :]
             for index, row in uncontained.iterrows():
                 x, y = self._random_xy(row["_radius_min"], row["_radius_max"])
                 self.masked.at[index, "geometry"] = translate(
@@ -85,8 +85,23 @@ class Donut(Base):
         )
         if isinstance(self.container, GeoDataFrame):
             self._mask_within_container()
-        self.masked = self.masked.drop(["_offset"], axis=1)
+        self.check()
+        self.masked = self.masked.loc[:, ~self.masked.columns.str.startswith("_")]
         return self.masked
+
+    def check(self):
+        self.displacement_distance()
+        max = self.max if self.distribution != "gaussian" else self.max * 1.5
+        min = self.max * self.donut_ratio if self.distribution != "gaussian" else 0
+        assert (
+            self.masked["_displace_dist"].min() > min
+        ), "Displacement distance is less than minimum."
+        assert (
+            self.masked["_displace_dist"].max() < max
+        ), "Displacement distance is greater than maximum."
+        assert len(self.sensitive) == len(
+            self.masked
+        ), "Masked data not same length as sensitive data."
 
 
 class Donut_MaxK(Donut):
@@ -110,6 +125,13 @@ class Donut_MaxK(Donut):
         self.masked["_radius_min"] = join.apply(lambda x: x["_min_radius"], axis=1)
         self.masked["_radius_max"] = join.apply(lambda x: x["_max_radius"], axis=1)
 
+    def check(self):
+        self.displacement_distance()
+        assert self.masked["_displace_dist"].min() > 0, "Displacement distance is zero."
+        assert len(self.sensitive) == len(
+            self.masked
+        ), "Masked data not same length as sensitive data."
+
 
 class Donut_Multiply(Donut):
     def __init__(self, *args, population_multiplier=0, **kwargs):
@@ -132,3 +154,10 @@ class Donut_Multiply(Donut):
         self.masked["_radius_min"] = self.masked.apply(
             lambda x: x["_radius_max"] * self.donut_ratio, axis=1
         )
+
+    def check(self):
+        self.displacement_distance()
+        assert self.masked["_displace_dist"].min() > 0, "Displacement distance is zero."
+        assert len(self.sensitive) == len(
+            self.masked
+        ), "Masked data not same length as sensitive data."

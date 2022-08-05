@@ -106,6 +106,8 @@ class Street(Base):
         else:
             self.masked = self._apply_street_mask(self.masked)
         self.masked = self.masked.to_crs(self.crs)
+        self.check()
+        self.masked = self.masked.loc[:, ~self.masked.columns.str.startswith("_")]
         return self.masked
 
     def execute_parallel(self):
@@ -117,3 +119,13 @@ class Street(Base):
         gdf = GeoDataFrame(concat(masked_chunks))
         gdf = gdf.set_crs(epsg=4326)
         return gdf
+
+    def check(self):
+        self.displacement_distance()
+        assert len(self.sensitive) == len(
+            self.masked
+        ), "Masked data not same length as sensitive data."
+        assert self.masked["_displace_dist"].min() > 0, "Displacement distance is zero."
+        assert (
+            self.masked["_displace_dist"].max() < self.depth * self.max_street_length
+        ), f"Displacement distance is unexepectedly large."

@@ -13,21 +13,15 @@ def basic_assertions(masking_class):
 
     assert sensitive_length == masked_length, "Masked data not same length as sensitive data."
 
-    for i in range(int(masked_length / 10)):
+    for i in range(masked_length):
         assert not masking_class.sensitive.at[i, "geometry"].intersects(
             masking_class.masked.at[i, "geometry"]
         ), "Sensitive and masked geometries intersect."
 
-        assert masking_class.masked.at[i, "_displace_dist"] > 0, "Displacement distance is zero."
-
-        assert (
-            masking_class.masked.at[i, "_displace_dist"] < 10000
-        ), "Displacement distance is extremely large."
-
 
 def test_donut_random_xy():
     modes = ["uniform", "areal"]
-    i = 1000
+    i = 100
     for mode in modes:
         for i in range(i):
             DonutMasker = Donut(sensitive=points, distribution=mode)
@@ -43,7 +37,7 @@ def test_donut_random_xy():
 
 
 def test_seed_reproducibility():
-    i = 1000
+    i = 100
     numbers = []
     for i in range(i):
         DonutMasker = Donut(sensitive=points, seed=123456789)
@@ -53,7 +47,7 @@ def test_seed_reproducibility():
 
 
 def test_seed_randomness():
-    i = 1000
+    i = 100
     numbers = []
     for n in range(i):
         DonutMasker = Donut(sensitive=points, seed=n)
@@ -67,7 +61,7 @@ def test_donut_mask_normal():
         sensitive=points,
         population=populations,
         population_column="POP",
-        address_points=addresses,
+        addresses=addresses,
         seed=1235151512515,
         distribution="gaussian",
     )
@@ -81,7 +75,7 @@ def test_donut_mask_max_k():
         sensitive=points,
         population=populations,
         population_column="POP",
-        address_points=addresses,
+        addresses=addresses,
         max_k_anonymity=100,
     )
     DonutMasker.execute()
@@ -94,16 +88,13 @@ def test_donut_mask_pop_multiplier():
         sensitive=points,
         population=populations,
         population_column="POP",
-        address_points=addresses,
+        addresses=addresses,
         population_multiplier=5,
         max_distance=100,
     )
     DonutMasker.execute()
     DonutMasker.displacement_distance()
     basic_assertions(DonutMasker)
-    assert (
-        max(DonutMasker.masked["_radius_max"]) == 500
-    ), "Max radius not scaling with population properly."
 
 
 def test_street_mask():
@@ -111,7 +102,7 @@ def test_street_mask():
         sensitive=points,
         population=populations,
         population_column="POP",
-        address_points=addresses,
+        addresses=addresses,
     )
     StreetMasker.execute()
     StreetMasker.displacement_distance()
@@ -123,7 +114,7 @@ def test_street_mask_parallel():
         sensitive=points,
         population=populations,
         population_column="POP",
-        address_points=addresses,
+        addresses=addresses,
     )
     StreetMasker.execute(parallel=True)
     StreetMasker.displacement_distance()
