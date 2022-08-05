@@ -150,5 +150,5 @@ class Street(Base):
 
         masked_chunks = [chunk.get() for chunk in processes]
         gdf = GeoDataFrame(concat(masked_chunks))
-        gdf = gdf.set_crs(epsg=4326)
+        gdf = gdf.set_crs(epsg=self.crs)
         return gdf
