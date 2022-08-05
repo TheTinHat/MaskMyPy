@@ -34,7 +34,7 @@ def test_donut_random_xy():
     i = 1000
     for mode in modes:
         for i in range(i):
-            DonutMasker = Donut(sensitive_gdf=points, distribution=mode)
+            DonutMasker = Donut(sensitive=points, distribution=mode)
             offset_coords = DonutMasker._random_xy(1, 100)
             assert isinstance(
                 offset_coords[0], float
@@ -54,7 +54,7 @@ def test_seed_reproducibility():
     i = 1000
     numbers = []
     for i in range(i):
-        DonutMasker = Donut(sensitive_gdf=points, seed=123456789)
+        DonutMasker = Donut(sensitive=points, seed=123456789)
         offset_coords = DonutMasker._random_xy(1, 100)
         numbers.append(offset_coords)
     assert (
@@ -66,7 +66,7 @@ def test_seed_randomness():
     i = 1000
     numbers = []
     for n in range(i):
-        DonutMasker = Donut(sensitive_gdf=points, seed=n)
+        DonutMasker = Donut(sensitive=points, seed=n)
         offset_coords = DonutMasker._random_xy(1, 100)
         numbers.append(offset_coords)
     assert len(set(numbers)) == i, "Random numbers are not unique across seeds."
@@ -74,10 +74,10 @@ def test_seed_randomness():
 
 def test_donut_mask_normal():
     DonutMasker = Donut(
-        sensitive_gdf=points,
-        population_gdf=populations,
+        sensitive=points,
+        population=populations,
         population_column="POP",
-        address_points_gdf=addresses,
+        address_points=addresses,
         seed=1235151512515,
         distribution="gaussian",
     )
@@ -88,10 +88,10 @@ def test_donut_mask_normal():
 
 def test_donut_mask_max_k():
     DonutMasker = Donut_MaxK(
-        sensitive_gdf=points,
-        population_gdf=populations,
+        sensitive=points,
+        population=populations,
         population_column="POP",
-        address_points_gdf=addresses,
+        address_points=addresses,
         max_k_anonymity=100,
     )
     DonutMasker.execute()
@@ -101,10 +101,10 @@ def test_donut_mask_max_k():
 
 def test_donut_mask_pop_multiplier():
     DonutMasker = Donut_Multiply(
-        sensitive_gdf=points,
-        population_gdf=populations,
+        sensitive=points,
+        population=populations,
         population_column="POP",
-        address_points_gdf=addresses,
+        address_points=addresses,
         population_multiplier=5,
         max_distance=100,
     )
@@ -118,10 +118,10 @@ def test_donut_mask_pop_multiplier():
 
 def test_street_mask():
     StreetMasker = Street(
-        sensitive_gdf=points,
-        population_gdf=populations,
+        sensitive=points,
+        population=populations,
         population_column="POP",
-        address_points_gdf=addresses,
+        address_points=addresses,
     )
     StreetMasker.execute()
     StreetMasker.displacement_distance()
@@ -130,10 +130,10 @@ def test_street_mask():
 
 def test_street_mask_parallel():
     StreetMasker = Street(
-        sensitive_gdf=points,
-        population_gdf=populations,
+        sensitive=points,
+        population=populations,
         population_column="POP",
-        address_points_gdf=addresses,
+        address_points=addresses,
     )
     StreetMasker.execute(parallel=True)
     StreetMasker.displacement_distance()

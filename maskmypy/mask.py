@@ -6,27 +6,27 @@ class Base:
 
     def __init__(
         self,
-        sensitive_gdf,
-        population_gdf="",
+        sensitive,
+        population="",
         population_column="pop",
-        container_gdf="",
+        container="",
         max_tries=1000,
-        address_points_gdf="",
+        address_points="",
     ):
-        self.sensitive = sensitive_gdf.copy()
+        self.sensitive = sensitive.copy()
         self.crs = self.sensitive.crs
-        self._load_population(population_gdf, population_column)
-        self._load_container(container_gdf)
-        self._load_addresses(address_points_gdf)
+        self._load_population(population, population_column)
+        self._load_container(container)
+        self._load_addresses(address_points)
         self.max_tries = max_tries
 
-    def _load_population(self, population_gdf="", population_column="pop"):
+    def _load_population(self, population="", population_column="pop"):
         """Loads a geodataframe of population data for donut masking and/or k-anonymity estimation."""
-        if isinstance(population_gdf, GeoDataFrame):
+        if isinstance(population, GeoDataFrame):
             assert (
-                population_gdf.crs == self.crs
+                population.crs == self.crs
             ), "Population CRS does not match points CRS"
-            self.population = self._crop_gdf(population_gdf, self.sensitive)
+            self.population = self._crop(population, self.sensitive)
             self.pop_column = population_column
             self.population = self.population.loc[:, ["geometry", self.pop_column]]
             return True
@@ -34,44 +34,42 @@ class Base:
             self.population = ""
             return False
 
-    def _load_container(self, container_gdf):
+    def _load_container(self, container):
         """Loads a geodataframe of polygons to contain points while donut masking"""
-        if isinstance(container_gdf, GeoDataFrame):
-            assert (
-                container_gdf.crs == self.crs
-            ), "Container CRS does not match points CRS"
-            self.container = self._crop_gdf(container_gdf, self.sensitive)
+        if isinstance(container, GeoDataFrame):
+            assert container.crs == self.crs, "Container CRS does not match points CRS"
+            self.container = self._crop(container, self.sensitive)
             self.container = self.container.loc[:, ["geometry"]]
             return True
         else:
             self.container = ""
             return False
 
-    def _load_addresses(self, address_points_gdf):
+    def _load_addresses(self, address_points):
         """Loads geodataframe containing address data for k-anonymity calculation"""
-        if isinstance(address_points_gdf, GeoDataFrame):
+        if isinstance(address_points, GeoDataFrame):
             assert (
-                address_points_gdf.crs == self.crs
+                address_points.crs == self.crs
             ), "Address points CRS does not match points CRS"
-            self.addresses = self._crop_gdf(address_points_gdf, self.sensitive)
+            self.addresses = self._crop(address_points, self.sensitive)
             self.addresses = self.addresses.loc[:, ["geometry"]]
             return True
         else:
             self.addresses = ""
             return False
 
-    def _crop_gdf(self, target_gdf, reference_gdf):
+    def _crop(self, target, reference):
         """Uses spatial index to reduce an input (target) geodataframe to only
         that which intersects with a reference geodataframe"""
-        bb = reference_gdf.total_bounds
+        bb = reference.total_bounds
         x = (bb[2] - bb[0]) / 5
         y = (bb[3] - bb[1]) / 5
         bb[0] = bb[0] - x
         bb[1] = bb[1] - y
         bb[2] = bb[2] + x
         bb[3] = bb[3] + y
-        target_gdf = target_gdf.cx[bb[0] : bb[2], bb[1] : bb[3]]
-        return target_gdf
+        target = target.cx[bb[0] : bb[2], bb[1] : bb[3]]
+        return target
 
     def displacement_distance(self):
         """Calculate dispalcement distance for each point after masking."""
@@ -81,10 +79,10 @@ class Base:
         )
         return self.masked
 
-    def k_anonymity_estimate(self, population_gdf="", population_column="pop"):
+    def k_anonymity_estimate(self, population="", population_column="pop"):
         """Estimates k-anoynmity based on population data."""
         if not isinstance(self.population, GeoDataFrame):
-            self._load_population(population_gdf, population_column)
+            self._load_population(population, population_column)
 
         assert isinstance(
             self.sensitive, GeoDataFrame
@@ -114,11 +112,11 @@ class Base:
 
         return self.masked
 
-    def k_anonymity_actual(self, address_points_gdf=""):
+    def k_anonymity_actual(self, address_points=""):
         """Calculates k-anonymity based on the number of addresses closer
         to the masked point than sensitive point"""
         if not isinstance(self.addresses, GeoDataFrame):
-            self._load_addresses(address_points_gdf)
+            self._load_addresses(address_points)
 
         assert isinstance(
             self.sensitive, GeoDataFrame
@@ -148,10 +146,10 @@ class Base:
 
         return self.masked
 
-    def _disaggregate_population(self, target_gdf):
+    def _disaggregate_population(self, target):
         """Used for estimating k-anonymity. Disaggregates population within
         buffers based on population polygon data"""
-        target = target_gdf.copy()
+        target = target.copy()
         target = sjoin(target, self.population, how="left")
 
         target["index_2"] = target.index
@@ -167,7 +165,7 @@ class Base:
 
         target["intersected_area"] = target["geometry"].area
 
-        for i in range(len(target_gdf.index)):
+        for i in range(len(target.index)):
 
             polygon_fragments = target.loc[target["index_2"] == i, :]
 
