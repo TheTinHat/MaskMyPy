@@ -1,0 +1,19 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"git.enableCommitSigning": true,
+		"[python]": {
+			"editor.defaultFormatter": "ms-python.black-formatter",
+			"editor.formatOnSave": true
+		},
+		"black-formatter.args": [
+			"-l",
+			"99"
+		],
+		"git.ignoreRebaseWarning": true,
+	}
+}
