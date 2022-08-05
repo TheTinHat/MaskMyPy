@@ -1,5 +1,5 @@
-from maskmypy import Donut, Street, Donut_MaxK, Donut_Multiply
 import geopandas as gpd
+from maskmypy import Donut, Donut_MaxK, Donut_Multiply, Street
 
 # Load base data
 points = gpd.read_file("tests/test_data/test_points.shp")

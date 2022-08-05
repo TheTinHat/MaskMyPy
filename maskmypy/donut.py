@@ -1,9 +1,11 @@
-from geopandas import GeoDataFrame, sjoin
-from random import random, SystemRandom
-from .mask import Base
-from shapely.affinity import translate
 from math import sqrt
+from random import SystemRandom, random
+
+from geopandas import GeoDataFrame, sjoin
 from numpy import random
+from shapely.affinity import translate
+
+from .mask import Base
 
 
 class Donut(Base):

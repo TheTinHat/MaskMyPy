@@ -1,12 +1,14 @@
-from osmnx import graph_from_bbox, graph_to_gdfs
-from osmnx.distance import nearest_nodes, add_edge_lengths
-from osmnx.utils_graph import remove_isolated_nodes
-from geopandas import GeoDataFrame
-from pandas import concat
-from networkx import single_source_dijkstra_path_length
-from .mask import Base
 from multiprocessing import Pool, cpu_count
+
+from geopandas import GeoDataFrame
+from networkx import single_source_dijkstra_path_length
 from numpy import array_split
+from osmnx import graph_from_bbox, graph_to_gdfs
+from osmnx.distance import add_edge_lengths, nearest_nodes
+from osmnx.utils_graph import remove_isolated_nodes
+from pandas import concat
+
+from .mask import Base
 
 
 class Street(Base):
