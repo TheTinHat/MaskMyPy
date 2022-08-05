@@ -1,4 +1,4 @@
-from math import sqrt
+from math import sqrt, pi
 from random import SystemRandom, random
 
 from geopandas import GeoDataFrame, sjoin
@@ -141,11 +141,11 @@ class Donut_MaxK(Donut):
         )
 
         join["max_radius"] = join.apply(
-            lambda x: sqrt(x["max_area"] / 3.141592654), axis=1
+            lambda x: sqrt(x["max_area"] / pi), axis=1
         )
 
         join["min_radius"] = join.apply(
-            lambda x: sqrt(x["min_area"] / 3.141592654), axis=1
+            lambda x: sqrt(x["min_area"] / pi), axis=1
         )
 
         self.masked["radius_min"] = join.apply(lambda x: x["min_radius"], axis=1)
