@@ -12,21 +12,13 @@ from numpy import array_split
 class Street(Base):
     def __init__(
         self,
-        sensitive_gdf,
+        *args,
         depth=20,
         extent_expansion_distance=2000,
         max_street_length=500,
-        population_gdf="",
-        population_column="pop",
-        address_points_gdf="",
+        **kwargs
     ):
-
-        super().__init__(
-            sensitive_gdf=sensitive_gdf,
-            population_gdf=population_gdf,
-            population_column=population_column,
-            address_points_gdf=address_points_gdf,
-        )
+        super().__init__(*args, **kwargs)
 
         self.buffer_dist = extent_expansion_distance
         self.max_street_length = max_street_length

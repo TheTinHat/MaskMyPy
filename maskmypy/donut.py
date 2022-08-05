@@ -117,7 +117,6 @@ class Donut(Base):
 
 class Donut_MaxK(Donut):
     def __init__(self, *args, max_k_anonymity=0, **kwargs):
-
         super().__init__(*args, **kwargs)
 
         self.target_k = max_k_anonymity
@@ -153,7 +152,6 @@ class Donut_MaxK(Donut):
 
 class Donut_Multiply(Donut):
     def __init__(self, *args, population_multiplier=0, **kwargs):
-
         super().__init__(*args, **kwargs)
 
         self.pop_multiplier = population_multiplier - 1
