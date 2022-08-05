@@ -13,12 +13,7 @@ from .mask import Base
 
 class Street(Base):
     def __init__(
-        self,
-        *args,
-        depth=20,
-        extent_expansion_distance=2000,
-        max_street_length=500,
-        **kwargs
+        self, *args, depth=20, extent_expansion_distance=2000, max_street_length=500, **kwargs
     ):
         super().__init__(*args, **kwargs)
 
@@ -30,7 +25,6 @@ class Street(Base):
         selection = self.masked.buffer(self.buffer_dist)
         selection = selection.to_crs(epsg=4326)
         bb = selection.total_bounds
-
         self.graph = graph_from_bbox(
             north=bb[3],
             south=bb[1],
@@ -40,7 +34,6 @@ class Street(Base):
             simplify=True,
             truncate_by_edge=True,
         )
-
         self.graph = remove_isolated_nodes(self.graph)
         self.graph = add_edge_lengths(self.graph)
         self.graph_gdf = graph_to_gdfs(self.graph)
@@ -50,25 +43,18 @@ class Street(Base):
     def _nearest_node(self, graph_temporary, geometry):
         neighbor_count = 0
         while neighbor_count < 1:
-            node = nearest_nodes(
-                graph_temporary, geometry.centroid.x, geometry.centroid.y
-            )
-
+            node = nearest_nodes(graph_temporary, geometry.centroid.x, geometry.centroid.y)
             neighbor_count = len(self._find_neighbors(node))
-
             if neighbor_count == 0:
                 graph_temporary.remove_node(node)
-
         return node
 
     def _find_neighbors(self, node):
         neighbors = list(self.graph.neighbors(node))
         for neighbor in neighbors:
             length = self.graph.get_edge_data(node, neighbor)[0]["length"]
-
             if length > self.max_street_length:
                 neighbors = [n for n in neighbors if n != neighbor]
-
         return neighbors
 
     def _street_mask(self, node):
@@ -77,9 +63,7 @@ class Street(Base):
         threshold = self.depth
 
         while node_count < threshold:
-            paths = single_source_dijkstra_path_length(
-                self.graph, node, distance, "length"
-            )
+            paths = single_source_dijkstra_path_length(self.graph, node, distance, "length")
             node_count = len(paths)
             distance += 250
 
@@ -97,45 +81,30 @@ class Street(Base):
                 break
 
         candidate_distance = total_distance / threshold
-
         idx = distances.index(min(distances, key=lambda x: abs(x - candidate_distance)))
-
         node = nodes[idx]
-
         return node
 
     def _apply_street_mask(self, masked):
-
         graph_temporary = self.graph.copy()
-
         masked["mmp_node"] = masked.apply(
             lambda x: self._nearest_node(graph_temporary, x["geometry"]), axis=1
         )
-
-        masked["mmp_node_new"] = masked.apply(
-            lambda x: self._street_mask(x["mmp_node"]), axis=1
-        )
-
+        masked["mmp_node_new"] = masked.apply(lambda x: self._street_mask(x["mmp_node"]), axis=1)
         masked["geometry"] = masked.apply(
             lambda x: self.graph_gdf[0].at[x["mmp_node_new"], "geometry"], axis=1
         )
-
         masked = masked.drop(["mmp_node", "mmp_node_new"], axis=1)
-
         return masked
 
     def execute(self, parallel=False):
         self.masked = self.sensitive.copy()
-
         self._get_osm()
-
         self.masked = self.masked.to_crs(epsg=4326)
-
         if parallel == True:
             self.masked = self.execute_parallel()
         else:
             self.masked = self._apply_street_mask(self.masked)
-
         self.masked = self.masked.to_crs(self.crs)
         return self.masked
 
@@ -143,12 +112,8 @@ class Street(Base):
         cpus = cpu_count() - 1
         pool = Pool(processes=cpus)
         chunks = array_split(self.masked, cpus)
-
-        processes = [
-            pool.apply_async(self._apply_street_mask, args=(chunk,)) for chunk in chunks
-        ]
-
+        processes = [pool.apply_async(self._apply_street_mask, args=(chunk,)) for chunk in chunks]
         masked_chunks = [chunk.get() for chunk in processes]
         gdf = GeoDataFrame(concat(masked_chunks))
-        gdf = gdf.set_crs(epsg=self.crs)
+        gdf = gdf.set_crs(epsg=4326)
         return gdf
