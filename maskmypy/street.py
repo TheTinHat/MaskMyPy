@@ -87,14 +87,14 @@ class Street(Base):
 
     def _apply_street_mask(self, masked):
         graph_temporary = self.graph.copy()
-        masked["mmp_node"] = masked.apply(
+        masked["_node"] = masked.apply(
             lambda x: self._nearest_node(graph_temporary, x["geometry"]), axis=1
         )
-        masked["mmp_node_new"] = masked.apply(lambda x: self._street_mask(x["mmp_node"]), axis=1)
+        masked["_node_new"] = masked.apply(lambda x: self._street_mask(x["_node"]), axis=1)
         masked["geometry"] = masked.apply(
-            lambda x: self.graph_gdf[0].at[x["mmp_node_new"], "geometry"], axis=1
+            lambda x: self.graph_gdf[0].at[x["_node_new"], "geometry"], axis=1
         )
-        masked = masked.drop(["mmp_node", "mmp_node_new"], axis=1)
+        masked = masked.drop(["_node", "_node_new"], axis=1)
         return masked
 
     def execute(self, parallel=False):
