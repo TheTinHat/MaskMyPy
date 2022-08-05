@@ -21,11 +21,11 @@ def basic_assertions(masking_class):
         ), "Sensitive and masked geometries intersect."
 
         assert (
-            masking_class.masked.at[i, "displace_dist"] > 0
+            masking_class.masked.at[i, "mmp_displace_dist"] > 0
         ), "Displacement distance is zero."
 
         assert (
-            masking_class.masked.at[i, "displace_dist"] < 10000
+            masking_class.masked.at[i, "mmp_displace_dist"] < 10000
         ), "Displacement distance is extremely large."
 
 
@@ -112,7 +112,7 @@ def test_donut_mask_pop_multiplier():
     DonutMasker.displacement_distance()
     basic_assertions(DonutMasker)
     assert (
-        max(DonutMasker.masked["radius_max"]) == 500
+        max(DonutMasker.masked["mmp_radius_max"]) == 500
     ), "Max radius not scaling with population properly."
 
 

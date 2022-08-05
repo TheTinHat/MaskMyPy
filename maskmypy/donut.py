@@ -74,17 +74,17 @@ class Donut(Base):
         return (x, y)
 
     def _find_radii(self):
-        self.masked.loc[:, "radius_min"] = self.max * self.donut_ratio
-        self.masked.loc[:, "radius_max"] = self.max
+        self.masked.loc[:, "mmp_radius_min"] = self.max * self.donut_ratio
+        self.masked.loc[:, "mmp_radius_max"] = self.max
 
     def _mask_within_container(self):
-        self.masked.loc[:, "contain"] = 0
+        self.masked.loc[:, "mmp_contain"] = 0
 
-        while min(self.masked["contain"]) == 0:
-            uncontained = self.masked.loc[self.masked["contain"] == 0, :]
+        while min(self.masked["mmp_contain"]) == 0:
+            uncontained = self.masked.loc[self.masked["mmp_contain"] == 0, :]
 
             for index, row in uncontained.iterrows():
-                x, y = self._random_xy(row["radius_min"], row["radius_max"])
+                x, y = self._random_xy(row["mmp_radius_min"], row["mmp_radius_max"])
 
                 self.masked.at[index, "geometry"] = translate(
                     self.sensitive.at[index, "geometry"], xoff=x, yoff=y
@@ -98,13 +98,13 @@ class Donut(Base):
 
         self._find_radii()
 
-        self.masked["offset"] = self.masked.apply(
-            lambda x: self._random_xy(x["radius_min"], x["radius_max"]), axis=1
+        self.masked["mmp_offset"] = self.masked.apply(
+            lambda x: self._random_xy(x["mmp_radius_min"], x["mmp_radius_max"]), axis=1
         )
 
         self.masked["geometry"] = self.masked.apply(
             lambda x: translate(
-                x["geometry"], xoff=x["offset"][0], yoff=x["offset"][1]
+                x["geometry"], xoff=x["mmp_offset"][0], yoff=x["mmp_offset"][1]
             ),
             axis=1,
         )
@@ -112,7 +112,7 @@ class Donut(Base):
         if isinstance(self.container, GeoDataFrame):
             self._mask_within_container()
 
-        self.masked = self.masked.drop(["offset"], axis=1)
+        self.masked = self.masked.drop(["mmp_offset"], axis=1)
 
         return self.masked
 
@@ -125,31 +125,31 @@ class Donut_MaxK(Donut):
 
     def _find_radii(self):
 
-        self.population["pop_area"] = self.population.area
+        self.population["mmp_pop_area"] = self.population.area
 
         join = sjoin(self.masked, self.population, how="left")
 
-        join["max_area"] = join.apply(
-            lambda x: self.target_k * x["pop_area"] / x[self.pop_column], axis=1
+        join["mmp_max_area"] = join.apply(
+            lambda x: self.target_k * x["mmp_pop_area"] / x[self.pop_column], axis=1
         )
 
-        join["min_area"] = join.apply(
+        join["mmp_min_area"] = join.apply(
             lambda x: (self.target_k * self.donut_ratio)
-            * x["pop_area"]
+            * x["mmp_pop_area"]
             / x[self.pop_column],
             axis=1,
         )
 
-        join["max_radius"] = join.apply(
-            lambda x: sqrt(x["max_area"] / pi), axis=1
+        join["mmp_max_radius"] = join.apply(
+            lambda x: sqrt(x["mmp_max_area"] / pi), axis=1
         )
 
-        join["min_radius"] = join.apply(
-            lambda x: sqrt(x["min_area"] / pi), axis=1
+        join["mmp_min_radius"] = join.apply(
+            lambda x: sqrt(x["mmp_min_area"] / pi), axis=1
         )
 
-        self.masked["radius_min"] = join.apply(lambda x: x["min_radius"], axis=1)
-        self.masked["radius_max"] = join.apply(lambda x: x["max_radius"], axis=1)
+        self.masked["mmp_radius_min"] = join.apply(lambda x: x["mmp_min_radius"], axis=1)
+        self.masked["mmp_radius_max"] = join.apply(lambda x: x["mmp_max_radius"], axis=1)
 
 
 class Donut_Multiply(Donut):
@@ -159,7 +159,7 @@ class Donut_Multiply(Donut):
         self.pop_multiplier = population_multiplier - 1
 
     def _find_radii(self):
-        self.population["pop_area"] = self.population.area
+        self.population["mmp_pop_area"] = self.population.area
 
         join = sjoin(self.masked, self.population, how="left")
 
@@ -167,16 +167,16 @@ class Donut_Multiply(Donut):
         pop_max = max(join[self.pop_column])
         pop_range = pop_max - pop_min
 
-        join["pop_score"] = join.apply(
+        join["mmp_pop_score"] = join.apply(
             lambda x: (1 - (x[self.pop_column] - pop_min) / pop_range)
             * self.pop_multiplier,
             axis=1,
         )
 
-        self.masked["radius_max"] = join.apply(
-            lambda x: (x["pop_score"] * self.max) + self.max, axis=1
+        self.masked["mmp_radius_max"] = join.apply(
+            lambda x: (x["mmp_pop_score"] * self.max) + self.max, axis=1
         )
 
-        self.masked["radius_min"] = self.masked.apply(
-            lambda x: x["radius_max"] * self.donut_ratio, axis=1
+        self.masked["mmp_radius_min"] = self.masked.apply(
+            lambda x: x["mmp_radius_max"] * self.donut_ratio, axis=1
         )

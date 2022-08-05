@@ -76,7 +76,7 @@ class Base:
     def displacement_distance(self):
         """Calculate dispalcement distance for each point after masking."""
         assert isinstance(self.masked, GeoDataFrame), "Data has not yet been masked"
-        self.masked["displace_dist"] = self.masked.geometry.distance(
+        self.masked["mmp_displace_dist"] = self.masked.geometry.distance(
             self.sensitive["geometry"]
         )
         return self.masked
@@ -94,22 +94,22 @@ class Base:
             self.population, GeoDataFrame
         ), "Population geodataframe is missing"
 
-        self.population["pop_area"] = self.population.area
+        self.population["mmp_pop_area"] = self.population.area
 
-        if "displace_dist" not in self.masked.columns:
+        if "mmp_displace_dist" not in self.masked.columns:
             self.displacement_distance()
 
         masked_temp = self.masked.copy()
 
         masked_temp["geometry"] = masked_temp.apply(
-            lambda x: x.geometry.buffer(x["displace_dist"]), axis=1
+            lambda x: x.geometry.buffer(x["mmp_displace_dist"]), axis=1
         )
 
         masked_temp = self._disaggregate_population(masked_temp)
 
         for i in range(len(self.masked.index)):
-            self.masked.at[i, "k_est"] = int(
-                masked_temp.loc[masked_temp["index_2"] == i, "pop_adjusted"].sum() - 1
+            self.masked.at[i, "mmp_k_est"] = int(
+                masked_temp.loc[masked_temp["mmp_index_2"] == i, "mmp_pop_adjusted"].sum() - 1
             )
 
         return self.masked
@@ -131,20 +131,20 @@ class Base:
         if isinstance(self.addresses, GeoDataFrame) is False:
             raise Exception("Error: missing address point geodataframe.")
 
-        if "displace_dist" not in self.masked.columns:
+        if "mmp_displace_dist" not in self.masked.columns:
             self.displacement_distance()
 
         masked_temp = self.masked.copy()
 
         masked_temp["geometry"] = masked_temp.apply(
-            lambda x: x.geometry.buffer(x["displace_dist"]), axis=1
+            lambda x: x.geometry.buffer(x["mmp_displace_dist"]), axis=1
         )
 
-        join = sjoin(self.addresses, masked_temp, how="left")
+        join = sjoin(self.addresses, masked_temp, how="left", rsuffix="mmp_index_right")
 
         for i in range(len(self.masked)):
-            subset = join.loc[join["index_right"] == i, :]
-            self.masked.at[i, "k_actual"] = len(subset)
+            subset = join.loc[join["mmp_index_right"] == i, :]
+            self.masked.at[i, "mmp_k_actual"] = len(subset)
 
         return self.masked
 
@@ -152,28 +152,28 @@ class Base:
         """Used for estimating k-anonymity. Disaggregates population within
         buffers based on population polygon data"""
         target = target.copy()
-        target = sjoin(target, self.population, how="left")
+        target = sjoin(target, self.population, how="left", rsuffix="mmp_index_right")
 
-        target["index_2"] = target.index
+        target["mmp_index_2"] = target.index
 
         target.index = range(len(target.index))
 
         target["geometry"] = target.apply(
             lambda x: x["geometry"].intersection(
-                self.population.at[x["index_right"], "geometry"]
+                self.population.at[x["mmp_index_right"], "geometry"]
             ),
             axis=1,
         )
 
-        target["intersected_area"] = target["geometry"].area
+        target["mmp_intersected_area"] = target["geometry"].area
 
         for i in range(len(target.index)):
 
-            polygon_fragments = target.loc[target["index_2"] == i, :]
+            polygon_fragments = target.loc[target["mmp_index_2"] == i, :]
 
             for index, row in polygon_fragments.iterrows():
-                area_pct = row["intersected_area"] / row["pop_area"]
-                target.at[index, "pop_adjusted"] = row[self.pop_column] * area_pct
+                area_pct = row["mmp_intersected_area"] / row["mmp_pop_area"]
+                target.at[index, "mmp_pop_adjusted"] = row[self.pop_column] * area_pct
 
         return target
 
@@ -181,22 +181,22 @@ class Base:
         """If a container geodataframe is loaded, checks whether or not masked
         points are within the same containment polygon as their original locations."""
 
-        if "index_right" not in self.sensitive.columns:
-            self.sensitive = sjoin(self.sensitive, self.container, how="left")
+        if "mmp_index_right" not in self.sensitive.columns:
+            self.sensitive = sjoin(self.sensitive, self.container, how="left", rsuffix="mmp_index_right")
             self.tries = 0
 
         uncontained = sjoin(uncontained, self.container, how="left")
 
         for index, row in uncontained.iterrows():
-            if row["index_right"] == self.sensitive.at[index, "index_right"]:
-                self.masked.at[index, "contain"] = 1
+            if row["mmp_index_right"] == self.sensitive.at[index, "mmp_index_right"]:
+                self.masked.at[index, "mmp_contain"] = 1
 
         self.tries += 1
 
         if self.tries > self.max_tries:
 
             for index, row in uncontained.iterrows():
-                self.masked.loc[index, "contain"] = 999
+                self.masked.loc[index, "mmp_contain"] = 999
 
             print(
                 str(len(uncontained)) + " points were masked but could not be"
