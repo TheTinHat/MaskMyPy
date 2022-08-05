@@ -9,33 +9,21 @@ from numpy import random
 class Donut(Base):
     def __init__(
         self,
-        sensitive_gdf,
-        population_gdf="",
-        population_column="pop",
+        *args,
         max_distance=250,
         donut_ratio=0.1,
         distribution="uniform",
-        container_gdf="",
-        address_points_gdf="",
-        max_tries=1000,
         seed="",
+        **kwargs
     ):
-
-        super().__init__(
-            sensitive_gdf=sensitive_gdf,
-            population_gdf=population_gdf,
-            population_column=population_column,
-            container_gdf=container_gdf,
-            max_tries=max_tries,
-            address_points_gdf=address_points_gdf,
-        )
+        super().__init__(*args, **kwargs)
 
         self.max = max_distance
         self.distribution = distribution
         self.donut_ratio = donut_ratio
 
         if not seed:
-            self.seed=int(SystemRandom().random() * (10**10))
+            self.seed = int(SystemRandom().random() * (10**10))
         elif seed:
             self.seed = seed
 
@@ -128,29 +116,9 @@ class Donut(Base):
 
 
 class Donut_MaxK(Donut):
-    def __init__(
-        self,
-        sensitive_gdf,
-        population_gdf="",
-        population_column="pop",
-        max_k_anonymity=0,
-        donut_ratio=0.1,
-        distribution="uniform",
-        container_gdf="",
-        address_points_gdf="",
-        max_tries=1000,
-    ):
+    def __init__(self, *args, max_k_anonymity=0, **kwargs):
 
-        super().__init__(
-            sensitive_gdf=sensitive_gdf,
-            population_gdf=population_gdf,
-            population_column=population_column,
-            container_gdf=container_gdf,
-            max_tries=max_tries,
-            address_points_gdf=address_points_gdf,
-            donut_ratio=donut_ratio,
-            distribution=distribution,
-        )
+        super().__init__(*args, **kwargs)
 
         self.target_k = max_k_anonymity
 
@@ -184,31 +152,9 @@ class Donut_MaxK(Donut):
 
 
 class Donut_Multiply(Donut):
-    def __init__(
-        self,
-        sensitive_gdf,
-        max_distance=250,
-        population_gdf="",
-        population_column="pop",
-        population_multiplier=0,
-        donut_ratio=0.1,
-        distribution="uniform",
-        container_gdf="",
-        address_points_gdf="",
-        max_tries=1000,
-    ):
+    def __init__(self, *args, population_multiplier=0, **kwargs):
 
-        super().__init__(
-            sensitive_gdf=sensitive_gdf,
-            max_distance=max_distance,
-            population_gdf=population_gdf,
-            population_column=population_column,
-            container_gdf=container_gdf,
-            max_tries=max_tries,
-            address_points_gdf=address_points_gdf,
-            donut_ratio=donut_ratio,
-            distribution=distribution,
-        )
+        super().__init__(*args, **kwargs)
 
         self.pop_multiplier = population_multiplier - 1
 
