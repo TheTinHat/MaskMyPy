@@ -111,9 +111,9 @@ class Base:
         masked_temp["geometry"] = masked_temp.apply(
             lambda x: x.geometry.buffer(x["_displace_dist"]), axis=1
         )
-        join = sjoin(self.addresses, masked_temp, how="left", rsuffix="_index_right")
+        join = sjoin(self.addresses, masked_temp, how="left", rsuffix="right")
         for i in range(len(self.masked)):
-            subset = join.loc[join["_index_right"] == i, :]
+            subset = join.loc[join["index_right"] == i, :]
             self.masked.at[i, "k_actual"] = len(subset)
         return self.masked
 
@@ -121,13 +121,11 @@ class Base:
         """Used for estimating k-anonymity. Disaggregates population within
         buffers based on population polygon data"""
         target = target.copy()
-        target = sjoin(target, self.population, how="left", rsuffix="_index_right")
+        target = sjoin(target, self.population, how="left", rsuffix="right")
         target["_index_2"] = target.index
         target.index = range(len(target.index))
         target["geometry"] = target.apply(
-            lambda x: x["geometry"].intersection(
-                self.population.at[x["_index_right"], "geometry"]
-            ),
+            lambda x: x["geometry"].intersection(self.population.at[x["index_right"], "geometry"]),
             axis=1,
         )
         target["_intersected_area"] = target["geometry"].area
@@ -141,14 +139,12 @@ class Base:
     def _containment(self, uncontained):
         """If a container geodataframe is loaded, checks whether or not masked
         points are within the same containment polygon as their original locations."""
-        if "_index_right" not in self.sensitive.columns:
-            self.sensitive = sjoin(
-                self.sensitive, self.container, how="left", rsuffix="_index_right"
-            )
+        if "index_right" not in self.sensitive.columns:
+            self.sensitive = sjoin(self.sensitive, self.container, how="left", rsuffix="right")
             self.tries = 0
         uncontained = sjoin(uncontained, self.container, how="left")
         for index, row in uncontained.iterrows():
-            if row["_index_right"] == self.sensitive.at[index, "_index_right"]:
+            if row["index_right"] == self.sensitive.at[index, "index_right"]:
                 self.masked.at[index, "CONTAINED"] = 1
         self.tries += 1
         if self.tries > self.max_tries:
