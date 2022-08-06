@@ -1,5 +1,4 @@
 from geopandas import GeoDataFrame, sjoin
-from faker import Faker
 
 
 class Base:
