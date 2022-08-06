@@ -4,9 +4,9 @@ from maskmypy import Donut, Donut_MaxK, Donut_Multiply, Street
 from numpy import random
 
 # Load base data
-points = gpd.read_file("tests/test_data/test_points.shp")
+points = gpd.read_file("tests/test_data/100_test_points.shp")
 populations = gpd.read_file("tests/test_data/test_population.shp")
-addresses = gpd.read_file("tests/test_data/test_addresses.shp")
+addresses = gpd.read_file("tests/test_data/1000_test_addresses.shp")
 
 rng = random.default_rng(seed=12345)
 
@@ -133,9 +133,6 @@ def test_street_mask():
 def test_street_mask_parallel():
     StreetMasker = Street(
         sensitive=points,
-        population=populations,
-        population_column="POP",
-        addresses=addresses,
     )
     StreetMasker.execute(parallel=True)
     StreetMasker.displacement_distance()
