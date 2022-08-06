@@ -47,8 +47,8 @@ from maskmypy import Donut
 
 donutmask = Donut(
     sensitive=sensitive, # Name of the sensitive geodataframe
-    max_distance=250, # The maximum possible distance that points are displaced
-    donut_ratio=0.1, # The ratio used to define the minimum distance points are displaced
+    max_distance=500, # The maximum possible distance that points are displaced
+    ratio=0.2, # The ratio used to define the minimum distance points are displaced
     distribution='uniform', # The distribution to use when displacing points. Other options include 'gaussian' and 'areal'. 'Areal' distribution means points are more likely to be displaced further within the range.
     container=container) # Optional, a geodataframe used to ensure that points do not leave a particular area.
 
@@ -67,7 +67,7 @@ donutmask = Donut_MaxK(
     population=population, # Name of the census geodataframe
     population_column='pop', # Name of the column containing the population field
     max_k_anonymity=1000, # The maximum possible k-anonymity value
-    donut_ratio=0.2, # The ratio used to define the minimum possible k-anonymity value.
+    ratio=0.2, # The ratio used to define the minimum possible k-anonymity value.
     distribution='uniform', # The distribution to use when displacing points. Other options include 'gaussian' and 'areal'. 'Areal' distribution means points are more likely to be displaced further within the range.
     container=container) # Optional, a geodataframe used to ensure that points do not leave a particular area.
 
