@@ -58,6 +58,8 @@ class Base:
         """Uses spatial index to reduce an input (target) geodataframe to only
         that which intersects with a reference geodataframe"""
         bb = reference.total_bounds
+        if len(set(bb)) == 2:  # If reference is single point, skip crop
+            return target
         x = (bb[2] - bb[0]) / 5
         y = (bb[3] - bb[1]) / 5
         bb[0] = bb[0] - x
@@ -90,7 +92,7 @@ class Base:
         masked_temp = self._disaggregate_population(masked_temp)
         for i in range(len(self.masked.index)):
             self.masked.at[i, "k_est"] = int(
-                masked_temp.loc[masked_temp["_index_2"] == i, "_pop_adjusted"].sum() - 1
+                round(masked_temp.loc[masked_temp["_index_2"] == i, "_pop_adjusted"].sum())
             )
         return self.masked
 
