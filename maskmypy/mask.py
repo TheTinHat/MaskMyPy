@@ -83,8 +83,8 @@ class Base:
         assert isinstance(self.masked, GeoDataFrame), "Data has not yet been masked"
         assert isinstance(self.population, GeoDataFrame), "Population geodataframe is missing"
         self.population["_pop_area"] = self.population.area
-        if "_displace_dist" not in self.masked.columns:
-            self.displacement_distance()
+
+        self.displacement_distance()
         masked_temp = self.masked.copy()
         masked_temp["geometry"] = masked_temp.apply(
             lambda x: x.geometry.buffer(x["_displace_dist"]), axis=1
@@ -106,8 +106,7 @@ class Base:
         assert isinstance(self.addresses, GeoDataFrame), "Address points geodataframe is missing"
         if isinstance(self.addresses, GeoDataFrame) is False:
             raise Exception("Error: missing address point geodataframe.")
-        if "_displace_dist" not in self.masked.columns:
-            self.displacement_distance()
+        self.displacement_distance()
         masked_temp = self.masked.copy()
         masked_temp["geometry"] = masked_temp.apply(
             lambda x: x.geometry.buffer(x["_displace_dist"]), axis=1
