@@ -13,7 +13,7 @@ class Donut(Base):
         self, *args, max_distance=500, ratio=0.2, distribution="uniform", seed="", **kwargs
     ):
         super().__init__(*args, **kwargs)
-        self.max = max_distance
+        self.max_distance = max_distance
         self.distribution = distribution
         self.ratio = ratio
 
@@ -58,8 +58,8 @@ class Donut(Base):
         return (x, y)
 
     def _find_radii(self):
-        self.masked.loc[:, "_radius_min"] = self.max * self.ratio
-        self.masked.loc[:, "_radius_max"] = self.max
+        self.masked.loc[:, "_radius_min"] = self.max_distance * self.ratio
+        self.masked.loc[:, "_radius_max"] = self.max_distance
 
     def _mask_within_container(self):
         self.masked.loc[:, "CONTAINED"] = 0
@@ -91,8 +91,8 @@ class Donut(Base):
 
     def check(self):
         self.displacement_distance()
-        max = self.max if self.distribution != "gaussian" else self.max * 1.5
-        min = self.max * self.ratio if self.distribution != "gaussian" else 0
+        max = self.max_distance if self.distribution != "gaussian" else self.max_distance * 1.5
+        min = self.max_distance * self.ratio if self.distribution != "gaussian" else 0
         assert (
             self.masked["_displace_dist"].min() > min
         ), "Displacement distance is less than minimum."
@@ -149,7 +149,7 @@ class Donut_Multiply(Donut):
             axis=1,
         )
         self.masked["_radius_max"] = join.apply(
-            lambda x: (x["_pop_score"] * self.max) + self.max, axis=1
+            lambda x: (x["_pop_score"] * self.max_distance) + self.max_distance, axis=1
         )
         self.masked["_radius_min"] = self.masked.apply(
             lambda x: x["_radius_max"] * self.ratio, axis=1
