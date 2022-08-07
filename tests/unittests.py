@@ -82,33 +82,16 @@ def test_displacement_distance(data):
 
 def test_k_anonymity_estimate(data):
     dubious_donut = Donut(
-        data["point"], population=data["population"], max_distance=20, ratio=0.99999999
+        data["point"], population=data["population"], max_distance=20, ratio=0.9999999
     )
     dubious_donut.execute()
     dubious_donut.k_anonymity_estimate()
-    print(dubious_donut.masked)
+    assert dubious_donut.masked.loc[0, "k_est"] == 4.0
 
-
-# def k_anonymity_estimate(self, population="", population_column="pop"):
-#     """Estimates k-anoynmity based on population data."""
-#     if not isinstance(self.population, GeoDataFrame):
-#         self._load_population(population, population_column)
-#     assert isinstance(self.sensitive, GeoDataFrame), "Sensitive points geodataframe is missing"
-#     assert isinstance(self.masked, GeoDataFrame), "Data has not yet been masked"
-#     assert isinstance(self.population, GeoDataFrame), "Population geodataframe is missing"
-#     self.population["_pop_area"] = self.population.area
-#     if "_displace_dist" not in self.masked.columns:
-#         self.displacement_distance()
-#     masked_temp = self.masked.copy()
-#     masked_temp["geometry"] = masked_temp.apply(
-#         lambda x: x.geometry.buffer(x["_displace_dist"]), axis=1
-#     )
-#     masked_temp = self._disaggregate_population(masked_temp)
-#     for i in range(len(self.masked.index)):
-#         self.masked.at[i, "k_est"] = int(
-#             masked_temp.loc[masked_temp["_index_2"] == i, "_pop_adjusted"].sum() - 1
-#         )
-#     return self.masked
+    dubious_donut.max_distance = 50
+    dubious_donut.execute()
+    dubious_donut.k_anonymity_estimate()
+    assert dubious_donut.masked.loc[0, "k_est"] == 25.0
 
 
 def test_disaggregate_population(data):
