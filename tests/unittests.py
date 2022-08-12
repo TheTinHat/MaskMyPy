@@ -213,18 +213,41 @@ def test_donut_find_radii(data):
     assert dubious_donut.masked.loc[0, "_radius_max"] == 100
 
 
-# DONUT
-# _mask_within_container
-# execute
+def test_donut_container(data):
+    dubious_donut = Donut(
+        data["point"],
+        max_distance=900,
+        ratio=0.01,
+        container=data["population"],
+        seed=data["seeds"][0],
+    )
+    dubious_donut.execute()
+    assert dubious_donut.try_count > 1
+    assert dubious_donut.masked.loc[0, "CONTAINED"] == 1
 
 
-# DONUT_MAXK
-# _find_radii
+def test_donut_maxk_find_radii(data):
+    dubious_donut = Donut_MaxK(
+        data["point"], population=data["population"], max_k_anonymity=100, ratio=0.1
+    )
+    dubious_donut.masked = dubious_donut.sensitive
+    dubious_donut._find_radii()
+    assert round(dubious_donut.masked.loc[0, "_radius_max"]) == 100
+    assert round(dubious_donut.masked.loc[0, "_radius_min"]) == 32
 
 
-# DONU
-# T_MULTIPLY
-# _find_radii
+def test_donut_multiply_find_radii(data):
+    dubious_donut = Donut_Multiply(
+        data["point"],
+        population=data["population"],
+        population_multiplier=5,
+        max_distance=100,
+        ratio=0.1,
+    )
+    dubious_donut.masked = dubious_donut.sensitive.copy()
+    dubious_donut._find_radii()
+    assert dubious_donut.masked.loc[0, "_radius_max"] == 500
+    assert dubious_donut.masked.loc[0, "_radius_min"] == 50
 
 
 # STREET
