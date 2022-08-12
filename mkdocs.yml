@@ -6,11 +6,6 @@ theme:
     # logo: assets/logo.png
     # favicon: assets/favicon.ico
     site_url: https://thetinhat.github.io/MaskMyPy/
-    palette:
-      scheme: default
-      primary: teal
-      accent: teal
-
 
 # Extensions
 markdown_extensions:
@@ -35,4 +30,4 @@ plugins:
       timezone: America/Vancouver
 
 extra_css:
-  - assets/css/extra.css
+  - stylesheets/extra.css
