@@ -104,14 +104,3 @@ def test_street_mask_parallel():
     StreetMasker.execute(parallel=True)
     StreetMasker.displacement_distance()
     basic_assertions(StreetMasker)
-
-
-if __name__ == "__main__":
-    test_donut_random_xy()
-    test_seed_reproducibility()
-    test_seed_randomness()
-    test_street_mask()
-    test_street_mask_parallel()
-    test_donut_mask_max_k()
-    test_donut_mask_normal()
-    test_donut_mask_pop_multiplier()
