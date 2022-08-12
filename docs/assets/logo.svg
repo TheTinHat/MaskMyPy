@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg5"
+   inkscape:export-filename="\\wsl$\Ubuntu\home\david\MaskMyPy\docs\assets\logo_white.png"
+   inkscape:export-xdpi="300"
+   inkscape:export-ydpi="300"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04, custom)"
+   sodipodi:docname="logo.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="true"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="0.77771465"
+     inkscape:cx="254.06398"
+     inkscape:cy="413.62405"
+     inkscape:window-width="2430"
+     inkscape:window-height="1368"
+     inkscape:window-x="1001"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs2">
+    <rect
+       x="22.275672"
+       y="432.78448"
+       width="546.89047"
+       height="128.65337"
+       id="rect33302" />
+    <rect
+       x="254.59209"
+       y="255.87791"
+       width="491.18273"
+       height="122.15277"
+       id="rect1749" />
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <text
+       xml:space="preserve"
+       transform="matrix(0.26458333,0,0,0.26458333,43.060616,-2.405621)"
+       id="text33300"
+       style="font-style:normal;font-weight:normal;font-size:74.6667px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect33302);fill:#306998;fill-opacity:1;stroke:none"
+       inkscape:export-filename="\\wsl$\Ubuntu\home\david\MaskMyPy\docs\assets\logo_white.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300"><tspan
+         x="22.275391"
+         y="501.90274"
+         id="tspan87247"><tspan
+           style="fill:#ffffff"
+           id="tspan87243">MaskMy</tspan><tspan
+           style="fill:#ffd43b"
+           id="tspan87245">Py</tspan></tspan></text>
+    <path
+       style="fill:#ffffff;fill-opacity:1;stroke-width:0.0568257"
+       d=""
+       id="path73094"
+       transform="scale(0.26458333)" />
+    <path
+       style="fill:#ffffff;fill-opacity:1;stroke-width:0.0568257"
+       d=""
+       id="path73170"
+       transform="scale(0.26458333)" />
+    <path
+       style="fill:#ffffff;fill-opacity:1;stroke-width:0.0568257"
+       d=""
+       id="path73476"
+       transform="scale(0.26458333)" />
+    <path
+       style="fill:#ffffff;fill-opacity:1;stroke-width:0.0568257"
+       d=""
+       id="path73554"
+       transform="scale(0.26458333)" />
+    <g
+       id="g73615"
+       transform="matrix(0.12749841,0,0,0.12749841,34.648392,116.41607)"
+       style="fill:#ff0000"
+       inkscape:export-filename="\\wsl$\Ubuntu\home\david\MaskMyPy\docs\assets\python_logo.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300">
+      <path
+         fill="url(#SVGID_1_)"
+         d="m 55.023,-0.077 c -25.971,0 -26.25,10.081 -26.25,12.156 0,3.148 0,12.594 0,12.594 h 26.75 v 3.781 c 0,0 -27.852,0 -37.375,0 -7.949,0 -17.938,4.833 -17.938,26.25 0,19.673 7.792,27.281 15.656,27.281 2.335,0 9.344,0 9.344,0 0,0 0,-9.765 0,-13.125 0,-5.491 2.721,-15.656 15.406,-15.656 15.91,0 19.971,0 26.531,0 3.902,0 14.906,-1.696 14.906,-14.406 0,-13.452 0,-17.89 0,-24.219 0.001,-3.153 -0.538,-14.656 -27.03,-14.656 z m -14.75,8.469 c 2.662,0 4.813,2.15 4.813,4.813 0,2.661 -2.151,4.813 -4.813,4.813 -2.662,0 -4.813,-2.151 -4.813,-4.813 0,-2.663 2.151,-4.813 4.813,-4.813 z"
+         id="path73598"
+         style="fill:#ffffff;fill-opacity:1" />
+      <path
+         fill="url(#SVGID_2_)"
+         d="m 55.397,109.923 c 25.959,0 26.282,-10.271 26.282,-12.156 0,-3.148 0,-12.594 0,-12.594 H 54.897 v -3.781 c 0,0 28.032,0 37.375,0 8.009,0 17.938,-4.954 17.938,-26.25 0,-23.322 -10.538,-27.281 -15.656,-27.281 -2.336,0 -9.344,0 -9.344,0 0,0 0,10.216 0,13.125 0,5.491 -2.631,15.656 -15.406,15.656 -15.91,0 -19.476,0 -26.532,0 -3.892,0 -14.906,1.896 -14.906,14.406 0,14.475 0,18.265 0,24.219 0,5.23 3.196,14.656 27.031,14.656 z m 14.751,-8.469 c -2.662,0 -4.813,-2.151 -4.813,-4.813 0,-2.662 2.15,-4.813 4.813,-4.813 2.661,0 4.813,2.151 4.813,4.813 0,2.662 -2.152,4.813 -4.813,4.813 z"
+         id="path73605"
+         style="fill:#ffd43b;fill-opacity:1" />
+    </g>
+  </g>
+</svg>
