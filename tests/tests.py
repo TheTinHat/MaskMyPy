@@ -27,39 +27,6 @@ def basic_assertions(masking_class):
         ), "Sensitive and masked geometries intersect."
 
 
-@pytest.mark.parametrize("distributions", ["uniform", "areal"])
-def test_donut_random_xy(distributions):
-    for i in range(100):
-        DonutMasker = Donut(sensitive=points, distribution=distributions)
-        offset_coords = DonutMasker._random_xy(1, 100)
-        assert isinstance(offset_coords[0], float), "Random XY offsets are not valid floats."
-        assert isinstance(offset_coords[1], float), "Random XY offsets are not valid floats."
-        assert (
-            offset_coords[0] > -100 and offset_coords[1] > -100
-        ), "Random XY offsets are outside input range."
-        assert (
-            offset_coords[0] < 100 and offset_coords[1] < 100
-        ), "Random XY offsets are outside input range."
-
-
-def test_seed_reproducibility():
-    numbers = []
-    for i in range(100):
-        DonutMasker = Donut(sensitive=points, seed=12345)
-        offset_coords = DonutMasker._random_xy(1, 100)
-        numbers.append(offset_coords)
-    assert len(set(numbers)) == 1, "Random numbers are not deterministic given same seed."
-
-
-def test_seed_randomness():
-    numbers = []
-    for seed in gen_seeds(100):
-        DonutMasker = Donut(sensitive=points, seed=seed)
-        offset_coords = DonutMasker._random_xy(1, 100)
-        numbers.append(offset_coords)
-    assert len(set(numbers)) == 100, "Random numbers are not unique across seeds."
-
-
 @pytest.mark.parametrize("distributions", ["uniform", "gaussian", "areal"])
 @pytest.mark.parametrize("seeds", gen_seeds(5))
 def test_donut_mask_normal(distributions, seeds):
