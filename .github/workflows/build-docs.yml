@@ -2,8 +2,7 @@ name: Build and Publish Docs
 on:
   push:
     branches:
-      - master
-      - main
+      - cli
     paths:
     - 'docs/**'
     - 'mkdocs.yml'
