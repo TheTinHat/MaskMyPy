@@ -9,7 +9,6 @@ cligj==0.7.2
 commonmark==0.9.1
 cycler==0.11.0
 cyclonedx-python-lib==2.7.0
-Faker==13.15.1
 Fiona==1.8.21
 fonttools==4.34.4
 geopandas==0.11.1
