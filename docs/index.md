@@ -1,4 +1,4 @@
-# MaskMyPy
+![MaskMyPy Logo](assets/logo.png)
 
 [MaskMyPy](https://github.com/TheTinHat/MaskMyPy) is a (very alpha) Python package that performs geographic masking on [GeoPandas geodataframes](http://geopandas.org/data_structures.html). It offers two main methods: street masking and donut masking.
 
@@ -8,7 +8,7 @@ MaskMyPy also supports k-anonymity estimation using population data and k-anonym
 
 **Disclaimer**: *MaskMyPy is offered as-is, without warranty of any kind. Geographic masking is a hard problem that requires informed decisions and validation. MaskMyPy provides helpful tools for geographic masking, but does not replace expertise.*
 
-## Installation
+# Installation
 ```
 pip install maskmypy
 ```
@@ -102,3 +102,10 @@ To add a column to the masked geodataframe that includes the actual displacement
 ```
 mask.displacement_distance()
 ```
+
+
+<style>
+.md-content__inner > h1:first-child  {
+  display: none;
+}
+</style>

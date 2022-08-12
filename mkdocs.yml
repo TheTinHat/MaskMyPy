@@ -3,11 +3,9 @@ site_description: Geographic Masking Python Package
 site_url: https://thetinhat.github.io/MaskMyPy/
 theme:
     name: 'material'
-    # logo: assets/logo.png
-    # favicon: assets/favicon.ico
     site_url: https://thetinhat.github.io/MaskMyPy/
+    logo: assets/python_logo.png
 
-# Extensions
 markdown_extensions:
   - footnotes
   - toc:
@@ -20,4 +18,4 @@ plugins:
       timezone: America/Vancouver
 
 extra_css:
-  - stylesheets/extra.css
+  - assets/style.css
