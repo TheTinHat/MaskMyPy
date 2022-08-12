@@ -1,4 +1,6 @@
-![MaskMyPy Logo](assets/logo.png)
+<div style="text-align:center;"><img src="assets/logo.png" style="max-width: 400px;"></div>
+
+-----
 
 [MaskMyPy](https://github.com/TheTinHat/MaskMyPy) is a (very alpha) Python package that performs geographic masking on [GeoPandas geodataframes](http://geopandas.org/data_structures.html). It offers two main methods: street masking and donut masking.
 
