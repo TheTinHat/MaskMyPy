@@ -30,7 +30,7 @@ streetmask = Street(
     max_street_length=500) # Optional, but recommended that you read below for full explanation of what this does.
 
 
-streetmask.execute() # Single threaded by default. Add `parallel=True` as parameter to run on all CPU cores, drastically increasing performance.
+streetmask.run() # Single threaded by default. Add `parallel=True` as parameter to run on all CPU cores, drastically increasing performance.
 
 masked = streetmask.masked
 ```
@@ -54,7 +54,7 @@ donutmask = Donut(
     distribution='uniform', # The distribution to use when displacing points. Other options include 'gaussian' and 'areal'. 'Areal' distribution means points are more likely to be displaced further within the range.
     container=container) # Optional, a geodataframe used to ensure that points do not leave a particular area.
 
-donutmask.execute()
+donutmask.run()
 
 masked = donutmask.masked
 ```
@@ -73,7 +73,7 @@ donutmask = Donut_MaxK(
     distribution='uniform', # The distribution to use when displacing points. Other options include 'gaussian' and 'areal'. 'Areal' distribution means points are more likely to be displaced further within the range.
     container=container) # Optional, a geodataframe used to ensure that points do not leave a particular area.
 
-donutmask.execute()
+donutmask.run()
 
 masked = donutmask.masked
 ```
@@ -100,7 +100,7 @@ mask.k_anonymity_actual(addresses='') # Name of the geodataframe including addre
 
 ## Displacement Distance
 **Usage:**
-To add a column to the masked geodataframe that includes the actual displacement distances (in meters), one can just execute:
+To add a column to the masked geodataframe that includes the actual displacement distances (in meters), one can just run:
 ```
 mask.displacement_distance()
 ```

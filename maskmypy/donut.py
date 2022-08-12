@@ -73,7 +73,7 @@ class Donut(Base):
             self._containment(uncontained)
         return True
 
-    def execute(self):
+    def run(self):
         self.masked = self.sensitive.copy()
         self._find_radii()
         self.masked["_offset"] = self.masked.apply(

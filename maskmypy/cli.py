@@ -29,7 +29,7 @@ def cli():
     help="Name of the population column in the population polygons.",
 )
 @click.option(
-    "--donut-ratio",
+    "--ratio",
     type=click.FLOAT,
     help="The ratio of the max displacement distance used to define the minimum displacement distance (e.g. if distance=100 and ratio=0.1, then the minimum distance will be set to 10).",
 )
@@ -53,5 +53,5 @@ def cli():
 def donut(input_shp, output_shp, **kwargs):
     pruned_kwargs = {k: v for k, v in kwargs.items() if v}
     donutmask = Donut(gpd.read_file(input_shp), **pruned_kwargs)
-    donutmask.execute()
+    donutmask.run()
     donutmask.masked.to_file(output_shp)

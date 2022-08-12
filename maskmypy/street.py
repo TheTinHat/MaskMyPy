@@ -13,7 +13,12 @@ from .mask import Base
 
 class Street(Base):
     def __init__(
-        self, *args, depth=20, extent_expansion_distance=2000, max_street_length=500, **kwargs
+        self,
+        *args,
+        depth=20,
+        extent_expansion_distance=2000,
+        max_street_length=500,
+        **kwargs,
     ):
         super().__init__(*args, **kwargs)
 
@@ -97,12 +102,12 @@ class Street(Base):
         masked = masked.drop(["_node", "_node_new"], axis=1)
         return masked
 
-    def execute(self, parallel=False):
+    def run(self, parallel=False):
         self.masked = self.sensitive.copy()
         self._get_osm()
         self.masked = self.masked.to_crs(epsg=4326)
         if parallel == True:
-            self.masked = self.execute_parallel()
+            self.masked = self.run_parallel()
         else:
             self.masked = self._apply_street_mask(self.masked)
         self.masked = self.masked.to_crs(self.crs)
@@ -110,8 +115,8 @@ class Street(Base):
         self.masked = self.masked.loc[:, ~self.masked.columns.str.startswith("_")]
         return self.masked
 
-    def execute_parallel(self):
-        cpus = cpu_count() - 1
+    def run_parallel(self):
+        cpus = cpu_count() - 1 if cpu_count() > 1 else 1
         pool = Pool(processes=cpus)
         chunks = array_split(self.masked, cpus)
         processes = [pool.apply_async(self._apply_street_mask, args=(chunk,)) for chunk in chunks]
