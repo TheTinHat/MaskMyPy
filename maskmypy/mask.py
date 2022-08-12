@@ -106,6 +106,7 @@ class Base:
         assert isinstance(self.addresses, GeoDataFrame), "Address points geodataframe is missing"
         if isinstance(self.addresses, GeoDataFrame) is False:
             raise Exception("Error: missing address point geodataframe.")
+
         self.displacement_distance()
         masked_temp = self.masked.copy()
         masked_temp["geometry"] = masked_temp.apply(
@@ -141,13 +142,13 @@ class Base:
         points are within the same containment polygon as their original locations."""
         if "index_right" not in self.sensitive.columns:
             self.sensitive = sjoin(self.sensitive, self.container, how="left", rsuffix="right")
-            self.tries = 0
+            self.try_count = 0
         uncontained = sjoin(uncontained, self.container, how="left")
         for index, row in uncontained.iterrows():
             if row["index_right"] == self.sensitive.at[index, "index_right"]:
                 self.masked.at[index, "CONTAINED"] = 1
-        self.tries += 1
-        if self.tries > self.max_tries:
+        self.try_count += 1
+        if self.try_count > self.max_tries:
             for index, row in uncontained.iterrows():
                 self.masked.loc[index, "CONTAINED"] = 0
             print(
