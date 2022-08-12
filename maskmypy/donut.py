@@ -105,7 +105,7 @@ class Donut(Base):
 
 
 class Donut_MaxK(Donut):
-    def __init__(self, *args, max_k_anonymity=0, **kwargs):
+    def __init__(self, *args, max_k_anonymity, **kwargs):
         super().__init__(*args, **kwargs)
         self.target_k = max_k_anonymity
 
@@ -134,7 +134,7 @@ class Donut_MaxK(Donut):
 
 
 class Donut_Multiply(Donut):
-    def __init__(self, *args, population_multiplier=0, **kwargs):
+    def __init__(self, *args, population_multiplier, **kwargs):
         super().__init__(*args, **kwargs)
         self.pop_multiplier = population_multiplier - 1
 
@@ -144,6 +144,7 @@ class Donut_Multiply(Donut):
         pop_min = min(join[self.pop_column])
         pop_max = max(join[self.pop_column])
         pop_range = pop_max - pop_min
+        pop_range = pop_range if pop_range > 0 else 1
         join["_pop_score"] = join.apply(
             lambda x: (1 - (x[self.pop_column] - pop_min) / pop_range) * self.pop_multiplier,
             axis=1,
