@@ -8,6 +8,8 @@ points = gpd.read_file("tests/test_data/100_test_points.shp")
 populations = gpd.read_file("tests/test_data/test_population.shp")
 addresses = gpd.read_file("tests/test_data/1000_test_addresses.shp")
 
+i = 10
+
 rng = random.default_rng(seed=12345)
 
 
@@ -28,25 +30,25 @@ def basic_assertions(masking_class):
 
 
 @pytest.mark.parametrize("distributions", ["uniform", "gaussian", "areal"])
-@pytest.mark.parametrize("seeds", gen_seeds(5))
+@pytest.mark.parametrize("seeds", gen_seeds(i))
 def test_donut_mask_normal(distributions, seeds):
     DonutMasker = Donut(
         sensitive=points,
         seed=seeds,
         distribution=distributions,
     )
-    DonutMasker.execute()
+    DonutMasker.run()
     DonutMasker.displacement_distance()
     basic_assertions(DonutMasker)
 
 
 @pytest.mark.parametrize("distributions", ["uniform", "gaussian", "areal"])
-@pytest.mark.parametrize("seeds", gen_seeds(5))
+@pytest.mark.parametrize("seeds", gen_seeds(i))
 def test_donut_mask_contained(distributions, seeds):
     DonutMasker = Donut(
         sensitive=points, container=populations, distribution=distributions, seed=seeds
     )
-    DonutMasker.execute()
+    DonutMasker.run()
     DonutMasker.displacement_distance()
     basic_assertions(DonutMasker)
     assert DonutMasker.masked["CONTAINED"].min() == 1, "Points were not contained."
@@ -63,7 +65,7 @@ def test_donut_mask_max_k(distributions):
         max_k_anonymity=20,
         ratio=0.1,
     )
-    DonutMasker.execute()
+    DonutMasker.run()
     DonutMasker.displacement_distance()
     DonutMasker.k_anonymity_estimate()
     basic_assertions(DonutMasker)
@@ -79,7 +81,7 @@ def test_donut_mask_pop_multiplier(distributions):
         population_multiplier=5,
         max_distance=100,
     )
-    DonutMasker.execute()
+    DonutMasker.run()
     DonutMasker.displacement_distance()
     basic_assertions(DonutMasker)
 
@@ -91,7 +93,7 @@ def test_street_mask():
         population_column="POP",
         addresses=addresses,
     )
-    StreetMasker.execute()
+    StreetMasker.run()
     StreetMasker.displacement_distance()
     StreetMasker.k_anonymity_actual()
     basic_assertions(StreetMasker)
@@ -101,6 +103,6 @@ def test_street_mask_parallel():
     StreetMasker = Street(
         sensitive=points,
     )
-    StreetMasker.execute(parallel=True)
+    StreetMasker.run(parallel=True)
     StreetMasker.displacement_distance()
     basic_assertions(StreetMasker)

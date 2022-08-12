@@ -90,12 +90,12 @@ def test_k_anonymity_estimate(data):
     dubious_donut = Donut(
         data["point"], population=data["population"], max_distance=20, ratio=0.99999
     )
-    dubious_donut.execute()
+    dubious_donut.run()
     dubious_donut.k_anonymity_estimate()
     assert dubious_donut.masked.loc[0, "k_est"] == 4.0
 
     dubious_donut.max_distance = 50
-    dubious_donut.execute()
+    dubious_donut.run()
     dubious_donut.k_anonymity_estimate()
     assert dubious_donut.masked.loc[0, "k_est"] == 25.0
 
@@ -128,7 +128,7 @@ def test_k_anonymity_actual_no_distance(data):
         ratio=0.99999,
         seed=data["seeds"][0],
     )
-    dubious_donut.execute()
+    dubious_donut.run()
     dubious_donut.k_anonymity_actual()
     assert int(dubious_donut.masked.loc[0, "k_actual"]) == 0
 
@@ -141,7 +141,7 @@ def test_k_anonymity_actual(data):
         ratio=0.99999,
         seed=data["seeds"][0],
     )
-    dubious_donut.execute()
+    dubious_donut.run()
     dubious_donut.k_anonymity_actual()
     assert int(dubious_donut.masked.loc[0, "k_actual"]) == 39
 
@@ -199,10 +199,10 @@ def test_random_xy_gaussian(data):
         dubious_donut = Donut(
             data["point"], distribution="gaussian", max_distance=100, ratio=0, seed=seed
         )
-        dubious_donut.execute()
+        dubious_donut.run()
         dubious_donut.displacement_distance()
         distance_list.append(dubious_donut.masked.loc[0, "_displace_dist"])
-    assert normaltest(distance_list)[1] > 0.05
+    assert normaltest(distance_list)[1] > 0.1
 
 
 def test_donut_find_radii(data):
@@ -221,7 +221,7 @@ def test_donut_container(data):
         container=data["population"],
         seed=data["seeds"][0],
     )
-    dubious_donut.execute()
+    dubious_donut.run()
     assert dubious_donut.try_count > 1
     assert dubious_donut.masked.loc[0, "CONTAINED"] == 1
 
@@ -256,5 +256,5 @@ def test_donut_multiply_find_radii(data):
 # _find_neighbors
 # _street_mask
 # _apply_street_mask
-# execute
-# execute_parallel
+# run
+# run_parallel
