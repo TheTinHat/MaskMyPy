@@ -26,10 +26,6 @@
         
         <link rel="stylesheet" href="assets/stylesheets/palette.cbb835fc.min.css">
         
-          
-          
-          <meta name="theme-color" content="#009485">
-        
       
       
     
@@ -44,7 +40,7 @@
       
     
     
-      <link rel="stylesheet" href="assets/css/extra.css">
+      <link rel="stylesheet" href="stylesheets/extra.css">
     
     <script>__md_scope=new URL(".",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
@@ -60,7 +56,7 @@
     
     
     
-    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="teal">
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
   
     
     
@@ -412,8 +408,8 @@ To perform basic donut geomasking on a geodataframe containing sensitive points,
 
 donutmask = Donut(
     sensitive=sensitive, # Name of the sensitive geodataframe
-    max_distance=250, # The maximum possible distance that points are displaced
-    donut_ratio=0.1, # The ratio used to define the minimum distance points are displaced
+    max_distance=500, # The maximum possible distance that points are displaced
+    ratio=0.2, # The ratio used to define the minimum distance points are displaced
     distribution='uniform', # The distribution to use when displacing points. Other options include 'gaussian' and 'areal'. 'Areal' distribution means points are more likely to be displaced further within the range.
     container=container) # Optional, a geodataframe used to ensure that points do not leave a particular area.
 
@@ -429,7 +425,7 @@ donutmask = Donut_MaxK(
     population=population, # Name of the census geodataframe
     population_column='pop', # Name of the column containing the population field
     max_k_anonymity=1000, # The maximum possible k-anonymity value
-    donut_ratio=0.2, # The ratio used to define the minimum possible k-anonymity value.
+    ratio=0.2, # The ratio used to define the minimum possible k-anonymity value.
     distribution='uniform', # The distribution to use when displacing points. Other options include 'gaussian' and 'areal'. 'Areal' distribution means points are more likely to be displaced further within the range.
     container=container) # Optional, a geodataframe used to ensure that points do not leave a particular area.
 
@@ -449,7 +445,7 @@ After the data has been masked, estimating k-anoynmity using census data would l
 <h3 id="calculate-k-anonymity">Calculate K-Anonymity<a class="headerlink" href="#calculate-k-anonymity" title="Permanent link">&para;</a></h3>
 <p><strong>Usage:</strong>
 After the data has been masked, calcualting address-based k-anoynmity would look like this and will add a column to the masked geodataframe:</p>
-<pre><code>mask.k_anonymity_actual(address_points='') # Name of the geodataframe including address points.
+<pre><code>mask.k_anonymity_actual(addresses='') # Name of the geodataframe including address points.
 </code></pre>
 <h2 id="displacement-distance">Displacement Distance<a class="headerlink" href="#displacement-distance" title="Permanent link">&para;</a></h2>
 <p><strong>Usage:</strong>
@@ -462,7 +458,7 @@ To add a column to the masked geodataframe that includes the actual displacement
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">August 4, 2022</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">August 5, 2022</span>
       
     
   </small>
