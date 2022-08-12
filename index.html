@@ -40,7 +40,7 @@
       
     
     
-      <link rel="stylesheet" href="stylesheets/extra.css">
+      <link rel="stylesheet" href="assets/style.css">
     
     <script>__md_scope=new URL(".",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
@@ -66,7 +66,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#maskmypy" class="md-skip">
+        <a href="#installation" class="md-skip">
           Skip to content
         </a>
       
@@ -82,8 +82,7 @@
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href="." title="MaskMyPy Documentation" class="md-header__button md-logo" aria-label="MaskMyPy Documentation" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+  <img src="assets/python_logo.png" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -99,7 +98,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              MaskMyPy
+              Home
             
           </span>
         </div>
@@ -168,8 +167,7 @@
   <label class="md-nav__title" for="__drawer">
     <a href="." title="MaskMyPy Documentation" class="md-nav__button md-logo" aria-label="MaskMyPy Documentation" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+  <img src="assets/python_logo.png" alt="logo">
 
     </a>
     MaskMyPy Documentation
@@ -195,12 +193,12 @@
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          MaskMyPy
+          Home
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <a href="." class="md-nav__link md-nav__link--active">
-        MaskMyPy
+        Home
       </a>
       
         
@@ -217,13 +215,6 @@
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#installation" class="md-nav__link">
-    Installation
-  </a>
-  
-</li>
       
         <li class="md-nav__item">
   <a href="#street-masking" class="md-nav__link">
@@ -281,6 +272,21 @@
   
 
     
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tests/" class="md-nav__link">
+        Testing
+      </a>
+    </li>
+  
+
+    
   </ul>
 </nav>
                   </div>
@@ -306,13 +312,6 @@
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#installation" class="md-nav__link">
-    Installation
-  </a>
-  
-</li>
       
         <li class="md-nav__item">
   <a href="#street-masking" class="md-nav__link">
@@ -376,12 +375,12 @@
                 
 
 
-<h1 id="maskmypy">MaskMyPy<a class="headerlink" href="#maskmypy" title="Permanent link">&para;</a></h1>
+<p><img alt="MaskMyPy Logo" src="assets/logo.png" /></p>
 <p><a href="https://github.com/TheTinHat/MaskMyPy">MaskMyPy</a> is a (very alpha) Python package that performs geographic masking on <a href="http://geopandas.org/data_structures.html">GeoPandas geodataframes</a>. It offers two main methods: street masking and donut masking.</p>
 <p>MaskMyPy also supports k-anonymity estimation using population data and k-anonymity calculation using address data, as well as the calculation of displacement distance between sensitive and masked points.</p>
 <p><img alt="Master Tests" src="https://img.shields.io/github/checks-status/TheTinHat/maskmyxyz/master" /></p>
 <p><strong>Disclaimer</strong>: <em>MaskMyPy is offered as-is, without warranty of any kind. Geographic masking is a hard problem that requires informed decisions and validation. MaskMyPy provides helpful tools for geographic masking, but does not replace expertise.</em></p>
-<h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
+<h1 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h1>
 <pre><code>pip install maskmypy
 </code></pre>
 <h2 id="street-masking">Street Masking<a class="headerlink" href="#street-masking" title="Permanent link">&para;</a></h2>
@@ -452,13 +451,18 @@ After the data has been masked, calcualting address-based k-anoynmity would look
 To add a column to the masked geodataframe that includes the actual displacement distances (in meters), one can just execute:</p>
 <pre><code>mask.displacement_distance()
 </code></pre>
+<style>
+.md-content__inner > h1:first-child  {
+  display: none;
+}
+</style>
 
   <hr>
 <div class="md-source-file">
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">August 5, 2022</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">August 12, 2022</span>
       
     
   </small>
@@ -473,6 +477,27 @@ To add a column to the masked geodataframe that includes the actual displacement
       </main>
       
         <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="Footer" >
+      
+      
+        
+        <a href="tests/" class="md-footer__link md-footer__link--next" aria-label="Next: Testing" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Testing
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
