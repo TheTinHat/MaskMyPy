@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://thetinhat.github.io/MaskMyPy/">
       
       <link rel="icon" href="assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.3.1, mkdocs-material-8.3.9">
+      <meta name="generator" content="mkdocs-1.3.1, mkdocs-material-8.4.0">
     
     
       
@@ -21,7 +21,7 @@
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.1d29e8d0.min.css">
+      <link rel="stylesheet" href="assets/stylesheets/main.69437709.min.css">
       
         
         <link rel="stylesheet" href="assets/stylesheets/palette.cbb835fc.min.css">
@@ -42,7 +42,7 @@
     
       <link rel="stylesheet" href="assets/style.css">
     
-    <script>__md_scope=new URL(".",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -393,15 +393,15 @@
 streetmask = Street(
     sensitive, # Name of the sensitive geodataframe
     depth=20, # The search depth value used to calculate displacement distances.
-    extent_expansion_distance=2000, # Used to download road network data surrounding the study area. Needs to be sufficiently large to reduce edge effects. Increasing reduces edge effects, but uses more memory.
-    max_street_length=500) # Optional, but recommended that you read below for full explanation of what this does.
+    padding=2000, # Used to download road network data surrounding the study area. Needs to be sufficiently large to reduce edge effects. Increasing reduces edge effects, but uses more memory.
+    max_length=500) # Optional, but recommended that you read below for full explanation of what this does.
 
 
 streetmask.run() # Single threaded by default. Add `parallel=True` as parameter to run on all CPU cores, drastically increasing performance.
 
-masked = streetmask.masked
+masked = streetmask.mask
 </code></pre>
-<p><strong>About max_street_length</strong>: when snapping points to the street network, the algorithm checks to make sure that the nearest node is actually connected to the network and has neighbors that are no more than max_street_length away (in meters). If it does not, then the next closest viable node is selected, checked, and so on. This acts as a sanity check to prevent extremely large masking distances. Feel free to change this to whatever you feel is appropriate.</p>
+<p><strong>About max_length</strong>: when snapping points to the street network, the algorithm checks to make sure that the nearest node is actually connected to the network and has neighbors that are no more than max_length away (in meters). If it does not, then the next closest viable node is selected, checked, and so on. This acts as a sanity check to prevent extremely large masking distances. Feel free to change this to whatever you feel is appropriate.</p>
 <h2 id="donut-masking">Donut Masking<a class="headerlink" href="#donut-masking" title="Permanent link">&para;</a></h2>
 <p><strong>Usage:</strong>
 To perform basic donut geomasking on a geodataframe containing sensitive points, with a maximum displacement distance of 500 meters and an minimum displacement distance of 20% of the maximum distance (i.e. 100 meters), the code would look like this:</p>
@@ -416,7 +416,7 @@ donutmask = Donut(
 
 donutmask.run()
 
-masked = donutmask.masked
+masked = donutmask.mask
 </code></pre>
 <p>To perform full donut geomasking (i.e. using census data and a target k-anonymity range rather than distance range) with a maximum k-anonymity of 1000 and minimum of 200, and a census geodataframe called population, the code would appear as follows:</p>
 <pre><code>from maskmypy import Donut_MaxK
@@ -424,7 +424,7 @@ masked = donutmask.masked
 donutmask = Donut_MaxK(
     sensitive, # Name of the sensitive geodataframe
     population=population, # Name of the census geodataframe
-    population_column='pop', # Name of the column containing the population field
+    pop_col='pop', # Name of the column containing the population field
     max_k_anonymity=1000, # The maximum possible k-anonymity value
     ratio=0.2, # The ratio used to define the minimum possible k-anonymity value.
     distribution='uniform', # The distribution to use when displacing points. Other options include 'gaussian' and 'areal'. 'Areal' distribution means points are more likely to be displaced further within the range.
@@ -432,7 +432,7 @@ donutmask = Donut_MaxK(
 
 donutmask.run()
 
-masked = donutmask.masked
+masked = donutmask.mask
 </code></pre>
 <h2 id="k-anonymity">K-Anonymity<a class="headerlink" href="#k-anonymity" title="Permanent link">&para;</a></h2>
 <p>Maskmypy is able to calculate the k-anonymity of each point after masking. Two methods are available for this: estimates, and exact calculations. Estimates of k-anoynmity are inferred from census data, and assume a homogeneously distributed population within each census polygon. Address-based k-anonymity is more accurate and uses actual home address data to calculate k-anonymity.</p>
@@ -441,12 +441,12 @@ masked = donutmask.masked
 After the data has been masked, estimating k-anoynmity using census data would look like this and will add a column to the masked geodataframe:</p>
 <pre><code>mask.k_anonymity_estimate(
     population=population, # Name of the census geodataframe. Not necessary if you already included this parameter in the original masking steps.
-    population_column='pop') # Name of the column containing the population field. Not necessary if you already included this parameter in the original masking steps.
+    pop_col='pop') # Name of the column containing the population field. Not necessary if you already included this parameter in the original masking steps.
 </code></pre>
 <h3 id="calculate-k-anonymity">Calculate K-Anonymity<a class="headerlink" href="#calculate-k-anonymity" title="Permanent link">&para;</a></h3>
 <p><strong>Usage:</strong>
 After the data has been masked, calcualting address-based k-anoynmity would look like this and will add a column to the masked geodataframe:</p>
-<pre><code>mask.k_anonymity_actual(addresses='') # Name of the geodataframe including address points.
+<pre><code>mask.k_anonymity_actual(address='') # Name of the geodataframe including address points.
 </code></pre>
 <h2 id="displacement-distance">Displacement Distance<a class="headerlink" href="#displacement-distance" title="Permanent link">&para;</a></h2>
 <p><strong>Usage:</strong>
@@ -464,11 +464,14 @@ To add a column to the masked geodataframe that includes the actual displacement
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">August 12, 2022</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">August 14, 2022</span>
       
     
   </small>
 </div>
+
+
+
 
               
             </article>
@@ -521,10 +524,11 @@ To add a column to the masked geodataframe that includes the actual displacement
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": ".", "features": [], "search": "assets/javascripts/workers/search.b97dbffb.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    <script id="__config" type="application/json">{"base": ".", "features": [], "search": "assets/javascripts/workers/search.ecf98df9.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
-      <script src="assets/javascripts/bundle.6c7ad80a.min.js"></script>
+      <script src="assets/javascripts/bundle.9c69f0bc.min.js"></script>
       
     
   </body>
