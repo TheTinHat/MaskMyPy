@@ -26,6 +26,10 @@
         
         <link rel="stylesheet" href="assets/stylesheets/palette.cbb835fc.min.css">
         
+          
+          
+          <meta name="theme-color" content="#009485">
+        
       
       
     
@@ -40,7 +44,7 @@
       
     
     
-      <link rel="stylesheet" href="assets/style.css">
+      <link rel="stylesheet" href="assets/css/extra.css">
     
     <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
@@ -56,7 +60,7 @@
     
     
     
-    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="teal">
   
     
     
@@ -66,7 +70,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#installation" class="md-skip">
+        <a href="#maskmypy" class="md-skip">
           Skip to content
         </a>
       
@@ -82,7 +86,8 @@
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href="." title="MaskMyPy Documentation" class="md-header__button md-logo" aria-label="MaskMyPy Documentation" data-md-component="logo">
       
-  <img src="assets/python_logo.png" alt="logo">
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -98,7 +103,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Home
+              MaskMyPy
             
           </span>
         </div>
@@ -167,7 +172,8 @@
   <label class="md-nav__title" for="__drawer">
     <a href="." title="MaskMyPy Documentation" class="md-nav__button md-logo" aria-label="MaskMyPy Documentation" data-md-component="logo">
       
-  <img src="assets/python_logo.png" alt="logo">
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
 
     </a>
     MaskMyPy Documentation
@@ -193,12 +199,12 @@
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          Home
+          MaskMyPy
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <a href="." class="md-nav__link md-nav__link--active">
-        Home
+        MaskMyPy
       </a>
       
         
@@ -215,6 +221,13 @@
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    Installation
+  </a>
+  
+</li>
       
         <li class="md-nav__item">
   <a href="#street-masking" class="md-nav__link">
@@ -272,21 +285,6 @@
   
 
     
-      
-      
-      
-
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="tests/" class="md-nav__link">
-        Testing
-      </a>
-    </li>
-  
-
-    
   </ul>
 </nav>
                   </div>
@@ -312,6 +310,13 @@
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    Installation
+  </a>
+  
+</li>
       
         <li class="md-nav__item">
   <a href="#street-masking" class="md-nav__link">
@@ -375,14 +380,12 @@
                 
 
 
-<div style="text-align:center;"><img src="assets/logo.png" style="max-width: 400px;"></div>
-
-<hr />
+<h1 id="maskmypy">MaskMyPy<a class="headerlink" href="#maskmypy" title="Permanent link">&para;</a></h1>
 <p><a href="https://github.com/TheTinHat/MaskMyPy">MaskMyPy</a> is a (very alpha) Python package that performs geographic masking on <a href="http://geopandas.org/data_structures.html">GeoPandas geodataframes</a>. It offers two main methods: street masking and donut masking.</p>
 <p>MaskMyPy also supports k-anonymity estimation using population data and k-anonymity calculation using address data, as well as the calculation of displacement distance between sensitive and masked points.</p>
 <p><img alt="Master Tests" src="https://img.shields.io/github/checks-status/TheTinHat/maskmyxyz/master" /></p>
 <p><strong>Disclaimer</strong>: <em>MaskMyPy is offered as-is, without warranty of any kind. Geographic masking is a hard problem that requires informed decisions and validation. MaskMyPy provides helpful tools for geographic masking, but does not replace expertise.</em></p>
-<h1 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h1>
+<h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
 <pre><code>pip install maskmypy
 </code></pre>
 <h2 id="street-masking">Street Masking<a class="headerlink" href="#street-masking" title="Permanent link">&para;</a></h2>
@@ -393,15 +396,15 @@
 streetmask = Street(
     sensitive, # Name of the sensitive geodataframe
     depth=20, # The search depth value used to calculate displacement distances.
-    padding=2000, # Used to download road network data surrounding the study area. Needs to be sufficiently large to reduce edge effects. Increasing reduces edge effects, but uses more memory.
-    max_length=500) # Optional, but recommended that you read below for full explanation of what this does.
+    extent_expansion_distance=2000, # Used to download road network data surrounding the study area. Needs to be sufficiently large to reduce edge effects. Increasing reduces edge effects, but uses more memory.
+    max_street_length=500) # Optional, but recommended that you read below for full explanation of what this does.
 
 
-streetmask.run() # Single threaded by default. Add `parallel=True` as parameter to run on all CPU cores, drastically increasing performance.
+streetmask.execute() # Single threaded by default. Add `parallel=True` as parameter to run on all CPU cores, drastically increasing performance.
 
-masked = streetmask.mask
+masked = streetmask.masked
 </code></pre>
-<p><strong>About max_length</strong>: when snapping points to the street network, the algorithm checks to make sure that the nearest node is actually connected to the network and has neighbors that are no more than max_length away (in meters). If it does not, then the next closest viable node is selected, checked, and so on. This acts as a sanity check to prevent extremely large masking distances. Feel free to change this to whatever you feel is appropriate.</p>
+<p><strong>About max_street_length</strong>: when snapping points to the street network, the algorithm checks to make sure that the nearest node is actually connected to the network and has neighbors that are no more than max_street_length away (in meters). If it does not, then the next closest viable node is selected, checked, and so on. This acts as a sanity check to prevent extremely large masking distances. Feel free to change this to whatever you feel is appropriate.</p>
 <h2 id="donut-masking">Donut Masking<a class="headerlink" href="#donut-masking" title="Permanent link">&para;</a></h2>
 <p><strong>Usage:</strong>
 To perform basic donut geomasking on a geodataframe containing sensitive points, with a maximum displacement distance of 500 meters and an minimum displacement distance of 20% of the maximum distance (i.e. 100 meters), the code would look like this:</p>
@@ -409,14 +412,14 @@ To perform basic donut geomasking on a geodataframe containing sensitive points,
 
 donutmask = Donut(
     sensitive=sensitive, # Name of the sensitive geodataframe
-    max_distance=500, # The maximum possible distance that points are displaced
-    ratio=0.2, # The ratio used to define the minimum distance points are displaced
+    max_distance=250, # The maximum possible distance that points are displaced
+    donut_ratio=0.1, # The ratio used to define the minimum distance points are displaced
     distribution='uniform', # The distribution to use when displacing points. Other options include 'gaussian' and 'areal'. 'Areal' distribution means points are more likely to be displaced further within the range.
     container=container) # Optional, a geodataframe used to ensure that points do not leave a particular area.
 
-donutmask.run()
+donutmask.execute()
 
-masked = donutmask.mask
+masked = donutmask.masked
 </code></pre>
 <p>To perform full donut geomasking (i.e. using census data and a target k-anonymity range rather than distance range) with a maximum k-anonymity of 1000 and minimum of 200, and a census geodataframe called population, the code would appear as follows:</p>
 <pre><code>from maskmypy import Donut_MaxK
@@ -424,15 +427,15 @@ masked = donutmask.mask
 donutmask = Donut_MaxK(
     sensitive, # Name of the sensitive geodataframe
     population=population, # Name of the census geodataframe
-    pop_col='pop', # Name of the column containing the population field
+    population_column='pop', # Name of the column containing the population field
     max_k_anonymity=1000, # The maximum possible k-anonymity value
-    ratio=0.2, # The ratio used to define the minimum possible k-anonymity value.
+    donut_ratio=0.2, # The ratio used to define the minimum possible k-anonymity value.
     distribution='uniform', # The distribution to use when displacing points. Other options include 'gaussian' and 'areal'. 'Areal' distribution means points are more likely to be displaced further within the range.
     container=container) # Optional, a geodataframe used to ensure that points do not leave a particular area.
 
-donutmask.run()
+donutmask.execute()
 
-masked = donutmask.mask
+masked = donutmask.masked
 </code></pre>
 <h2 id="k-anonymity">K-Anonymity<a class="headerlink" href="#k-anonymity" title="Permanent link">&para;</a></h2>
 <p>Maskmypy is able to calculate the k-anonymity of each point after masking. Two methods are available for this: estimates, and exact calculations. Estimates of k-anoynmity are inferred from census data, and assume a homogeneously distributed population within each census polygon. Address-based k-anonymity is more accurate and uses actual home address data to calculate k-anonymity.</p>
@@ -441,30 +444,25 @@ masked = donutmask.mask
 After the data has been masked, estimating k-anoynmity using census data would look like this and will add a column to the masked geodataframe:</p>
 <pre><code>mask.k_anonymity_estimate(
     population=population, # Name of the census geodataframe. Not necessary if you already included this parameter in the original masking steps.
-    pop_col='pop') # Name of the column containing the population field. Not necessary if you already included this parameter in the original masking steps.
+    population_column='pop') # Name of the column containing the population field. Not necessary if you already included this parameter in the original masking steps.
 </code></pre>
 <h3 id="calculate-k-anonymity">Calculate K-Anonymity<a class="headerlink" href="#calculate-k-anonymity" title="Permanent link">&para;</a></h3>
 <p><strong>Usage:</strong>
 After the data has been masked, calcualting address-based k-anoynmity would look like this and will add a column to the masked geodataframe:</p>
-<pre><code>mask.k_anonymity_actual(address='') # Name of the geodataframe including address points.
+<pre><code>mask.k_anonymity_actual(address_points='') # Name of the geodataframe including address points.
 </code></pre>
 <h2 id="displacement-distance">Displacement Distance<a class="headerlink" href="#displacement-distance" title="Permanent link">&para;</a></h2>
 <p><strong>Usage:</strong>
-To add a column to the masked geodataframe that includes the actual displacement distances (in meters), one can just run:</p>
+To add a column to the masked geodataframe that includes the actual displacement distances (in meters), one can just execute:</p>
 <pre><code>mask.displacement_distance()
 </code></pre>
-<style>
-.md-content__inner > h1:first-child  {
-  display: none;
-}
-</style>
 
   <hr>
 <div class="md-source-file">
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">August 14, 2022</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">August 4, 2022</span>
       
     
   </small>
@@ -482,27 +480,6 @@ To add a column to the masked geodataframe that includes the actual displacement
       </main>
       
         <footer class="md-footer">
-  
-    
-    <nav class="md-footer__inner md-grid" aria-label="Footer" >
-      
-      
-        
-        <a href="tests/" class="md-footer__link md-footer__link--next" aria-label="Next: Testing" rel="next">
-          <div class="md-footer__title">
-            <div class="md-ellipsis">
-              <span class="md-footer__direction">
-                Next
-              </span>
-              Testing
-            </div>
-          </div>
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
-          </div>
-        </a>
-      
-    </nav>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
