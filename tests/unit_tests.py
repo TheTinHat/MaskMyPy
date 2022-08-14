@@ -26,20 +26,20 @@ def data():
     seeds = rng.integers(low=100000, high=10000000, size=100)
     assert len(set(seeds)) == 100, "Duplicate seeds found"
 
-    addresses = gpd.GeoDataFrame(columns=["geometry"], crs=crs)
+    address = gpd.GeoDataFrame(columns=["geometry"], crs=crs)
     for i in range(population.loc[0, "pop"]):
         contained = False
         while contained is False:
-            address = Point(
+            addr = Point(
                 rng.uniform(low=bbox[0], high=bbox[2]), rng.uniform(low=bbox[1], high=bbox[3])
             )
-            if address.intersects(population.loc[0, "geometry"]):
-                addresses.loc[i, "geometry"] = address
+            if addr.intersects(population.loc[0, "geometry"]):
+                address.loc[i, "geometry"] = addr
                 contained = True
     return {
         "point": point,
         "population": population,
-        "addresses": addresses,
+        "address": address,
         "container": container,
         "test_point": test_point,
         "test_circle": test_circle,
@@ -49,36 +49,36 @@ def data():
 
 def test_load_population(data):
     dubious_donut = Donut(data["point"], population=data["population"])
-    assert dubious_donut.sensitive.crs == dubious_donut.population.crs
+    assert dubious_donut.input.crs == dubious_donut.population.crs
     with pytest.raises(AssertionError):
         assert Donut(data["point"], population=data["population"].to_crs(4326))
 
 
 def test_load_container(data):
     dubious_donut = Donut(data["point"], container=data["container"])
-    assert dubious_donut.sensitive.crs == dubious_donut.container.crs
+    assert dubious_donut.input.crs == dubious_donut.container.crs
     with pytest.raises(AssertionError):
         assert Donut(data["point"], container=data["container"].to_crs(4326))
 
 
-def test_load_addresses(data):
-    dubious_donut = Donut(data["point"], addresses=data["addresses"])
-    assert dubious_donut.sensitive.crs == dubious_donut.addresses.crs
+def test_load_address(data):
+    dubious_donut = Donut(data["point"], address=data["address"])
+    assert dubious_donut.input.crs == dubious_donut.address.crs
     with pytest.raises(AssertionError):
-        assert Donut(data["point"], addresses=data["addresses"].to_crs(4326))
+        assert Donut(data["point"], address=data["address"].to_crs(4326))
 
 
 def test_crop(data):
     dubious_donut = Donut(data["point"])
-    dubious_crop = dubious_donut._crop(data["addresses"], data["test_circle"])
-    assert len(dubious_crop) < len(data["addresses"])
+    dubious_crop = dubious_donut._crop(data["address"], data["test_circle"])
+    assert len(dubious_crop) < len(data["address"])
     assert any(dubious_crop.intersects(data["test_circle"].loc[0, "geometry"]))
 
 
 def test_crop_single_point(data):
     dubious_donut = Donut(data["point"])
-    dubious_crop = dubious_donut._crop(data["addresses"], data["point"])
-    assert len(dubious_crop) == len(data["addresses"])
+    dubious_crop = dubious_donut._crop(data["address"], data["point"])
+    assert len(dubious_crop) == len(data["address"])
 
 
 def test_displacement_distance(data):
@@ -92,12 +92,12 @@ def test_k_anonymity_estimate(data):
     )
     dubious_donut.run()
     dubious_donut.k_anonymity_estimate()
-    assert dubious_donut.masked.loc[0, "k_est"] == 4.0
+    assert dubious_donut.mask.loc[0, "k_est"] == 4.0
 
     dubious_donut.max_distance = 50
     dubious_donut.run()
     dubious_donut.k_anonymity_estimate()
-    assert dubious_donut.masked.loc[0, "k_est"] == 25.0
+    assert dubious_donut.mask.loc[0, "k_est"] == 25.0
 
 
 def test_disaggregate_population(data):
@@ -123,41 +123,41 @@ def test_disaggregate_population(data):
 def test_k_anonymity_actual_no_distance(data):
     dubious_donut = Donut(
         data["point"],
-        addresses=data["addresses"],
+        address=data["address"],
         max_distance=1,
         ratio=0.99999,
         seed=data["seeds"][0],
     )
     dubious_donut.run()
     dubious_donut.k_anonymity_actual()
-    assert int(dubious_donut.masked.loc[0, "k_actual"]) == 0
+    assert int(dubious_donut.mask.loc[0, "k_actual"]) == 0
 
 
 def test_k_anonymity_actual(data):
     dubious_donut = Donut(
         data["point"],
-        addresses=data["addresses"],
+        address=data["address"],
         max_distance=100,
         ratio=0.99999,
         seed=data["seeds"][0],
     )
     dubious_donut.run()
     dubious_donut.k_anonymity_actual()
-    assert int(dubious_donut.masked.loc[0, "k_actual"]) == 39
+    assert int(dubious_donut.mask.loc[0, "k_actual"]) == 39
 
 
 def test_containment_false(data):
     dubious_donut = Donut(data["point"], container=data["test_circle"], max_tries=0)
-    dubious_donut.masked = data["test_point"]
+    dubious_donut.mask = data["test_point"]
     dubious_donut._containment(data["test_point"])
-    assert dubious_donut.masked.loc[0, "CONTAINED"] == 0
+    assert dubious_donut.mask.loc[0, "CONTAINED"] == 0
 
 
 def test_containment_true(data):
     dubious_donut = Donut(data["point"], container=data["test_circle"])
-    dubious_donut.masked = data["point"]
+    dubious_donut.mask = data["point"]
     dubious_donut._containment(data["point"])
-    assert dubious_donut.masked.loc[0, "CONTAINED"] == 1
+    assert dubious_donut.mask.loc[0, "CONTAINED"] == 1
 
 
 def test_seed_reproducibility(data):
@@ -166,7 +166,7 @@ def test_seed_reproducibility(data):
         dubious_donut = Donut(data["point"], seed=data["seeds"][0])
         offset_coords = dubious_donut._random_xy(1, 100)
         numbers.append(offset_coords)
-    assert len(set(numbers)) == 1, "Random numbers are not deterministic given same seed."
+    assert len(set(numbers)) == 1
 
 
 def test_seed_randomness(data):
@@ -175,7 +175,7 @@ def test_seed_randomness(data):
         dubious_donut = Donut(data["point"], seed=seed)
         offset_coords = dubious_donut._random_xy(1, 100)
         numbers.append(offset_coords)
-    assert len(set(numbers)) == len(data["seeds"]), "Random numbers are not unique across seeds."
+    assert len(set(numbers)) == len(data["seeds"])
 
 
 @pytest.mark.parametrize("distribution", ["uniform", "areal"])
@@ -183,14 +183,10 @@ def test_random_xy(data, distribution):
     for i in range(100):
         dubious_donut = Donut(data["point"], distribution=distribution)
         offset_coords = dubious_donut._random_xy(1, 100)
-        assert isinstance(offset_coords[0], float), "Random XY offsets are not valid floats."
-        assert isinstance(offset_coords[1], float), "Random XY offsets are not valid floats."
-        assert (
-            offset_coords[0] > -100 and offset_coords[1] > -100
-        ), "Random XY offsets are outside input range."
-        assert (
-            offset_coords[0] < 100 and offset_coords[1] < 100
-        ), "Random XY offsets are outside input range."
+        assert isinstance(offset_coords[0], float)
+        assert isinstance(offset_coords[1], float)
+        assert offset_coords[0] > -100 and offset_coords[1] > -100
+        assert offset_coords[0] < 100 and offset_coords[1] < 100
 
 
 def test_random_xy_gaussian(data):
@@ -201,16 +197,16 @@ def test_random_xy_gaussian(data):
         )
         dubious_donut.run()
         dubious_donut.displacement_distance()
-        distance_list.append(dubious_donut.masked.loc[0, "_displace_dist"])
+        distance_list.append(dubious_donut.mask.loc[0, "_distance"])
     assert normaltest(distance_list)[1] > 0.1
 
 
-def test_donut_find_radii(data):
+def test_donut_set_radii(data):
     dubious_donut = Donut(data["point"], max_distance=100, ratio=0.1)
-    dubious_donut.masked = data["point"]
-    dubious_donut._find_radii()
-    assert dubious_donut.masked.loc[0, "_radius_min"] == 10
-    assert dubious_donut.masked.loc[0, "_radius_max"] == 100
+    dubious_donut.mask = data["point"]
+    dubious_donut._set_radii()
+    assert dubious_donut.mask.loc[0, "_r_min"] == 10
+    assert dubious_donut.mask.loc[0, "_r_max"] == 100
 
 
 def test_donut_container(data):
@@ -223,20 +219,20 @@ def test_donut_container(data):
     )
     dubious_donut.run()
     assert dubious_donut.try_count > 1
-    assert dubious_donut.masked.loc[0, "CONTAINED"] == 1
+    assert dubious_donut.mask.loc[0, "CONTAINED"] == 1
 
 
-def test_donut_maxk_find_radii(data):
+def test_donut_maxk_set_radii(data):
     dubious_donut = Donut_MaxK(
         data["point"], population=data["population"], max_k_anonymity=100, ratio=0.1
     )
-    dubious_donut.masked = dubious_donut.sensitive
-    dubious_donut._find_radii()
-    assert round(dubious_donut.masked.loc[0, "_radius_max"]) == 100
-    assert round(dubious_donut.masked.loc[0, "_radius_min"]) == 32
+    dubious_donut.mask = dubious_donut.input
+    dubious_donut._set_radii()
+    assert round(dubious_donut.mask.loc[0, "_r_max"]) == 100
+    assert round(dubious_donut.mask.loc[0, "_r_min"]) == 32
 
 
-def test_donut_multiply_find_radii(data):
+def test_donut_multiply_set_radii(data):
     dubious_donut = Donut_Multiply(
         data["point"],
         population=data["population"],
@@ -244,10 +240,10 @@ def test_donut_multiply_find_radii(data):
         max_distance=100,
         ratio=0.1,
     )
-    dubious_donut.masked = dubious_donut.sensitive.copy()
-    dubious_donut._find_radii()
-    assert dubious_donut.masked.loc[0, "_radius_max"] == 500
-    assert dubious_donut.masked.loc[0, "_radius_min"] == 50
+    dubious_donut.mask = dubious_donut.input.copy()
+    dubious_donut._set_radii()
+    assert dubious_donut.mask.loc[0, "_r_max"] == 500
+    assert dubious_donut.mask.loc[0, "_r_min"] == 50
 
 
 # STREET

@@ -16,18 +16,17 @@ class Street(Base):
         self,
         *args,
         depth=20,
-        extent_expansion_distance=2000,
-        max_street_length=500,
+        padding=2000,
+        max_length=500,
         **kwargs,
     ):
         super().__init__(*args, **kwargs)
-
-        self.buffer_dist = extent_expansion_distance
-        self.max_street_length = max_street_length
+        self.padding = padding
+        self.max_length = max_length
         self.depth = depth
 
     def _get_osm(self):
-        selection = self.masked.buffer(self.buffer_dist)
+        selection = self.mask.buffer(self.padding)
         selection = selection.to_crs(epsg=4326)
         bb = selection.total_bounds
         self.graph = graph_from_bbox(
@@ -45,20 +44,20 @@ class Street(Base):
 
         return True
 
-    def _nearest_node(self, graph_temporary, geometry):
+    def _nearest_node(self, graph_tmp, geometry):
         neighbor_count = 0
         while neighbor_count < 1:
-            node = nearest_nodes(graph_temporary, geometry.centroid.x, geometry.centroid.y)
+            node = nearest_nodes(graph_tmp, geometry.centroid.x, geometry.centroid.y)
             neighbor_count = len(self._find_neighbors(node))
             if neighbor_count == 0:
-                graph_temporary.remove_node(node)
+                graph_tmp.remove_node(node)
         return node
 
     def _find_neighbors(self, node):
         neighbors = list(self.graph.neighbors(node))
         for neighbor in neighbors:
             length = self.graph.get_edge_data(node, neighbor)[0]["length"]
-            if length > self.max_street_length:
+            if length > self.max_length:
                 neighbors = [n for n in neighbors if n != neighbor]
         return neighbors
 
@@ -90,47 +89,41 @@ class Street(Base):
         node = nodes[idx]
         return node
 
-    def _apply_street_mask(self, masked):
-        graph_temporary = self.graph.copy()
-        masked["_node"] = masked.apply(
-            lambda x: self._nearest_node(graph_temporary, x["geometry"]), axis=1
-        )
-        masked["_node_new"] = masked.apply(lambda x: self._street_mask(x["_node"]), axis=1)
-        masked["geometry"] = masked.apply(
+    def _apply_street_mask(self, mask):
+        graph_tmp = self.graph.copy()
+        mask["_node"] = mask.apply(lambda x: self._nearest_node(graph_tmp, x["geometry"]), axis=1)
+        mask["_node_new"] = mask.apply(lambda x: self._street_mask(x["_node"]), axis=1)
+        mask["geometry"] = mask.apply(
             lambda x: self.graph_gdf[0].at[x["_node_new"], "geometry"], axis=1
         )
-        masked = masked.drop(["_node", "_node_new"], axis=1)
-        return masked
+        mask = mask.drop(["_node", "_node_new"], axis=1)
+        return mask
 
     def run(self, parallel=False):
-        self.masked = self.sensitive.copy()
+        self.mask = self.input.copy()
         self._get_osm()
-        self.masked = self.masked.to_crs(epsg=4326)
+        self.mask = self.mask.to_crs(epsg=4326)
         if parallel == True:
-            self.masked = self.run_parallel()
+            self.mask = self.run_parallel()
         else:
-            self.masked = self._apply_street_mask(self.masked)
-        self.masked = self.masked.to_crs(self.crs)
+            self.mask = self._apply_street_mask(self.mask)
+        self.mask = self.mask.to_crs(self.crs)
         self.check()
-        self.masked = self.masked.loc[:, ~self.masked.columns.str.startswith("_")]
-        return self.masked
+        self.mask = self.mask.loc[:, ~self.mask.columns.str.startswith("_")]
+        return self.mask
 
     def run_parallel(self):
         cpus = cpu_count() - 1 if cpu_count() > 1 else 1
         pool = Pool(processes=cpus)
-        chunks = array_split(self.masked, cpus)
+        chunks = array_split(self.mask, cpus)
         processes = [pool.apply_async(self._apply_street_mask, args=(chunk,)) for chunk in chunks]
-        masked_chunks = [chunk.get() for chunk in processes]
-        gdf = GeoDataFrame(concat(masked_chunks))
+        mask_chunks = [chunk.get() for chunk in processes]
+        gdf = GeoDataFrame(concat(mask_chunks))
         gdf = gdf.set_crs(epsg=4326)
         return gdf
 
     def check(self):
         self.displacement_distance()
-        assert len(self.sensitive) == len(
-            self.masked
-        ), "Masked data not same length as sensitive data."
-        assert self.masked["_displace_dist"].min() > 0, "Displacement distance is zero."
-        assert (
-            self.masked["_displace_dist"].max() < self.depth * self.max_street_length
-        ), f"Displacement distance is unexepectedly large."
+        assert len(self.input) == len(self.mask)
+        assert self.mask["_distance"].min() > 0
+        assert self.mask["_distance"].max() < self.depth * self.max_length

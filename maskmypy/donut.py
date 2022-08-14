@@ -57,51 +57,46 @@ class Donut(Base):
             pass
         return (x, y)
 
-    def _find_radii(self):
-        self.masked.loc[:, "_radius_min"] = self.max_distance * self.ratio
-        self.masked.loc[:, "_radius_max"] = self.max_distance
+    def _set_radii(self):
+        self.mask.loc[:, "_r_min"] = self.max_distance * self.ratio
+        self.mask.loc[:, "_r_max"] = self.max_distance
 
     def _mask_within_container(self):
-        self.masked.loc[:, "CONTAINED"] = 0
-        while min(self.masked["CONTAINED"]) == 0:
-            uncontained = self.masked.loc[self.masked["CONTAINED"] == 0, :]
+        self.mask.loc[:, "CONTAINED"] = 0
+        while min(self.mask["CONTAINED"]) == 0:
+            uncontained = self.mask.loc[self.mask["CONTAINED"] == 0, :]
             for index, row in uncontained.iterrows():
-                x, y = self._random_xy(row["_radius_min"], row["_radius_max"])
-                self.masked.at[index, "geometry"] = translate(
-                    self.sensitive.at[index, "geometry"], xoff=x, yoff=y
+                x, y = self._random_xy(row["_r_min"], row["_r_max"])
+                self.mask.at[index, "geometry"] = translate(
+                    self.input.at[index, "geometry"], xoff=x, yoff=y
                 )
             self._containment(uncontained)
         return True
 
+    def _displace(self, row):
+        x_off, y_off = self._random_xy(row["_r_min"], row["_r_max"])
+        return translate(row["geometry"], xoff=x_off, yoff=y_off)
+
     def run(self):
-        self.masked = self.sensitive.copy()
-        self._find_radii()
-        self.masked["_offset"] = self.masked.apply(
-            lambda x: self._random_xy(x["_radius_min"], x["_radius_max"]), axis=1
-        )
-        self.masked["geometry"] = self.masked.apply(
-            lambda x: translate(x["geometry"], xoff=x["_offset"][0], yoff=x["_offset"][1]),
+        self.mask = self.input.copy()
+        self._set_radii()
+        self.mask["geometry"] = self.mask.apply(
+            self._displace,
             axis=1,
         )
         if isinstance(self.container, GeoDataFrame):
             self._mask_within_container()
         self.check()
-        self.masked = self.masked.loc[:, ~self.masked.columns.str.startswith("_")]
-        return self.masked
+        self.mask = self.mask.loc[:, ~self.mask.columns.str.startswith("_")]
+        return self.mask
 
     def check(self):
         self.displacement_distance()
         max = self.max_distance if self.distribution != "gaussian" else self.max_distance * 1.5
         min = self.max_distance * self.ratio if self.distribution != "gaussian" else 0
-        assert (
-            self.masked["_displace_dist"].min() > min
-        ), "Displacement distance is less than minimum."
-        assert (
-            self.masked["_displace_dist"].max() < max
-        ), "Displacement distance is greater than maximum."
-        assert len(self.sensitive) == len(
-            self.masked
-        ), "Masked data not same length as sensitive data."
+        assert self.mask["_distance"].min() > min
+        assert self.mask["_distance"].max() < max
+        assert len(self.input) == len(self.mask)
 
 
 class Donut_MaxK(Donut):
@@ -109,28 +104,26 @@ class Donut_MaxK(Donut):
         super().__init__(*args, **kwargs)
         self.target_k = max_k_anonymity
 
-    def _find_radii(self):
+    def _set_radii(self):
         self.population["_pop_area"] = self.population.area
-        masked_pop = sjoin(self.masked, self.population, how="left")
+        mask_pop = sjoin(self.mask, self.population, how="left")
 
-        masked_pop["_max_area"] = masked_pop.apply(
-            lambda x: self.target_k * x["_pop_area"] / x[self.pop_column], axis=1
+        mask_pop["_area_max"] = mask_pop.apply(
+            lambda x: self.target_k * x["_pop_area"] / x[self.pop_col], axis=1
         )
-        masked_pop["_min_area"] = masked_pop.apply(
-            lambda x: (self.target_k * self.ratio) * x["_pop_area"] / x[self.pop_column],
+        mask_pop["_area_min"] = mask_pop.apply(
+            lambda x: (self.target_k * self.ratio) * x["_pop_area"] / x[self.pop_col],
             axis=1,
         )
-        masked_pop["_max_radius"] = masked_pop.apply(lambda x: sqrt(x["_max_area"] / pi), axis=1)
-        masked_pop["_min_radius"] = masked_pop.apply(lambda x: sqrt(x["_min_area"] / pi), axis=1)
-        self.masked["_radius_min"] = masked_pop.apply(lambda x: x["_min_radius"], axis=1)
-        self.masked["_radius_max"] = masked_pop.apply(lambda x: x["_max_radius"], axis=1)
+        mask_pop["_r_max"] = mask_pop.apply(lambda x: sqrt(x["_area_max"] / pi), axis=1)
+        mask_pop["_r_min"] = mask_pop.apply(lambda x: sqrt(x["_area_min"] / pi), axis=1)
+        self.mask["_r_min"] = mask_pop.apply(lambda x: x["_r_min"], axis=1)
+        self.mask["_r_max"] = mask_pop.apply(lambda x: x["_r_max"], axis=1)
 
     def check(self):
         self.displacement_distance()
-        assert self.masked["_displace_dist"].min() > 0, "Displacement distance is zero."
-        assert len(self.sensitive) == len(
-            self.masked
-        ), "Masked data not same length as sensitive data."
+        assert self.mask["_distance"].min() > 0
+        assert len(self.input) == len(self.mask)
 
 
 class Donut_Multiply(Donut):
@@ -138,27 +131,23 @@ class Donut_Multiply(Donut):
         super().__init__(*args, **kwargs)
         self.pop_multiplier = population_multiplier - 1
 
-    def _find_radii(self):
+    def _set_radii(self):
         self.population["_pop_area"] = self.population.area
-        join = sjoin(self.masked, self.population, how="left")
-        pop_min = min(join[self.pop_column])
-        pop_max = max(join[self.pop_column])
+        mask_pop = sjoin(self.mask, self.population, how="left")
+        pop_min = min(mask_pop[self.pop_col])
+        pop_max = max(mask_pop[self.pop_col])
         pop_range = pop_max - pop_min
         pop_range = pop_range if pop_range > 0 else 1
-        join["_pop_score"] = join.apply(
-            lambda x: (1 - (x[self.pop_column] - pop_min) / pop_range) * self.pop_multiplier,
+        mask_pop["_pop_score"] = mask_pop.apply(
+            lambda x: (1 - (x[self.pop_col] - pop_min) / pop_range) * self.pop_multiplier,
             axis=1,
         )
-        self.masked["_radius_max"] = join.apply(
+        self.mask["_r_max"] = mask_pop.apply(
             lambda x: (x["_pop_score"] * self.max_distance) + self.max_distance, axis=1
         )
-        self.masked["_radius_min"] = self.masked.apply(
-            lambda x: x["_radius_max"] * self.ratio, axis=1
-        )
+        self.mask["_r_min"] = self.mask.apply(lambda x: x["_r_max"] * self.ratio, axis=1)
 
     def check(self):
         self.displacement_distance()
-        assert self.masked["_displace_dist"].min() > 0, "Displacement distance is zero."
-        assert len(self.sensitive) == len(
-            self.masked
-        ), "Masked data not same length as sensitive data."
+        assert self.mask["_distance"].min() > 0
+        assert len(self.input) == len(self.mask)

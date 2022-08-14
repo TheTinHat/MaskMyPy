@@ -54,4 +54,4 @@ def donut(input_shp, output_shp, **kwargs):
     pruned_kwargs = {k: v for k, v in kwargs.items() if v}
     donutmask = Donut(gpd.read_file(input_shp), **pruned_kwargs)
     donutmask.run()
-    donutmask.masked.to_file(output_shp)
+    donutmask.mask.to_file(output_shp)
