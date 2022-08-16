@@ -1,4 +1,5 @@
 from multiprocessing import Pool, cpu_count
+from typing import Optional, Union
 
 from geopandas import GeoDataFrame
 from networkx import single_source_dijkstra_path_length
@@ -15,9 +16,9 @@ class Street(Base):
     def __init__(
         self,
         *args,
-        depth=20,
-        padding=2000,
-        max_length=500,
+        depth: int = 20,
+        padding: Union[int, float] = 2000,
+        max_length: Union[int, float] = 500,
         **kwargs,
     ):
         super().__init__(*args, **kwargs)
@@ -99,7 +100,7 @@ class Street(Base):
         mask = mask.drop(["_node", "_node_new"], axis=1)
         return mask
 
-    def run(self, parallel=False):
+    def run(self, parallel=False) -> GeoDataFrame:
         self.mask = self.input.copy()
         self._get_osm()
         self.mask = self.mask.to_crs(epsg=4326)
@@ -112,7 +113,7 @@ class Street(Base):
         self.mask = self.mask.loc[:, ~self.mask.columns.str.startswith("_")]
         return self.mask
 
-    def run_parallel(self):
+    def run_parallel(self) -> GeoDataFrame:
         cpus = cpu_count() - 1 if cpu_count() > 1 else 1
         pool = Pool(processes=cpus)
         chunks = array_split(self.mask, cpus)

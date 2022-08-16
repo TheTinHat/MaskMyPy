@@ -1,3 +1,5 @@
+from typing import Optional
+
 from geopandas import GeoDataFrame, sjoin
 
 
@@ -6,12 +8,12 @@ class Base:
 
     def __init__(
         self,
-        input,
-        population="",
-        pop_col="pop",
-        container="",
-        max_tries=1000,
-        address="",
+        input: GeoDataFrame,
+        population: Optional[GeoDataFrame] = None,
+        pop_col: str = "pop",
+        container: Optional[GeoDataFrame] = None,
+        address: Optional[GeoDataFrame] = None,
+        max_tries: int = 1000,
     ):
         self.input = input.copy()
         self.crs = self.input.crs
@@ -20,7 +22,7 @@ class Base:
         self._load_container(container)
         self._load_address(address)
 
-    def _load_population(self, population="", pop_col="pop"):
+    def _load_population(self, population, pop_col="pop"):
         """Loads a geodataframe of population data for donut masking and/or k-anonymity estimation."""
         if isinstance(population, GeoDataFrame):
             assert population.crs == self.crs
@@ -69,13 +71,15 @@ class Base:
         target = target.cx[bb[0] : bb[2], bb[1] : bb[3]]
         return target
 
-    def displacement_distance(self):
+    def displacement_distance(self) -> GeoDataFrame:
         """Calculate dispalcement distance for each point after masking."""
         assert isinstance(self.mask, GeoDataFrame)
         self.mask["_distance"] = self.mask.geometry.distance(self.input["geometry"])
         return self.mask
 
-    def k_anonymity_estimate(self, population="", pop_col="pop"):
+    def k_anonymity_estimate(
+        self, population: Optional[GeoDataFrame] = None, pop_col: str = "pop"
+    ) -> GeoDataFrame:
         """Estimates k-anoynmity based on population data."""
         if population:
             self._load_population(population, pop_col)
@@ -91,7 +95,7 @@ class Base:
             )
         return self.mask
 
-    def k_anonymity_actual(self, address=""):
+    def k_anonymity_actual(self, address: Optional[GeoDataFrame] = None) -> GeoDataFrame:
         """Calculates k-anonymity based on the number of address closer
         to the mask point than input point"""
         if address:
@@ -143,4 +147,4 @@ class Base:
                 str(len(target)) + " points were mask but could not be "
                 "contained. target points are listed as 0 in the 'CONTAINED' field"
             )
-        return True
+        return self.mask

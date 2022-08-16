@@ -1,5 +1,6 @@
-from math import sqrt, pi
+from math import pi, sqrt
 from random import SystemRandom
+from typing import Optional, Union
 
 from geopandas import GeoDataFrame, sjoin
 from numpy import random
@@ -10,7 +11,13 @@ from .mask import Base
 
 class Donut(Base):
     def __init__(
-        self, *args, max_distance=500, ratio=0.2, distribution="uniform", seed="", **kwargs
+        self,
+        *args,
+        max_distance: Union[int, float] = 500,
+        ratio: float = 0.2,
+        distribution: str = "uniform",
+        seed: Optional[int] = None,
+        **kwargs
     ):
         super().__init__(*args, **kwargs)
         self.max_distance = max_distance
@@ -77,7 +84,7 @@ class Donut(Base):
         x_off, y_off = self._random_xy(row["_r_min"], row["_r_max"])
         return translate(row["geometry"], xoff=x_off, yoff=y_off)
 
-    def run(self):
+    def run(self) -> GeoDataFrame:
         self.mask = self.input.copy()
         self._set_radii()
         self.mask["geometry"] = self.mask.apply(
@@ -102,7 +109,7 @@ class Donut(Base):
 class Donut_MaxK(Donut):
     def __init__(self, *args, max_k_anonymity, **kwargs):
         super().__init__(*args, **kwargs)
-        self.target_k = max_k_anonymity
+        self.target_k: int = max_k_anonymity
 
     def _set_radii(self):
         self.population["_pop_area"] = self.population.area
@@ -129,7 +136,7 @@ class Donut_MaxK(Donut):
 class Donut_Multiply(Donut):
     def __init__(self, *args, population_multiplier, **kwargs):
         super().__init__(*args, **kwargs)
-        self.pop_multiplier = population_multiplier - 1
+        self.pop_multiplier: int = population_multiplier - 1
 
     def _set_radii(self):
         self.population["_pop_area"] = self.population.area
