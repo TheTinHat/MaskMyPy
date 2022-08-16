@@ -93,11 +93,11 @@ class Donut(Base):
         )
         if isinstance(self.container, GeoDataFrame):
             self._mask_within_container()
-        self.check()
+        self._check()
         self.mask = self.mask.loc[:, ~self.mask.columns.str.startswith("_")]
         return self.mask
 
-    def check(self):
+    def _check(self):
         self.displacement_distance()
         max = self.max_distance if self.distribution != "gaussian" else self.max_distance * 1.5
         min = self.max_distance * self.ratio if self.distribution != "gaussian" else 0
@@ -127,7 +127,7 @@ class Donut_MaxK(Donut):
         self.mask["_r_min"] = mask_pop.apply(lambda x: x["_r_min"], axis=1)
         self.mask["_r_max"] = mask_pop.apply(lambda x: x["_r_max"], axis=1)
 
-    def check(self):
+    def _check(self):
         self.displacement_distance()
         assert self.mask["_distance"].min() > 0
         assert len(self.input) == len(self.mask)
@@ -154,7 +154,7 @@ class Donut_Multiply(Donut):
         )
         self.mask["_r_min"] = self.mask.apply(lambda x: x["_r_max"] * self.ratio, axis=1)
 
-    def check(self):
+    def _check(self):
         self.displacement_distance()
         assert self.mask["_distance"].min() > 0
         assert len(self.input) == len(self.mask)

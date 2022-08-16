@@ -89,7 +89,7 @@ class Base:
         mask_tmp = self.mask.copy()
         mask_tmp["geometry"] = mask_tmp.apply(lambda x: x.geometry.buffer(x["_distance"]), axis=1)
         mask_tmp = self._disaggregate_population(mask_tmp)
-        for i in range(len(self.mask.index)):
+        for i, _ in enumerate(self.mask.index):
             self.mask.at[i, "k_est"] = int(
                 round(mask_tmp.loc[mask_tmp["_index_2"] == i, "_pop_adjusted"].sum())
             )
@@ -105,7 +105,7 @@ class Base:
         mask_tmp = self.mask.copy()
         mask_tmp["geometry"] = mask_tmp.apply(lambda x: x.geometry.buffer(x["_distance"]), axis=1)
         join = sjoin(self.address, mask_tmp, how="left", rsuffix="mask")
-        for i in range(len(self.mask)):
+        for i, _ in enumerate(self.mask):
             subset = join.loc[join["index_mask"] == i, :]
             self.mask.at[i, "k_actual"] = len(subset)
         return self.mask
@@ -118,11 +118,11 @@ class Base:
         target["_index_2"] = target.index
         target.index = range(len(target.index))
         target["geometry"] = target.apply(
-            lambda x: x["geometry"].intersection(self.population.at[x["index_pop"], "geometry"]),
+            lambda x: x.geometry.intersection(self.population.at[x["index_pop"], "geometry"]),
             axis=1,
         )
         target["_intersected_area"] = target["geometry"].area
-        for i in range(len(target.index)):
+        for i, _ in enumerate(target.index):
             polygon_fragments = target.loc[target["_index_2"] == i, :]
             for index, row in polygon_fragments.iterrows():
                 area_pct = row["_intersected_area"] / row["_pop_area"]

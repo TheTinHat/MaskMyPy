@@ -109,7 +109,7 @@ class Street(Base):
         else:
             self.mask = self._apply_street_mask(self.mask)
         self.mask = self.mask.to_crs(self.crs)
-        self.check()
+        self._check()
         self.mask = self.mask.loc[:, ~self.mask.columns.str.startswith("_")]
         return self.mask
 
@@ -123,7 +123,7 @@ class Street(Base):
         gdf = gdf.set_crs(epsg=4326)
         return gdf
 
-    def check(self):
+    def _check(self):
         self.displacement_distance()
         assert len(self.input) == len(self.mask)
         assert self.mask["_distance"].min() > 0
