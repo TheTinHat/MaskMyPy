@@ -1,5 +1,5 @@
 from math import sqrt, pi
-from random import SystemRandom, random
+from random import SystemRandom
 
 from geopandas import GeoDataFrame, sjoin
 from numpy import random
