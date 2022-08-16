@@ -15,16 +15,16 @@ class Base:
     ):
         self.input = input.copy()
         self.crs = self.input.crs
+        self.max_tries = max_tries
         self._load_population(population, pop_col)
         self._load_container(container)
         self._load_address(address)
-        self.max_tries = max_tries
 
     def _load_population(self, population="", pop_col="pop"):
         """Loads a geodataframe of population data for donut masking and/or k-anonymity estimation."""
         if isinstance(population, GeoDataFrame):
             assert population.crs == self.crs
-            self.population = self._crop(population, self.input)
+            self.population = self._crop(population.copy(), self.input)
             self.pop_col = pop_col
             self.population = self.population.loc[:, ["geometry", self.pop_col]]
             return True
@@ -36,7 +36,7 @@ class Base:
         """Loads a geodataframe of polygons to contain points while donut masking"""
         if isinstance(container, GeoDataFrame):
             assert container.crs == self.crs
-            self.container = self._crop(container, self.input)
+            self.container = self._crop(container.copy(), self.input)
             self.container = self.container.loc[:, ["geometry"]]
             return True
         else:
@@ -47,7 +47,7 @@ class Base:
         """Loads geodataframe containing address data for k-anonymity calculation"""
         if isinstance(address, GeoDataFrame):
             assert address.crs == self.crs
-            self.address = self._crop(address, self.input)
+            self.address = self._crop(address.copy(), self.input)
             self.address = self.address.loc[:, ["geometry"]]
             return True
         else:
@@ -79,8 +79,6 @@ class Base:
         """Estimates k-anoynmity based on population data."""
         if population:
             self._load_population(population, pop_col)
-        elif not isinstance(self.population, GeoDataFrame):
-            self._load_population(population, pop_col)
 
         self.population["_pop_area"] = self.population.area
         self.displacement_distance()
@@ -97,8 +95,6 @@ class Base:
         """Calculates k-anonymity based on the number of address closer
         to the mask point than input point"""
         if address:
-            self._load_address(address)
-        elif not isinstance(self.address, GeoDataFrame):
             self._load_address(address)
 
         self.displacement_distance()
