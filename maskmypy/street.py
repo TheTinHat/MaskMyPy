@@ -1,5 +1,5 @@
 from multiprocessing import Pool, cpu_count
-from typing import Optional, Union
+from typing import Union
 
 from geopandas import GeoDataFrame
 from networkx import single_source_dijkstra_path_length
