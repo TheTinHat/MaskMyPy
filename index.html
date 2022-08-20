@@ -385,7 +385,7 @@
 <pre><code class="language-python">&gt;&gt;&gt; from maskmypy import Donut
 &gt;&gt;&gt; import geopandas as gpd
 &gt;&gt;&gt; sensitive_points = gpd.read_file('sensitive_points')
-&gt;&gt;&gt; sensitive_points
+&gt;&gt;&gt; sensitive_points.head()
      CID                           geometry
 0      1  POINT (-13703523.337 6313860.932)
 1      2  POINT (-13703436.959 6314112.457)
@@ -394,7 +394,7 @@
 4      5  POINT (-13703200.338 6313847.431)
 
 &gt;&gt;&gt; masked_points = Donut(sensitive_points, max_distance=500).run()
-&gt;&gt;&gt; masked_points
+&gt;&gt;&gt; masked_points.head()
      CID                           geometry
 0      1  POINT (-13703383.941 6313989.161)
 1      2  POINT (-13703227.863 6313973.121)
@@ -404,7 +404,7 @@
 </code></pre>
 <p>We can also calculate the distance that each points was displaced by adding the <code>displacement=True</code> flag to <code>.run()</code>:</p>
 <pre><code class="language-python">&gt;&gt;&gt; masked_points = Donut(points).run(displacement=True)
-&gt;&gt;&gt; masked_points
+&gt;&gt;&gt; masked_points.head()
      CID                           geometry   _distance
 0      1  POINT (-13703383.941 6313989.161)  189.404946
 1      2  POINT (-13703227.863 6313973.121)  251.267943
