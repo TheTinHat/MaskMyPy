@@ -1,110 +1,30 @@
 <div style="text-align:center;"><img src="assets/logo.png" style="max-width: 400px;"></div>
 
 -----
-
-[MaskMyPy](https://github.com/TheTinHat/MaskMyPy) is a (very alpha) Python package that performs geographic masking on [GeoPandas geodataframes](http://geopandas.org/data_structures.html). It offers two main methods: street masking and donut masking.
-
-MaskMyPy also supports k-anonymity estimation using population data and k-anonymity calculation using address data, as well as the calculation of displacement distance between sensitive and masked points.
+Python tools for anonymizing geographic data.
 
 ![Master Tests](https://img.shields.io/github/checks-status/TheTinHat/maskmyxyz/master)
+![License](https://img.shields.io/github/license/TheTinHat/MaskMyPy)
+![PyPi](https://img.shields.io/pypi/v/maskmypy)
+# Introduction
+
+[MaskMyPy](https://github.com/TheTinHat/MaskMyPy) is a Python package that performs geographic masking on [GeoDataFrames](http://geopandas.org/data_structures.html). It offers two main methods: [donut masking](donut.md) and [street masking](street.md).
+
+
+MaskMyPy also supports calculating metrics to help optimize and validate masking parameters. Currently, it offers k-anonymity estimation using population data, k-anonymity calculation using address data, and displacement distance calculation between sensitive and masked points.
 
 **Disclaimer**: *MaskMyPy is offered as-is, without warranty of any kind. Geographic masking is a hard problem that requires informed decisions and validation. MaskMyPy provides helpful tools for geographic masking, but does not replace expertise.*
 
-# Installation
+## Installation
 ```
 pip install maskmypy
 ```
 
-## Street Masking
-Street masking automatically downloads OpenStreetMap road network data and uses it to geographically mask your sensitive points. It works by first downloading the road network data, snapping each sensitive point to the nearest node on the network (an intersection or dead end), and then calculating the average network-distance between that node and a pool of the closest x number of nodes (e.g. the closest 20 nodes on the network, known as the search depth). This average distance is the target displacement distance. Finally, it selects a node from the pool whose network-distance from the starting node is closest to the target displacement distance.
-
-**Usage:** To street mask a geodataframe containing sensitive points with a search-depth value of 20, the code would be as follows:
-
-```
-from maskmypy import Street
-
-streetmask = Street(
-    sensitive, # Name of the sensitive geodataframe
-    depth=20, # The search depth value used to calculate displacement distances.
-    padding=2000, # Used to download road network data surrounding the study area. Needs to be sufficiently large to reduce edge effects. Increasing reduces edge effects, but uses more memory.
-    max_length=500) # Optional, but recommended that you read below for full explanation of what this does.
-
-
-streetmask.run() # Single threaded by default. Add `parallel=True` as parameter to run on all CPU cores, drastically increasing performance.
-
-masked = streetmask.mask
-```
-
-**About max_length**: when snapping points to the street network, the algorithm checks to make sure that the nearest node is actually connected to the network and has neighbors that are no more than max_length away (in meters). If it does not, then the next closest viable node is selected, checked, and so on. This acts as a sanity check to prevent extremely large masking distances. Feel free to change this to whatever you feel is appropriate.
-
-
-
-## Donut Masking
-
-**Usage:**
-To perform basic donut geomasking on a geodataframe containing sensitive points, with a maximum displacement distance of 500 meters and an minimum displacement distance of 20% of the maximum distance (i.e. 100 meters), the code would look like this:
-
-```
-from maskmypy import Donut
-
-donutmask = Donut(
-    sensitive=sensitive, # Name of the sensitive geodataframe
-    max_distance=500, # The maximum possible distance that points are displaced
-    ratio=0.2, # The ratio used to define the minimum distance points are displaced
-    distribution='uniform', # The distribution to use when displacing points. Other options include 'gaussian' and 'areal'. 'Areal' distribution means points are more likely to be displaced further within the range.
-    container=container) # Optional, a geodataframe used to ensure that points do not leave a particular area.
-
-donutmask.run()
-
-masked = donutmask.mask
-```
-
-To perform full donut geomasking (i.e. using census data and a target k-anonymity range rather than distance range) with a maximum k-anonymity of 1000 and minimum of 200, and a census geodataframe called population, the code would appear as follows:
-
-```
-from maskmypy import Donut_MaxK
-
-donutmask = Donut_MaxK(
-    sensitive, # Name of the sensitive geodataframe
-    population=population, # Name of the census geodataframe
-    pop_col='pop', # Name of the column containing the population field
-    max_k_anonymity=1000, # The maximum possible k-anonymity value
-    ratio=0.2, # The ratio used to define the minimum possible k-anonymity value.
-    distribution='uniform', # The distribution to use when displacing points. Other options include 'gaussian' and 'areal'. 'Areal' distribution means points are more likely to be displaced further within the range.
-    container=container) # Optional, a geodataframe used to ensure that points do not leave a particular area.
-
-donutmask.run()
-
-masked = donutmask.mask
-```
-
-
-## K-Anonymity
-Maskmypy is able to calculate the k-anonymity of each point after masking. Two methods are available for this: estimates, and exact calculations. Estimates of k-anoynmity are inferred from census data, and assume a homogeneously distributed population within each census polygon. Address-based k-anonymity is more accurate and uses actual home address data to calculate k-anonymity.
-
-### Estimate K-Anonymity
-**Usage:**
-After the data has been masked, estimating k-anoynmity using census data would look like this and will add a column to the masked geodataframe:
-```
-mask.k_anonymity_estimate(
-    population=population, # Name of the census geodataframe. Not necessary if you already included this parameter in the original masking steps.
-    pop_col='pop') # Name of the column containing the population field. Not necessary if you already included this parameter in the original masking steps.
-```
-
-### Calculate K-Anonymity
-**Usage:**
-After the data has been masked, calcualting address-based k-anoynmity would look like this and will add a column to the masked geodataframe:
-```
-mask.k_anonymity_actual(address='') # Name of the geodataframe including address points.
-```
-
-## Displacement Distance
-**Usage:**
-To add a column to the masked geodataframe that includes the actual displacement distances (in meters), one can just run:
-```
-mask.displacement_distance()
-```
-
+## Roadmap
+The following features are currently planned:
+- Location Swapping/Verified Neighbor masks
+- Automatic plotting of point displacement
+- The ability to save mask metadata
 
 <style>
 .md-content__inner > h1:first-child  {
