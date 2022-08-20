@@ -1,3 +1,6 @@
+---
+title: Metric Calculation
+---
 
 
 ## K-Anonymity

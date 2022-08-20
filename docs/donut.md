@@ -1,3 +1,7 @@
+---
+title: Donut Masking
+---
+
 ## Donut Masking
 
 **Usage:**
