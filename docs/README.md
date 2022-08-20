@@ -63,7 +63,7 @@ masked_points
 4      5  POINT (-13702837.385 6314140.874)  466.738146
 ```
 
-*Note that the `max_distance` parameter assumes that the supplied distance is in the same unit as the GeoDataFrame. For example, if your GeoDataFrame is projected to a CRS that uses feet, then `max_distance=500` will displace points up to 500 feet.*
+\* *Note that the `max_distance` parameter assumes that the supplied distance is in the same unit as the GeoDataFrame. For example, if your GeoDataFrame is projected to a CRS that uses feet, then `max_distance=500` will displace points up to 500 feet.*
 
 ## Roadmap
 The following features are currently planned:
