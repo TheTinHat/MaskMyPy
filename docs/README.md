@@ -26,6 +26,7 @@ The following features are currently planned:
 - Automatic plotting of point displacement
 - The ability to save mask metadata
 
+
 <style>
 .md-content__inner > h1:first-child  {
   display: none;
