@@ -29,9 +29,7 @@ The following snippet applies a 500 meter* donut mask to a GeoDataFrame of sensi
 ```python
 >>> from maskmypy import Donut
 >>> import geopandas as gpd
-
 >>> sensitive_points = gpd.read_file('sensitive_points')
-
 >>> sensitive_points
      CID                           geometry
 0      1  POINT (-13703523.337 6313860.932)
