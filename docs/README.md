@@ -52,8 +52,8 @@ The following snippet applies a 500 meter* donut mask to a GeoDataFrame of sensi
 We can also calculate the distance that each points was displaced by adding the `displacement=True` flag to `.run()`:
 
 ```python
-masked_points = Donut(points).run(displacement=True)
-masked_points
+>>> masked_points = Donut(points).run(displacement=True)
+>>> masked_points
      CID                           geometry   _distance
 0      1  POINT (-13703383.941 6313989.161)  189.404946
 1      2  POINT (-13703227.863 6313973.121)  251.267943
