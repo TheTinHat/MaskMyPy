@@ -224,6 +224,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#example" class="md-nav__link">
+    Example
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#roadmap" class="md-nav__link">
     Roadmap
   </a>
@@ -332,6 +339,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#example" class="md-nav__link">
+    Example
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#roadmap" class="md-nav__link">
     Roadmap
   </a>
@@ -365,6 +379,40 @@
 <p><strong>Disclaimer</strong>: <em>MaskMyPy is offered as-is, without warranty of any kind. Geographic masking is a hard problem that requires informed decisions and validation. MaskMyPy provides helpful tools for geographic masking, but does not replace expertise.</em></p>
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
 <pre><code>pip install maskmypy
+</code></pre>
+<h2 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h2>
+<p>The following snippet applies a 500 meter donut mask to a GeoDataFrame of sensitive points:</p>
+<pre><code>&gt;&gt;&gt; from maskmypy import Donut
+&gt;&gt;&gt; import geopandas as gpd
+
+&gt;&gt;&gt; sensitive_points = gpd.read_file('sensitive_points')
+
+&gt;&gt;&gt; sensitive_points
+     CID                           geometry
+0      1  POINT (-13703523.337 6313860.932)
+1      2  POINT (-13703436.959 6314112.457)
+2      3  POINT (-13703679.041 6314040.923)
+3      4  POINT (-13703285.553 6313721.356)
+4      5  POINT (-13703200.338 6313847.431)
+
+&gt;&gt;&gt; masked_points = Donut(sensitive_points, max_distance=500).run()
+&gt;&gt;&gt; masked_points
+     CID                           geometry
+0      1  POINT (-13703383.941 6313989.161)
+1      2  POINT (-13703227.863 6313973.121)
+2      3  POINT (-13703313.001 6314172.582)
+3      4  POINT (-13703107.232 6313614.978)
+4      5  POINT (-13702837.385 6314140.874)
+</code></pre>
+<p>We can also calculate the distance that each points was displaced by adding the <code>displacement=True</code> flag to <code>.run()</code>:</p>
+<pre><code>&gt;&gt;&gt; masked_points = Donut(points).run(displacement=True)
+&gt;&gt;&gt; masked_points
+     CID                           geometry   _distance
+0      1  POINT (-13703383.941 6313989.161)  189.404946
+1      2  POINT (-13703227.863 6313973.121)  251.267943
+2      3  POINT (-13703313.001 6314172.582)  388.997713
+3      4  POINT (-13703107.232 6313614.978)  207.639785
+4      5  POINT (-13702837.385 6314140.874)  466.738146
 </code></pre>
 <h2 id="roadmap">Roadmap<a class="headerlink" href="#roadmap" title="Permanent link">&para;</a></h2>
 <p>The following features are currently planned:</p>
