@@ -105,7 +105,7 @@ class Street(Base):
         self._get_osm()
         self.mask = self.mask.to_crs(epsg=4326)
         if parallel == True:
-            self.mask = self.run_parallel()
+            self.mask = self._run_parallel()
         else:
             self.mask = self._apply_street_mask(self.mask)
         self.mask = self.mask.to_crs(self.crs)
@@ -113,7 +113,7 @@ class Street(Base):
         self.mask = self.mask.loc[:, ~self.mask.columns.str.startswith("_")]
         return self.mask
 
-    def run_parallel(self) -> GeoDataFrame:
+    def _run_parallel(self) -> GeoDataFrame:
         cpus = cpu_count() - 1 if cpu_count() > 1 else 1
         pool = Pool(processes=cpus)
         chunks = array_split(self.mask, cpus)
