@@ -6,6 +6,7 @@ Python tools for anonymizing geographic data.
 ![Master Tests](https://img.shields.io/github/checks-status/TheTinHat/maskmyxyz/master)
 ![License](https://img.shields.io/github/license/TheTinHat/MaskMyPy)
 [![PyPi](https://img.shields.io/pypi/v/maskmypy)](https://pypi.org/project/maskmypy/)
+
 # Introduction
 
 [MaskMyPy](https://github.com/TheTinHat/MaskMyPy) is a Python package that performs geographic masking on [GeoDataFrames](http://geopandas.org/data_structures.html). It offers two main methods: [donut masking](donut.md) and [street masking](street.md).
