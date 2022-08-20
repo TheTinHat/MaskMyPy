@@ -22,7 +22,7 @@ pip install maskmypy
 
 ## Example
 The following snippet applies a 500 meter donut mask to a GeoDataFrame of sensitive points:
-```
+```python
 >>> from maskmypy import Donut
 >>> import geopandas as gpd
 
@@ -58,7 +58,7 @@ We can also calculate the distance that each points was displaced by adding the 
 3      4  POINT (-13703107.232 6313614.978)  207.639785
 4      5  POINT (-13702837.385 6314140.874)  466.738146
 ```
-
+*Note that the `max_distance` parameter assumes that the supplied distance is in the same unit as the GeoDataFrame. For example, if your GeoDataFrame is projected to a CRS that uses feet, then `max_distance=500` will displace points up to 500 feet.*
 
 ## Roadmap
 The following features are currently planned:
