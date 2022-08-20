@@ -393,19 +393,19 @@
 <h3 id="estimate-k-anonymity">Estimate K-Anonymity<a class="headerlink" href="#estimate-k-anonymity" title="Permanent link">&para;</a></h3>
 <p><strong>Usage:</strong>
 After the data has been masked, estimating k-anoynmity using census data would look like this and will add a column to the masked geodataframe:</p>
-<pre><code>mask.k_anonymity_estimate(
+<pre><code class="language-python">mask.k_anonymity_estimate(
     population=population, # Name of the census geodataframe. Not necessary if you already included this parameter in the original masking steps.
     pop_col='pop') # Name of the column containing the population field. Not necessary if you already included this parameter in the original masking steps.
 </code></pre>
 <h3 id="calculate-k-anonymity">Calculate K-Anonymity<a class="headerlink" href="#calculate-k-anonymity" title="Permanent link">&para;</a></h3>
 <p><strong>Usage:</strong>
 After the data has been masked, calcualting address-based k-anoynmity would look like this and will add a column to the masked geodataframe:</p>
-<pre><code>mask.k_anonymity_actual(address='') # Name of the geodataframe including address points.
+<pre><code class="language-python">mask.k_anonymity_actual(address='') # Name of the geodataframe including address points.
 </code></pre>
 <h2 id="displacement-distance">Displacement Distance<a class="headerlink" href="#displacement-distance" title="Permanent link">&para;</a></h2>
 <p><strong>Usage:</strong>
 To add a column to the masked geodataframe that includes the actual displacement distances (in meters), one can just run:</p>
-<pre><code>mask.displacement_distance()
+<pre><code class="language-python">mask.displacement_distance()
 </code></pre>
 
   <hr>
