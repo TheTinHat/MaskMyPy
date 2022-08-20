@@ -1,5 +1,4 @@
-<div style="text-align:center;"><img src="assets/logo.png" width=400px style="max-width: 400px;"></div>
-
+<div style="text-align:center; width: 100%;"><img src="assets/logo.png" width=400px style="max-width: 400px;"></div>
 -----
 Python tools for anonymizing geographic data.
 
