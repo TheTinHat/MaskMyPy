@@ -1,5 +1,7 @@
 <div style="text-align:center; width: 100%;"><img src="assets/logo.png" width=400px style="max-width: 400px;"></div>
+
 -----
+
 Python tools for anonymizing geographic data.
 
 ![Master Tests](https://img.shields.io/github/checks-status/TheTinHat/maskmyxyz/master)
