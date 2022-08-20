@@ -31,7 +31,7 @@ The following snippet applies a 500 meter* donut mask to a GeoDataFrame of sensi
 >>> from maskmypy import Donut
 >>> import geopandas as gpd
 >>> sensitive_points = gpd.read_file('sensitive_points')
->>> sensitive_points
+>>> sensitive_points.head()
      CID                           geometry
 0      1  POINT (-13703523.337 6313860.932)
 1      2  POINT (-13703436.959 6314112.457)
@@ -40,7 +40,7 @@ The following snippet applies a 500 meter* donut mask to a GeoDataFrame of sensi
 4      5  POINT (-13703200.338 6313847.431)
 
 >>> masked_points = Donut(sensitive_points, max_distance=500).run()
->>> masked_points
+>>> masked_points.head()
      CID                           geometry
 0      1  POINT (-13703383.941 6313989.161)
 1      2  POINT (-13703227.863 6313973.121)
@@ -53,7 +53,7 @@ We can also calculate the distance that each points was displaced by adding the 
 
 ```python
 >>> masked_points = Donut(points).run(displacement=True)
->>> masked_points
+>>> masked_points.head()
      CID                           geometry   _distance
 0      1  POINT (-13703383.941 6313989.161)  189.404946
 1      2  POINT (-13703227.863 6313973.121)  251.267943
