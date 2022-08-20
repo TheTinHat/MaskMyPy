@@ -22,13 +22,7 @@ pip install maskmypy
 
 ## Roadmap
 The following features are currently planned:
+
 - Location Swapping/Verified Neighbor masks
 - Automatic plotting of point displacement
 - The ability to save mask metadata
-
-
-<style>
-.md-content__inner > h1:first-child  {
-  display: none;
-}
-</style>
