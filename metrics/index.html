@@ -10,21 +10,21 @@
       
       
       
-        <link rel="canonical" href="https://thetinhat.github.io/MaskMyPy/">
+        <link rel="canonical" href="https://thetinhat.github.io/MaskMyPy/metrics/">
       
-      <link rel="icon" href="assets/images/favicon.png">
+      <link rel="icon" href="../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.3.1, mkdocs-material-8.4.0">
     
     
       
-        <title>MaskMyPy Documentation</title>
+        <title>Metrics - MaskMyPy Documentation</title>
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.69437709.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.69437709.min.css">
       
         
-        <link rel="stylesheet" href="assets/stylesheets/palette.cbb835fc.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.cbb835fc.min.css">
         
       
       
@@ -40,9 +40,9 @@
       
     
     
-      <link rel="stylesheet" href="assets/style.css">
+      <link rel="stylesheet" href="../assets/style.css">
     
-    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -66,7 +66,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#introduction" class="md-skip">
+        <a href="#k-anonymity" class="md-skip">
           Skip to content
         </a>
       
@@ -80,9 +80,9 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="." title="MaskMyPy Documentation" class="md-header__button md-logo" aria-label="MaskMyPy Documentation" data-md-component="logo">
+    <a href=".." title="MaskMyPy Documentation" class="md-header__button md-logo" aria-label="MaskMyPy Documentation" data-md-component="logo">
       
-  <img src="assets/python_logo.png" alt="logo">
+  <img src="../assets/python_logo.png" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -98,7 +98,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Home
+              Metrics
             
           </span>
         </div>
@@ -165,15 +165,45 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="." title="MaskMyPy Documentation" class="md-nav__button md-logo" aria-label="MaskMyPy Documentation" data-md-component="logo">
+    <a href=".." title="MaskMyPy Documentation" class="md-nav__button md-logo" aria-label="MaskMyPy Documentation" data-md-component="logo">
       
-  <img src="assets/python_logo.png" alt="logo">
+  <img src="../assets/python_logo.png" alt="logo">
 
     </a>
     MaskMyPy Documentation
   </label>
   
   <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../donut/" class="md-nav__link">
+        Donut
+      </a>
+    </li>
+  
+
     
       
       
@@ -189,16 +219,14 @@
       <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
       
       
-        
-      
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          Home
+          Metrics
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <a href="." class="md-nav__link md-nav__link--active">
-        Home
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Metrics
       </a>
       
         
@@ -206,8 +234,6 @@
 <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
   
   
-  
-    
   
   
     <label class="md-nav__title" for="__toc">
@@ -217,15 +243,35 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#installation" class="md-nav__link">
-    Installation
+  <a href="#k-anonymity" class="md-nav__link">
+    K-Anonymity
   </a>
+  
+    <nav class="md-nav" aria-label="K-Anonymity">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#estimate-k-anonymity" class="md-nav__link">
+    Estimate K-Anonymity
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#calculate-k-anonymity" class="md-nav__link">
+    Calculate K-Anonymity
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#roadmap" class="md-nav__link">
-    Roadmap
+  <a href="#displacement-distance" class="md-nav__link">
+    Displacement Distance
   </a>
   
 </li>
@@ -246,37 +292,7 @@
   
   
     <li class="md-nav__item">
-      <a href="donut/" class="md-nav__link">
-        Donut
-      </a>
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="metrics/" class="md-nav__link">
-        Metrics
-      </a>
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="street/" class="md-nav__link">
+      <a href="../street/" class="md-nav__link">
         Street
       </a>
     </li>
@@ -291,7 +307,7 @@
   
   
     <li class="md-nav__item">
-      <a href="tests/" class="md-nav__link">
+      <a href="../tests/" class="md-nav__link">
         Testing
       </a>
     </li>
@@ -315,8 +331,6 @@
   
   
   
-    
-  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -325,15 +339,35 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#installation" class="md-nav__link">
-    Installation
+  <a href="#k-anonymity" class="md-nav__link">
+    K-Anonymity
   </a>
+  
+    <nav class="md-nav" aria-label="K-Anonymity">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#estimate-k-anonymity" class="md-nav__link">
+    Estimate K-Anonymity
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#calculate-k-anonymity" class="md-nav__link">
+    Calculate K-Anonymity
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#roadmap" class="md-nav__link">
-    Roadmap
+  <a href="#displacement-distance" class="md-nav__link">
+    Displacement Distance
   </a>
   
 </li>
@@ -352,30 +386,27 @@
                 
 
 
-<div style="text-align:center;"><img src="assets/logo.png" style="max-width: 400px;"></div>
+  <h1>Metrics</h1>
 
-<hr />
-<p>Python tools for anonymizing geographic data.</p>
-<p><img alt="Master Tests" src="https://img.shields.io/github/checks-status/TheTinHat/maskmyxyz/master" />
-<img alt="License" src="https://img.shields.io/github/license/TheTinHat/MaskMyPy" />
-<img alt="PyPi" src="https://img.shields.io/pypi/v/maskmypy" /></p>
-<h1 id="introduction">Introduction<a class="headerlink" href="#introduction" title="Permanent link">&para;</a></h1>
-<p><a href="https://github.com/TheTinHat/MaskMyPy">MaskMyPy</a> is a Python package that performs geographic masking on <a href="http://geopandas.org/data_structures.html">GeoDataFrames</a>. It offers two main methods: <a href="donut/">donut masking</a> and <a href="street/">street masking</a>.</p>
-<p>MaskMyPy also supports calculating metrics to help optimize and validate masking parameters. Currently, it offers k-anonymity estimation using population data, k-anonymity calculation using address data, and displacement distance calculation between sensitive and masked points.</p>
-<p><strong>Disclaimer</strong>: <em>MaskMyPy is offered as-is, without warranty of any kind. Geographic masking is a hard problem that requires informed decisions and validation. MaskMyPy provides helpful tools for geographic masking, but does not replace expertise.</em></p>
-<h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
-<pre><code>pip install maskmypy
+<h2 id="k-anonymity">K-Anonymity<a class="headerlink" href="#k-anonymity" title="Permanent link">&para;</a></h2>
+<p>Maskmypy is able to calculate the k-anonymity of each point after masking. Two methods are available for this: estimates, and exact calculations. Estimates of k-anoynmity are inferred from census data, and assume a homogeneously distributed population within each census polygon. Address-based k-anonymity is more accurate and uses actual home address data to calculate k-anonymity.</p>
+<h3 id="estimate-k-anonymity">Estimate K-Anonymity<a class="headerlink" href="#estimate-k-anonymity" title="Permanent link">&para;</a></h3>
+<p><strong>Usage:</strong>
+After the data has been masked, estimating k-anoynmity using census data would look like this and will add a column to the masked geodataframe:</p>
+<pre><code>mask.k_anonymity_estimate(
+    population=population, # Name of the census geodataframe. Not necessary if you already included this parameter in the original masking steps.
+    pop_col='pop') # Name of the column containing the population field. Not necessary if you already included this parameter in the original masking steps.
 </code></pre>
-<h2 id="roadmap">Roadmap<a class="headerlink" href="#roadmap" title="Permanent link">&para;</a></h2>
-<p>The following features are currently planned:
-- Location Swapping/Verified Neighbor masks
-- Automatic plotting of point displacement
-- The ability to save mask metadata</p>
-<style>
-.md-content__inner > h1:first-child  {
-  display: none;
-}
-</style>
+<h3 id="calculate-k-anonymity">Calculate K-Anonymity<a class="headerlink" href="#calculate-k-anonymity" title="Permanent link">&para;</a></h3>
+<p><strong>Usage:</strong>
+After the data has been masked, calcualting address-based k-anoynmity would look like this and will add a column to the masked geodataframe:</p>
+<pre><code>mask.k_anonymity_actual(address='') # Name of the geodataframe including address points.
+</code></pre>
+<h2 id="displacement-distance">Displacement Distance<a class="headerlink" href="#displacement-distance" title="Permanent link">&para;</a></h2>
+<p><strong>Usage:</strong>
+To add a column to the masked geodataframe that includes the actual displacement distances (in meters), one can just run:</p>
+<pre><code>mask.displacement_distance()
+</code></pre>
 
   <hr>
 <div class="md-source-file">
@@ -404,15 +435,30 @@
     
     <nav class="md-footer__inner md-grid" aria-label="Footer" >
       
+        
+        <a href="../donut/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Donut" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Donut
+            </div>
+          </div>
+        </a>
+      
       
         
-        <a href="donut/" class="md-footer__link md-footer__link--next" aria-label="Next: Donut" rel="next">
+        <a href="../street/" class="md-footer__link md-footer__link--next" aria-label="Next: Street" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Donut
+              Street
             </div>
           </div>
           <div class="md-footer__button md-icon">
@@ -443,10 +489,10 @@
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": ".", "features": [], "search": "assets/javascripts/workers/search.ecf98df9.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.ecf98df9.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
-      <script src="assets/javascripts/bundle.9c69f0bc.min.js"></script>
+      <script src="../assets/javascripts/bundle.9c69f0bc.min.js"></script>
       
     
   </body>
