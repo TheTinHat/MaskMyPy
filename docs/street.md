@@ -8,7 +8,7 @@ Street masking automatically downloads OpenStreetMap road network data and uses 
 
 **Usage:** To street mask a geodataframe containing sensitive points with a search-depth value of 20, the code would be as follows:
 
-```
+```python
 from maskmypy import Street
 
 streetmask = Street(

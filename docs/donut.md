@@ -4,10 +4,12 @@ title: Donut Masking
 
 ## Donut Masking
 
+Donut masking
+
 **Usage:**
 To perform basic donut geomasking on a geodataframe containing sensitive points, with a maximum displacement distance of 500 meters and an minimum displacement distance of 20% of the maximum distance (i.e. 100 meters), the code would look like this:
 
-```
+```python
 from maskmypy import Donut
 
 donutmask = Donut(
@@ -24,7 +26,7 @@ masked = donutmask.mask
 
 To perform full donut geomasking (i.e. using census data and a target k-anonymity range rather than distance range) with a maximum k-anonymity of 1000 and minimum of 200, and a census geodataframe called population, the code would appear as follows:
 
-```
+```python
 from maskmypy import Donut_MaxK
 
 donutmask = Donut_MaxK(
