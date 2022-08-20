@@ -16,12 +16,15 @@ MaskMyPy also supports calculating metrics to help optimize and validate masking
 **Disclaimer**: *MaskMyPy is offered as-is, without warranty of any kind. Geographic masking is a hard problem that requires informed decisions and validation. MaskMyPy provides helpful tools for geographic masking, but does not replace expertise.*
 
 ## Installation
+
 ```
 pip install maskmypy
 ```
 
 ## Example
+
 The following snippet applies a 500 meter donut mask to a GeoDataFrame of sensitive points:
+
 ```python
 >>> from maskmypy import Donut
 >>> import geopandas as gpd
@@ -48,9 +51,9 @@ The following snippet applies a 500 meter donut mask to a GeoDataFrame of sensit
 
 We can also calculate the distance that each points was displaced by adding the `displacement=True` flag to `.run()`:
 
-```
->>> masked_points = Donut(points).run(displacement=True)
->>> masked_points
+```python
+masked_points = Donut(points).run(displacement=True)
+masked_points
      CID                           geometry   _distance
 0      1  POINT (-13703383.941 6313989.161)  189.404946
 1      2  POINT (-13703227.863 6313973.121)  251.267943
