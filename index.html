@@ -405,8 +405,8 @@
 4      5  POINT (-13702837.385 6314140.874)
 </code></pre>
 <p>We can also calculate the distance that each points was displaced by adding the <code>displacement=True</code> flag to <code>.run()</code>:</p>
-<pre><code>&gt;&gt;&gt; masked_points = Donut(points).run(displacement=True)
-&gt;&gt;&gt; masked_points
+<pre><code class="language-python">masked_points = Donut(points).run(displacement=True)
+masked_points
      CID                           geometry   _distance
 0      1  POINT (-13703383.941 6313989.161)  189.404946
 1      2  POINT (-13703227.863 6313973.121)  251.267943
