@@ -20,6 +20,46 @@ MaskMyPy also supports calculating metrics to help optimize and validate masking
 pip install maskmypy
 ```
 
+## Example
+The following snippet applies a 500 meter donut mask to a GeoDataFrame of sensitive points:
+```
+>>> from maskmypy import Donut
+>>> import geopandas as gpd
+
+>>> sensitive_points = gpd.read_file('sensitive_points')
+
+>>> sensitive_points
+     CID                           geometry
+0      1  POINT (-13703523.337 6313860.932)
+1      2  POINT (-13703436.959 6314112.457)
+2      3  POINT (-13703679.041 6314040.923)
+3      4  POINT (-13703285.553 6313721.356)
+4      5  POINT (-13703200.338 6313847.431)
+
+>>> masked_points = Donut(sensitive_points, max_distance=500).run()
+>>> masked_points
+     CID                           geometry
+0      1  POINT (-13703383.941 6313989.161)
+1      2  POINT (-13703227.863 6313973.121)
+2      3  POINT (-13703313.001 6314172.582)
+3      4  POINT (-13703107.232 6313614.978)
+4      5  POINT (-13702837.385 6314140.874)
+```
+
+We can also calculate the distance that each points was displaced by adding the `displacement=True` flag to `.run()`:
+
+```
+>>> masked_points = Donut(points).run(displacement=True)
+>>> masked_points
+     CID                           geometry   _distance
+0      1  POINT (-13703383.941 6313989.161)  189.404946
+1      2  POINT (-13703227.863 6313973.121)  251.267943
+2      3  POINT (-13703313.001 6314172.582)  388.997713
+3      4  POINT (-13703107.232 6313614.978)  207.639785
+4      5  POINT (-13702837.385 6314140.874)  466.738146
+```
+
+
 ## Roadmap
 The following features are currently planned:
 
