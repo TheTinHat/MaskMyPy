@@ -1,4 +1,5 @@
 from typing import Optional
+from warnings import warn
 
 from geopandas import GeoDataFrame, sjoin
 
@@ -143,8 +144,7 @@ class Base:
         if self.try_count > self.max_tries:
             for index, row in target.iterrows():
                 self.mask.loc[index, "CONTAINED"] = 0
-            print(
-                str(len(target)) + " points were mask but could not be "
-                "contained. target points are listed as 0 in the 'CONTAINED' field"
+
+            warn(f"One or more points were masked but could not be contained. Target points are listed as 0 in the 'CONTAINED' field"
             )
         return self.mask
