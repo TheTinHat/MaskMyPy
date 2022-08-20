@@ -84,7 +84,7 @@ class Donut(Base):
         x_off, y_off = self._random_xy(row["_r_min"], row["_r_max"])
         return translate(row["geometry"], xoff=x_off, yoff=y_off)
 
-    def run(self) -> GeoDataFrame:
+    def run(self, displacement=False) -> GeoDataFrame:
         self.mask = self.input.copy()
         self._set_radii()
         self.mask["geometry"] = self.mask.apply(
@@ -95,6 +95,8 @@ class Donut(Base):
             self._mask_within_container()
         self._check()
         self.mask = self.mask.loc[:, ~self.mask.columns.str.startswith("_")]
+        if displacement:
+            self.displacement_distance()
         return self.mask
 
     def _check(self):
