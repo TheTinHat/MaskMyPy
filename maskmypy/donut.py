@@ -75,7 +75,7 @@ class Donut(Base):
             for index, row in uncontained.iterrows():
                 x, y = self._random_xy(row["_r_min"], row["_r_max"])
                 self.mask.at[index, "geometry"] = translate(
-                    self.input.at[index, "geometry"], xoff=x, yoff=y
+                    self.secret.at[index, "geometry"], xoff=x, yoff=y
                 )
             self._containment(uncontained)
         return True
@@ -85,7 +85,7 @@ class Donut(Base):
         return translate(row["geometry"], xoff=x_off, yoff=y_off)
 
     def run(self, displacement=False) -> GeoDataFrame:
-        self.mask = self.input.copy()
+        self.mask = self.secret.copy()
         self._set_radii()
         self.mask["geometry"] = self.mask.apply(
             self._displace,
@@ -105,7 +105,7 @@ class Donut(Base):
         min = self.max_distance * self.ratio if self.distribution != "gaussian" else 0
         assert self.mask["_distance"].min() > min
         assert self.mask["_distance"].max() < max
-        assert len(self.input) == len(self.mask)
+        assert len(self.secret) == len(self.mask)
 
 
 class Donut_MaxK(Donut):
@@ -132,7 +132,7 @@ class Donut_MaxK(Donut):
     def _check(self):
         self.displacement_distance()
         assert self.mask["_distance"].min() > 0
-        assert len(self.input) == len(self.mask)
+        assert len(self.secret) == len(self.mask)
 
 
 class Donut_Multiply(Donut):
@@ -159,4 +159,4 @@ class Donut_Multiply(Donut):
     def _check(self):
         self.displacement_distance()
         assert self.mask["_distance"].min() > 0
-        assert len(self.input) == len(self.mask)
+        assert len(self.secret) == len(self.mask)

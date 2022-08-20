@@ -101,7 +101,7 @@ class Street(Base):
         return mask
 
     def run(self, parallel=False) -> GeoDataFrame:
-        self.mask = self.input.copy()
+        self.mask = self.secret.copy()
         self._get_osm()
         self.mask = self.mask.to_crs(epsg=4326)
         if parallel == True:
@@ -125,6 +125,6 @@ class Street(Base):
 
     def _check(self):
         self.displacement_distance()
-        assert len(self.input) == len(self.mask)
+        assert len(self.secret) == len(self.mask)
         assert self.mask["_distance"].min() > 0
         assert self.mask["_distance"].max() < self.depth * self.max_length

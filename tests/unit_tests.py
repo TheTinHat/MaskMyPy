@@ -49,21 +49,21 @@ def data():
 
 def test_load_population(data):
     dubious_donut = Donut(data["point"], population=data["population"])
-    assert dubious_donut.input.crs == dubious_donut.population.crs
+    assert dubious_donut.secret.crs == dubious_donut.population.crs
     with pytest.raises(AssertionError):
         assert Donut(data["point"], population=data["population"].to_crs(4326))
 
 
 def test_load_container(data):
     dubious_donut = Donut(data["point"], container=data["container"])
-    assert dubious_donut.input.crs == dubious_donut.container.crs
+    assert dubious_donut.secret.crs == dubious_donut.container.crs
     with pytest.raises(AssertionError):
         assert Donut(data["point"], container=data["container"].to_crs(4326))
 
 
 def test_load_address(data):
     dubious_donut = Donut(data["point"], address=data["address"])
-    assert dubious_donut.input.crs == dubious_donut.address.crs
+    assert dubious_donut.secret.crs == dubious_donut.address.crs
     with pytest.raises(AssertionError):
         assert Donut(data["point"], address=data["address"].to_crs(4326))
 
@@ -226,7 +226,7 @@ def test_donut_maxk_set_radii(data):
     dubious_donut = Donut_MaxK(
         data["point"], population=data["population"], max_k_anonymity=100, ratio=0.1
     )
-    dubious_donut.mask = dubious_donut.input
+    dubious_donut.mask = dubious_donut.secret
     dubious_donut._set_radii()
     assert round(dubious_donut.mask.loc[0, "_r_max"]) == 100
     assert round(dubious_donut.mask.loc[0, "_r_min"]) == 32
@@ -240,7 +240,7 @@ def test_donut_multiply_set_radii(data):
         max_distance=100,
         ratio=0.1,
     )
-    dubious_donut.mask = dubious_donut.input.copy()
+    dubious_donut.mask = dubious_donut.secret.copy()
     dubious_donut._set_radii()
     assert dubious_donut.mask.loc[0, "_r_max"] == 500
     assert dubious_donut.mask.loc[0, "_r_min"] == 50

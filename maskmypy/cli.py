@@ -11,7 +11,7 @@ def cli():
 
 
 @cli.command(help="Perform donut masking on a given shapefile")
-@click.argument("input_shp", type=click.Path(exists=True))
+@click.argument("secret_shp", type=click.Path(exists=True))
 @click.argument("output_shp", type=click.Path(dir_okay=False))
 @click.option(
     "--max-distance",
@@ -50,8 +50,8 @@ def cli():
 )
 @click.option("--max-tries", type=click.INT, help="")
 @click.option("--seed", type=click.INT, help="")
-def donut(input_shp, output_shp, **kwargs):
+def donut(secret_shp, output_shp, **kwargs):
     pruned_kwargs = {k: v for k, v in kwargs.items() if v}
-    donutmask = Donut(gpd.read_file(input_shp), **pruned_kwargs)
+    donutmask = Donut(gpd.read_file(secret_shp), **pruned_kwargs)
     donutmask.run()
     donutmask.mask.to_file(output_shp)

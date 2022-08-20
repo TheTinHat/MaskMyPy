@@ -18,13 +18,13 @@ def gen_seeds(n):
 
 
 def basic_assertions(masking_class):
-    input_length = len(masking_class.input)
+    secret_length = len(masking_class.secret)
     mask_length = len(masking_class.mask)
 
-    assert input_length == mask_length
+    assert secret_length == mask_length
 
     for i in range(mask_length):
-        assert not masking_class.input.at[i, "geometry"].intersects(
+        assert not masking_class.secret.at[i, "geometry"].intersects(
             masking_class.mask.at[i, "geometry"]
         )
 
@@ -33,7 +33,7 @@ def basic_assertions(masking_class):
 @pytest.mark.parametrize("seeds", gen_seeds(i))
 def test_donut_mask_normal(distributions, seeds):
     DonutMasker = Donut(
-        input=points,
+        secret=points,
         seed=seeds,
         distribution=distributions,
     )
@@ -46,7 +46,7 @@ def test_donut_mask_normal(distributions, seeds):
 @pytest.mark.parametrize("seeds", gen_seeds(i))
 def test_donut_mask_contained(distributions, seeds):
     DonutMasker = Donut(
-        input=points, container=populations, distribution=distributions, seed=seeds
+        secret=points, container=populations, distribution=distributions, seed=seeds
     )
     DonutMasker.run()
     DonutMasker.displacement_distance()
@@ -57,7 +57,7 @@ def test_donut_mask_contained(distributions, seeds):
 @pytest.mark.parametrize("distributions", ["uniform", "gaussian", "areal"])
 def test_donut_mask_max_k(distributions):
     DonutMasker = Donut_MaxK(
-        input=points,
+        secret=points,
         population=populations,
         pop_col="POP",
         distribution=distributions,
@@ -74,7 +74,7 @@ def test_donut_mask_max_k(distributions):
 @pytest.mark.parametrize("distributions", ["uniform", "gaussian", "areal"])
 def test_donut_mask_pop_multiplier(distributions):
     DonutMasker = Donut_Multiply(
-        input=points,
+        secret=points,
         population=populations,
         pop_col="POP",
         distribution=distributions,
@@ -88,7 +88,7 @@ def test_donut_mask_pop_multiplier(distributions):
 
 def test_street_mask():
     StreetMasker = Street(
-        input=points,
+        secret=points,
         population=populations,
         pop_col="POP",
         address=address,
@@ -101,7 +101,7 @@ def test_street_mask():
 
 def test_street_mask_parallel():
     StreetMasker = Street(
-        input=points,
+        secret=points,
     )
     StreetMasker.run(parallel=True)
     StreetMasker.displacement_distance()

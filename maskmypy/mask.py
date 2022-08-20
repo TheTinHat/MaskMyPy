@@ -9,15 +9,15 @@ class Base:
 
     def __init__(
         self,
-        input: GeoDataFrame,
+        secret: GeoDataFrame,
         population: Optional[GeoDataFrame] = None,
         pop_col: str = "pop",
         container: Optional[GeoDataFrame] = None,
         address: Optional[GeoDataFrame] = None,
         max_tries: int = 1000,
     ):
-        self.input = input.copy()
-        self.crs = self.input.crs
+        self.secret = secret.copy()
+        self.crs = self.secret.crs
         self.max_tries = max_tries
         self._load_population(population, pop_col)
         self._load_container(container)
@@ -27,7 +27,7 @@ class Base:
         """Loads a geodataframe of population data for donut masking and/or k-anonymity estimation."""
         if isinstance(population, GeoDataFrame):
             assert population.crs == self.crs
-            self.population = self._crop(population.copy(), self.input)
+            self.population = self._crop(population.copy(), self.secret)
             self.pop_col = pop_col
             self.population = self.population.loc[:, ["geometry", self.pop_col]]
             return True
@@ -39,7 +39,7 @@ class Base:
         """Loads a geodataframe of polygons to contain points while donut masking"""
         if isinstance(container, GeoDataFrame):
             assert container.crs == self.crs
-            self.container = self._crop(container.copy(), self.input)
+            self.container = self._crop(container.copy(), self.secret)
             self.container = self.container.loc[:, ["geometry"]]
             return True
         else:
@@ -50,7 +50,7 @@ class Base:
         """Loads geodataframe containing address data for k-anonymity calculation"""
         if isinstance(address, GeoDataFrame):
             assert address.crs == self.crs
-            self.address = self._crop(address.copy(), self.input)
+            self.address = self._crop(address.copy(), self.secret)
             self.address = self.address.loc[:, ["geometry"]]
             return True
         else:
@@ -58,7 +58,7 @@ class Base:
             return False
 
     def _crop(self, target, reference):
-        """Uses spatial index to reduce an input (target) geodataframe to only
+        """Uses spatial index to reduce an secret (target) geodataframe to only
         that which intersects with a reference geodataframe"""
         bb = reference.total_bounds
         if len(set(bb)) == 2:  # If reference is single point, skip crop
@@ -75,7 +75,7 @@ class Base:
     def displacement_distance(self) -> GeoDataFrame:
         """Calculate dispalcement distance for each point after masking."""
         assert isinstance(self.mask, GeoDataFrame)
-        self.mask["_distance"] = self.mask.geometry.distance(self.input["geometry"])
+        self.mask["_distance"] = self.mask.geometry.distance(self.secret["geometry"])
         return self.mask
 
     def k_anonymity_estimate(
@@ -97,8 +97,8 @@ class Base:
         return self.mask
 
     def k_anonymity_actual(self, address: Optional[GeoDataFrame] = None) -> GeoDataFrame:
-        """Calculates k-anonymity based on the number of address closer
-        to the mask point than input point"""
+        """Calculates k-anonymity based on the number of address points that are closer
+        to the masked point than secret point"""
         if address:
             self._load_address(address)
 
@@ -133,12 +133,12 @@ class Base:
     def _containment(self, target):
         """Checks whether or not mask points are within the same containment
         polygon as their original locations."""
-        if "index_cont" not in self.input.columns:
-            self.input = sjoin(self.input, self.container, how="left", rsuffix="cont")
+        if "index_cont" not in self.secret.columns:
+            self.secret = sjoin(self.secret, self.container, how="left", rsuffix="cont")
             self.try_count = 0
         target = sjoin(target, self.container, how="left", rsuffix="cont")
         for index, row in target.iterrows():
-            if row["index_cont"] == self.input.at[index, "index_cont"]:
+            if row["index_cont"] == self.secret.at[index, "index_cont"]:
                 self.mask.at[index, "CONTAINED"] = 1
         self.try_count += 1
         if self.try_count > self.max_tries:
