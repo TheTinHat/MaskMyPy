@@ -178,8 +178,8 @@ class Base:
             lambda x: LineString([x["geometry"], x["geometry_secret"]]), axis=1
         )
         line_map = lines.plot(color="black", zorder=1, linewidth=1, figsize=[10, 10])
-        line_map = self.secret.plot(ax=line_map, color="red", zorder=2, markersize=10)
-        line_map = self.mask.plot(ax=line_map, color="blue", zorder=3, markersize=10)
+        line_map = self.secret.plot(ax=line_map, color="red", zorder=2, markersize=12)
+        line_map = self.mask.plot(ax=line_map, color="blue", zorder=3, markersize=12)
         if isinstance(self.container, GeoDataFrame):
             line_map = self.container.plot(ax=line_map, color="grey", zorder=0, linewidth=1)
         if isinstance(self.address, GeoDataFrame):
