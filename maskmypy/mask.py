@@ -75,13 +75,32 @@ class Base:
         target = target.cx[bb[0] : bb[2], bb[1] : bb[3]]
         return target
 
-    def displacement_distance(self) -> GeoDataFrame:
+    def _sanity_check(self):
+        pass
+
+    def _apply_mask(self):
+        pass
+
+    def _sanitize(self):
+        self.mask = self.mask.loc[:, ~self.mask.columns.str.startswith("_")]
+
+    def run(self, parallel=False) -> GeoDataFrame:
+        self.mask = self.secret.copy()
+
+        if parallel is True:
+            self._apply_mask(parallel=True)
+        else:
+            self._apply_mask()
+
+        self._sanity_check()
+        self._sanitize()
+
+    def displacement(self) -> GeoDataFrame:
         """Calculate dispalcement distance for each point after masking."""
-        assert isinstance(self.mask, GeoDataFrame)
         self.mask["_distance"] = self.mask.geometry.distance(self.secret["geometry"])
         return self.mask
 
-    def k_anonymity_estimate(
+    def estimate_k(
         self, population: Optional[GeoDataFrame] = None, pop_col: str = "pop"
     ) -> GeoDataFrame:
         """Estimates k-anoynmity based on population data."""
@@ -89,11 +108,9 @@ class Base:
             self._load_population(population, pop_col)
 
         self.population["_pop_area"] = self.population.area
-        self.displacement_distance()
+        self.displacement()
         mask_tmp = self.mask.copy()
-        mask_tmp["geometry"] = mask_tmp.apply(
-            lambda x: x.geometry.buffer(x["_distance"]), axis=1
-        )
+        mask_tmp["geometry"] = mask_tmp.apply(lambda x: x.geometry.buffer(x["_distance"]), axis=1)
         mask_tmp = self._disaggregate_population(mask_tmp)
         for i, _ in enumerate(self.mask.index):
             self.mask.at[i, "k_est"] = int(
@@ -101,23 +118,18 @@ class Base:
             )
         return self.mask
 
-    def k_anonymity_actual(
-        self, address: Optional[GeoDataFrame] = None
-    ) -> GeoDataFrame:
+    def calculate_k(self, address: Optional[GeoDataFrame] = None) -> GeoDataFrame:
         """Calculates k-anonymity based on the number of address points that are closer
         to the masked point than secret point"""
         if address:
             self._load_address(address)
-
-        self.displacement_distance()
+        self.displacement()
         mask_tmp = self.mask.copy()
-        mask_tmp["geometry"] = mask_tmp.apply(
-            lambda x: x.geometry.buffer(x["_distance"]), axis=1
-        )
+        mask_tmp["geometry"] = mask_tmp.apply(lambda x: x.geometry.buffer(x["_distance"]), axis=1)
         join = sjoin(self.address, mask_tmp, how="left", rsuffix="mask")
         for i, _ in enumerate(self.mask):
             subset = join.loc[join["index_mask"] == i, :]
-            self.mask.at[i, "k_actual"] = len(subset)
+            self.mask.at[i, "k_calc"] = len(subset)
         return self.mask
 
     def _disaggregate_population(self, target):
@@ -128,9 +140,7 @@ class Base:
         target["_index_2"] = target.index
         target.index = range(len(target.index))
         target["geometry"] = target.apply(
-            lambda x: x.geometry.intersection(
-                self.population.at[x["index_pop"], "geometry"]
-            ),
+            lambda x: x.geometry.intersection(self.population.at[x["index_pop"], "geometry"]),
             axis=1,
         )
         target["_intersected_area"] = target["geometry"].area
@@ -161,8 +171,7 @@ class Base:
             )
         return self.mask
 
-    def plot_displacement(self, filename="displacement_map.png"):
-        self.displacement_distance()
+    def map_displacement(self, filename=""):
         lines = self.mask.copy()
         lines = lines.join(self.secret, how="left", rsuffix="_secret")
         lines["geometry"] = lines.apply(
@@ -172,20 +181,21 @@ class Base:
         line_map = self.secret.plot(ax=line_map, color="red", zorder=2, markersize=10)
         line_map = self.mask.plot(ax=line_map, color="blue", zorder=3, markersize=10)
         if isinstance(self.container, GeoDataFrame):
-            line_map = self.container.plot(
-                ax=line_map, color="grey", zorder=0, linewidth=1
-            )
+            line_map = self.container.plot(ax=line_map, color="grey", zorder=0, linewidth=1)
         if isinstance(self.address, GeoDataFrame):
             line_map = self.address.plot(ax=line_map, color="grey", markersize=2)
         ctx.add_basemap(line_map, crs=self.crs, source=ctx.providers.OpenStreetMap.Mapnik)
-        plt.title("Displacement Map (Confidential)", fontsize=20)
+        plt.title("Displacement Distances", fontsize=16)
         plt.figtext(
             0.5,
-            0.01,
-            "Secret points (red), Masked points (blue)",
+            0.025,
+            "Secret points (red), Masked points (blue). \n KEEP CONFIDENTIAL",
             wrap=True,
             horizontalalignment="center",
             fontsize=12,
         )
-        plt.savefig(filename)
+        if filename:
+            plt.savefig(filename)
+        else:
+            plt.show()
         return True

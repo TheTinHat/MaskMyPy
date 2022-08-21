@@ -11,7 +11,7 @@ Maskmypy is able to calculate the k-anonymity of each point after masking. Two m
 After the data has been masked, estimating k-anoynmity using census data would look like this and will add a column to the masked geodataframe:
 
 ```python
-mask.k_anonymity_estimate(
+mask.estimate_k(
     population=population, # Name of the census geodataframe. Not necessary if you already included this parameter in the original masking steps.
     pop_col='pop') # Name of the column containing the population field. Not necessary if you already included this parameter in the original masking steps.
 ```
@@ -21,7 +21,7 @@ mask.k_anonymity_estimate(
 After the data has been masked, calcualting address-based k-anoynmity would look like this and will add a column to the masked geodataframe:
 
 ```python
-mask.k_anonymity_actual(address='') # Name of the geodataframe including address points.
+mask.calculate_k(address='') # Name of the geodataframe including address points.
 ```
 
 ## Displacement Distance
@@ -29,5 +29,5 @@ mask.k_anonymity_actual(address='') # Name of the geodataframe including address
 To add a column to the masked geodataframe that includes the actual displacement distances (in meters), one can just run:
 
 ```python
-mask.displacement_distance()
+mask.displacement()
 ```

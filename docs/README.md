@@ -25,13 +25,13 @@ pip install maskmypy
 
 ## Example
 
-The following snippet applies a 500 meter* donut mask to a GeoDataFrame of sensitive points:
+The following snippet applies a 500 meter* donut mask to a GeoDataFrame of sensitive (e.g. secret) points:
 
 ```python
 >>> from maskmypy import Donut
 >>> import geopandas as gpd
->>> sensitive_points = gpd.read_file('sensitive_points')
->>> sensitive_points.head()
+>>> secret = gpd.read_file('secret_points')
+>>> secret.head()
      CID                           geometry
 0      1  POINT (-13703523.337 6313860.932)
 1      2  POINT (-13703436.959 6314112.457)
@@ -39,7 +39,7 @@ The following snippet applies a 500 meter* donut mask to a GeoDataFrame of sensi
 3      4  POINT (-13703285.553 6313721.356)
 4      5  POINT (-13703200.338 6313847.431)
 
->>> masked_points = Donut(sensitive_points, max_distance=500).run()
+>>> masked_points = Donut(secret, max_distance=500).run()
 >>> masked_points.head()
      CID                           geometry
 0      1  POINT (-13703383.941 6313989.161)
@@ -49,11 +49,13 @@ The following snippet applies a 500 meter* donut mask to a GeoDataFrame of sensi
 4      5  POINT (-13702837.385 6314140.874)
 ```
 
-We can also calculate the distance that each points was displaced by adding the `displacement=True` flag to `.run()`:
+Chaining a given masking class (in this case `Donut()`) to the `run()` method is a quick way to return a masked GeoDataFrame. Alternatively, we can store an instance of the masking class to start accessing more functionality, like calculating displacement distance:
 
 ```python
->>> masked_points = Donut(points).run(displacement=True)
->>> masked_points.head()
+>>> donut = Donut(secret, max_distance=500) # Instantiate  the class
+>>> donut.run() # Execute the masking procedure
+>>> donut.displacement() # Add column containing displacement distance
+>>> donut.mask.head() # Access the masked geodataframe from .mask
      CID                           geometry   _distance
 0      1  POINT (-13703383.941 6313989.161)  189.404946
 1      2  POINT (-13703227.863 6313973.121)  251.267943
@@ -62,11 +64,17 @@ We can also calculate the distance that each points was displaced by adding the 
 4      5  POINT (-13702837.385 6314140.874)  466.738146
 ```
 
+We can also create a quick map of the displacement distance so that we can visually inspect the masking process:
+```python
+>>> donut.map_displacement('assets/displacement_map.png')
+```
+
+![Displacement Map](assets/displacement_map.png)
+
 \* *Note that the `max_distance` parameter assumes that the supplied distance is in the same unit as the GeoDataFrame. For example, if your GeoDataFrame is projected to a CRS that uses feet, then `max_distance=500` will displace points up to 500 feet.*
 
 ## Roadmap
 The following features are currently planned:
 
 - Location Swapping/Verified Neighbor masks
-- Automatic plotting of point displacement
 - The ability to save mask metadata

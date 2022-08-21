@@ -38,7 +38,8 @@ def test_donut_mask_normal(distributions, seeds):
         distribution=distributions,
     )
     DonutMasker.run()
-    DonutMasker.displacement_distance()
+    DonutMasker.displacement()
+    DonutMasker.map_displacement('tests/results/donut_mask_normal_displacement_map.png')
     basic_assertions(DonutMasker)
 
 
@@ -49,7 +50,7 @@ def test_donut_mask_contained(distributions, seeds):
         secret=points, container=populations, distribution=distributions, seed=seeds
     )
     DonutMasker.run()
-    DonutMasker.displacement_distance()
+    DonutMasker.displacement()
     basic_assertions(DonutMasker)
     assert DonutMasker.mask["CONTAINED"].min() == 1
 
@@ -66,8 +67,8 @@ def test_donut_mask_max_k(distributions):
         ratio=0.1,
     )
     DonutMasker.run()
-    DonutMasker.displacement_distance()
-    DonutMasker.k_anonymity_estimate()
+    DonutMasker.displacement()
+    DonutMasker.estimate_k()
     basic_assertions(DonutMasker)
 
 
@@ -82,7 +83,7 @@ def test_donut_mask_pop_multiplier(distributions):
         max_distance=100,
     )
     DonutMasker.run()
-    DonutMasker.displacement_distance()
+    DonutMasker.displacement()
     basic_assertions(DonutMasker)
 
 
@@ -94,9 +95,8 @@ def test_street_mask():
         address=address,
     )
     StreetMasker.run()
-    StreetMasker.displacement_distance()
-    StreetMasker.k_anonymity_actual()
-    StreetMasker.plot_displacement('street_mask_displacement.pdf')
+    StreetMasker.displacement()
+    StreetMasker.calculate_k()
     basic_assertions(StreetMasker)
 
 
@@ -105,5 +105,5 @@ def test_street_mask_parallel():
         secret=points,
     )
     StreetMasker.run(parallel=True)
-    StreetMasker.displacement_distance()
+    StreetMasker.displacement()
     basic_assertions(StreetMasker)

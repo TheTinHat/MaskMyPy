@@ -81,22 +81,22 @@ def test_crop_single_point(data):
     assert len(dubious_crop) == len(data["address"])
 
 
-def test_displacement_distance(data):
+def test_displacement(data):
     distance = int(data["point"].distance(data["test_point"]))
     assert distance == 60
 
 
-def test_k_anonymity_estimate(data):
+def test_estimate_k(data):
     dubious_donut = Donut(
         data["point"], population=data["population"], max_distance=20, ratio=0.99999
     )
     dubious_donut.run()
-    dubious_donut.k_anonymity_estimate()
+    dubious_donut.estimate_k()
     assert dubious_donut.mask.loc[0, "k_est"] == 4.0
 
     dubious_donut.max_distance = 50
     dubious_donut.run()
-    dubious_donut.k_anonymity_estimate()
+    dubious_donut.estimate_k()
     assert dubious_donut.mask.loc[0, "k_est"] == 25.0
 
 
@@ -120,7 +120,7 @@ def test_disaggregate_population(data):
     assert int(dubious_disaggregate.loc[0, "_pop_adjusted"]) == 100
 
 
-def test_k_anonymity_actual_no_distance(data):
+def test_calculate_k_no_distance(data):
     dubious_donut = Donut(
         data["point"],
         address=data["address"],
@@ -129,11 +129,11 @@ def test_k_anonymity_actual_no_distance(data):
         seed=data["seeds"][0],
     )
     dubious_donut.run()
-    dubious_donut.k_anonymity_actual()
-    assert int(dubious_donut.mask.loc[0, "k_actual"]) == 0
+    dubious_donut.calculate_k()
+    assert int(dubious_donut.mask.loc[0, "k_calc"]) == 0
 
 
-def test_k_anonymity_actual(data):
+def test_calculate_k(data):
     dubious_donut = Donut(
         data["point"],
         address=data["address"],
@@ -142,8 +142,8 @@ def test_k_anonymity_actual(data):
         seed=data["seeds"][0],
     )
     dubious_donut.run()
-    dubious_donut.k_anonymity_actual()
-    assert int(dubious_donut.mask.loc[0, "k_actual"]) == 39
+    dubious_donut.calculate_k()
+    assert int(dubious_donut.mask.loc[0, "k_calc"]) == 39
 
 
 def test_containment_false(data):
@@ -196,7 +196,7 @@ def test_random_xy_gaussian(data):
             data["point"], distribution="gaussian", max_distance=100, ratio=0, seed=seed
         )
         dubious_donut.run()
-        dubious_donut.displacement_distance()
+        dubious_donut.displacement()
         distance_list.append(dubious_donut.mask.loc[0, "_distance"])
     assert normaltest(distance_list)[1] > 0.1
 
@@ -245,10 +245,11 @@ def test_donut_multiply_set_radii(data):
     assert dubious_donut.mask.loc[0, "_r_max"] == 500
     assert dubious_donut.mask.loc[0, "_r_min"] == 50
 
-# def test_displacement_map(data):
-#     dubius_donut = Donut(data['point'], seed=data['seeds'][0])
-#     dubius_donut.run()
-#     dubius_donut._map_displacement()
+def test_displacement_map(data):
+    dubius_donut = Donut(data['point'], seed=data['seeds'][0])
+    dubius_donut.run()
+    dubius_donut.map_displacement('tests/results/displacement_map_test_image.png')
+
 
 
 # STREET

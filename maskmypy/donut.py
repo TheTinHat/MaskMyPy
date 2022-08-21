@@ -80,27 +80,22 @@ class Donut(Base):
             self._containment(uncontained)
         return True
 
-    def _displace(self, row):
+    def _displace_point(self, row):
         x_off, y_off = self._random_xy(row["_r_min"], row["_r_max"])
         return translate(row["geometry"], xoff=x_off, yoff=y_off)
 
-    def run(self, displacement=False) -> GeoDataFrame:
-        self.mask = self.secret.copy()
+    def _apply_mask(self) -> GeoDataFrame:
         self._set_radii()
         self.mask["geometry"] = self.mask.apply(
-            self._displace,
+            self._displace_point,
             axis=1,
         )
         if isinstance(self.container, GeoDataFrame):
             self._mask_within_container()
-        self._check()
-        self.mask = self.mask.loc[:, ~self.mask.columns.str.startswith("_")]
-        if displacement:
-            self.displacement_distance()
-        return self.mask
+        return True
 
-    def _check(self):
-        self.displacement_distance()
+    def _sanity_check(self):
+        self.displacement()
         max = self.max_distance if self.distribution != "gaussian" else self.max_distance * 1.5
         min = self.max_distance * self.ratio if self.distribution != "gaussian" else 0
         assert self.mask["_distance"].min() > min
@@ -129,8 +124,8 @@ class Donut_MaxK(Donut):
         self.mask["_r_min"] = mask_pop.apply(lambda x: x["_r_min"], axis=1)
         self.mask["_r_max"] = mask_pop.apply(lambda x: x["_r_max"], axis=1)
 
-    def _check(self):
-        self.displacement_distance()
+    def _sanity_check(self):
+        self.displacement()
         assert self.mask["_distance"].min() > 0
         assert len(self.secret) == len(self.mask)
 
@@ -156,7 +151,7 @@ class Donut_Multiply(Donut):
         )
         self.mask["_r_min"] = self.mask.apply(lambda x: x["_r_max"] * self.ratio, axis=1)
 
-    def _check(self):
-        self.displacement_distance()
+    def _sanity_check(self):
+        self.displacement()
         assert self.mask["_distance"].min() > 0
         assert len(self.secret) == len(self.mask)
