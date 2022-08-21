@@ -245,6 +245,11 @@ def test_donut_multiply_set_radii(data):
     assert dubious_donut.mask.loc[0, "_r_max"] == 500
     assert dubious_donut.mask.loc[0, "_r_min"] == 50
 
+# def test_displacement_map(data):
+#     dubius_donut = Donut(data['point'], seed=data['seeds'][0])
+#     dubius_donut.run()
+#     dubius_donut._map_displacement()
+
 
 # STREET
 # _get_osm

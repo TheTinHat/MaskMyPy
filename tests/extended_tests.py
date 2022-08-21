@@ -96,6 +96,7 @@ def test_street_mask():
     StreetMasker.run()
     StreetMasker.displacement_distance()
     StreetMasker.k_anonymity_actual()
+    StreetMasker.plot_displacement('street_mask_displacement.pdf')
     basic_assertions(StreetMasker)
 
 
