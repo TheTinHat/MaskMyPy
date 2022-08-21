@@ -69,9 +69,9 @@ class Donut(Base):
         self.mask.loc[:, "_r_max"] = self.max_distance
 
     def _mask_within_container(self):
-        self.mask.loc[:, "CONTAINED"] = 0
-        while min(self.mask["CONTAINED"]) == 0:
-            uncontained = self.mask.loc[self.mask["CONTAINED"] == 0, :]
+        self.mask.loc[:, "CONTAINED"] = -1
+        while min(self.mask["CONTAINED"]) == -1:
+            uncontained = self.mask.loc[self.mask["CONTAINED"] == -1, :]
             for index, row in uncontained.iterrows():
                 x, y = self._random_xy(row["_r_min"], row["_r_max"])
                 self.mask.at[index, "geometry"] = translate(
@@ -86,11 +86,11 @@ class Donut(Base):
 
     def _apply_mask(self) -> GeoDataFrame:
         self._set_radii()
-        self.mask["geometry"] = self.mask.apply(
+        self.mask.geometry = self.mask.apply(
             self._displace_point,
             axis=1,
         )
-        if isinstance(self.container, GeoDataFrame):
+        if hasattr(self, "container"):
             self._mask_within_container()
         return True
 
@@ -110,19 +110,16 @@ class Donut_MaxK(Donut):
 
     def _set_radii(self):
         self.population["_pop_area"] = self.population.area
-        mask_pop = sjoin(self.mask, self.population, how="left")
+        mask_pop = (
+            sjoin(self.mask, self.population, how="left")
+            .assign(_area_max=lambda x: self.target_k * x["_pop_area"] / x[self.pop_col])
+            .assign(
+                _area_min=lambda x: (self.target_k * self.ratio) * x["_pop_area"] / x[self.pop_col]
+            )
+        )
 
-        mask_pop["_area_max"] = mask_pop.apply(
-            lambda x: self.target_k * x["_pop_area"] / x[self.pop_col], axis=1
-        )
-        mask_pop["_area_min"] = mask_pop.apply(
-            lambda x: (self.target_k * self.ratio) * x["_pop_area"] / x[self.pop_col],
-            axis=1,
-        )
-        mask_pop["_r_max"] = mask_pop.apply(lambda x: sqrt(x["_area_max"] / pi), axis=1)
-        mask_pop["_r_min"] = mask_pop.apply(lambda x: sqrt(x["_area_min"] / pi), axis=1)
-        self.mask["_r_min"] = mask_pop.apply(lambda x: x["_r_min"], axis=1)
-        self.mask["_r_max"] = mask_pop.apply(lambda x: x["_r_max"], axis=1)
+        self.mask["_r_min"] = mask_pop.apply(lambda x: sqrt(x["_area_min"] / pi), axis=1)
+        self.mask["_r_max"] = mask_pop.apply(lambda x: sqrt(x["_area_max"] / pi), axis=1)
 
     def _sanity_check(self):
         self.displacement()

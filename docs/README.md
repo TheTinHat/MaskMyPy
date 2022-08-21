@@ -77,4 +77,5 @@ We can also create a quick map of the displacement distance so that we can visua
 The following features are currently planned:
 
 - Location Swapping/Verified Neighbor masks
-- The ability to save mask metadata
+- Mask metadata export
+- Minimum displacement values rather than ratios

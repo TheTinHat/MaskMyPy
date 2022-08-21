@@ -94,10 +94,20 @@ class Street(Base):
         graph_tmp = self.graph.copy()
         mask["_node"] = mask.apply(lambda x: self._nearest_node(graph_tmp, x["geometry"]), axis=1)
         mask["_node_new"] = mask.apply(lambda x: self._find_node(x["_node"]), axis=1)
-        mask["geometry"] = mask.apply(
+        mask.geometry = mask.apply(
             lambda x: self.graph_gdf[0].at[x["_node_new"], "geometry"], axis=1
         )
         mask = mask.drop(["_node", "_node_new"], axis=1)
+        return mask
+
+    def _street_mask_parallel(self):
+        cpus = cpu_count() - 1 if cpu_count() > 1 else 1
+        pool = Pool(processes=cpus)
+        chunks = array_split(self.mask, cpus)
+        processes = [pool.apply_async(self._street_mask, args=(chunk,)) for chunk in chunks]
+        mask_chunks = [chunk.get() for chunk in processes]
+        mask = GeoDataFrame(concat(mask_chunks))
+        mask = mask.set_crs(epsg=4326)
         return mask
 
     def _apply_mask(self, parallel=False):
@@ -109,16 +119,6 @@ class Street(Base):
             self.mask = self._street_mask(self.mask)
         self.mask = self.mask.to_crs(self.crs)
         return True
-
-    def _street_mask_parallel(self):
-        cpus = cpu_count() - 1 if cpu_count() > 1 else 1
-        pool = Pool(processes=cpus)
-        chunks = array_split(self.mask, cpus)
-        processes = [pool.apply_async(self._street_mask, args=(chunk,)) for chunk in chunks]
-        mask_chunks = [chunk.get() for chunk in processes]
-        mask = GeoDataFrame(concat(mask_chunks))
-        mask = mask.set_crs(epsg=4326)
-        return mask
 
     def _sanity_check(self):
         self.displacement()

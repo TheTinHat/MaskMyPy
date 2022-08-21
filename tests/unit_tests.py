@@ -148,6 +148,7 @@ def test_calculate_k(data):
 
 def test_containment_false(data):
     dubious_donut = Donut(data["point"], container=data["test_circle"], max_tries=0)
+    dubious_donut.try_count = 0
     dubious_donut.mask = data["test_point"]
     dubious_donut._containment(data["test_point"])
     assert dubious_donut.mask.loc[0, "CONTAINED"] == 0
@@ -155,6 +156,7 @@ def test_containment_false(data):
 
 def test_containment_true(data):
     dubious_donut = Donut(data["point"], container=data["test_circle"])
+    dubious_donut.try_count = 0
     dubious_donut.mask = data["point"]
     dubious_donut._containment(data["point"])
     assert dubious_donut.mask.loc[0, "CONTAINED"] == 1
@@ -245,11 +247,15 @@ def test_donut_multiply_set_radii(data):
     assert dubious_donut.mask.loc[0, "_r_max"] == 500
     assert dubious_donut.mask.loc[0, "_r_min"] == 50
 
-def test_displacement_map(data):
-    dubius_donut = Donut(data['point'], seed=data['seeds'][0])
-    dubius_donut.run()
-    dubius_donut.map_displacement('tests/results/displacement_map_test_image.png')
 
+def test_displacement_map(data):
+    dubius_donut = Donut(data["point"], seed=data["seeds"][0])
+    dubius_donut.run()
+    dubius_donut.map_displacement("tests/results/displacement_map_test_image.png")
+
+
+def test_get_osm(data):
+    dubious_street = Street(data["point"])
 
 
 # STREET

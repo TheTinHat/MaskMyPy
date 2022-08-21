@@ -39,7 +39,6 @@ def test_donut_mask_normal(distributions, seeds):
     )
     DonutMasker.run()
     DonutMasker.displacement()
-    DonutMasker.map_displacement('tests/results/donut_mask_normal_displacement_map.png')
     basic_assertions(DonutMasker)
 
 
