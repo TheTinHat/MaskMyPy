@@ -393,19 +393,19 @@
 <h3 id="estimate-k-anonymity">Estimate K-Anonymity<a class="headerlink" href="#estimate-k-anonymity" title="Permanent link">&para;</a></h3>
 <p><strong>Usage:</strong>
 After the data has been masked, estimating k-anoynmity using census data would look like this and will add a column to the masked geodataframe:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">mask</span><span class="o">.</span><span class="n">k_anonymity_estimate</span><span class="p">(</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">mask</span><span class="o">.</span><span class="n">estimate_k</span><span class="p">(</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">population</span><span class="o">=</span><span class="n">population</span><span class="p">,</span> <span class="c1"># Name of the census geodataframe. Not necessary if you already included this parameter in the original masking steps.</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">pop_col</span><span class="o">=</span><span class="s1">&#39;pop&#39;</span><span class="p">)</span> <span class="c1"># Name of the column containing the population field. Not necessary if you already included this parameter in the original masking steps.</span>
 </code></pre></div>
 <h3 id="calculate-k-anonymity">Calculate K-Anonymity<a class="headerlink" href="#calculate-k-anonymity" title="Permanent link">&para;</a></h3>
 <p><strong>Usage:</strong>
 After the data has been masked, calcualting address-based k-anoynmity would look like this and will add a column to the masked geodataframe:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">mask</span><span class="o">.</span><span class="n">k_anonymity_actual</span><span class="p">(</span><span class="n">address</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="c1"># Name of the geodataframe including address points.</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">mask</span><span class="o">.</span><span class="n">calculate_k</span><span class="p">(</span><span class="n">address</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="c1"># Name of the geodataframe including address points.</span>
 </code></pre></div>
 <h2 id="displacement-distance">Displacement Distance<a class="headerlink" href="#displacement-distance" title="Permanent link">&para;</a></h2>
 <p><strong>Usage:</strong>
 To add a column to the masked geodataframe that includes the actual displacement distances (in meters), one can just run:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">mask</span><span class="o">.</span><span class="n">displacement_distance</span><span class="p">()</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">mask</span><span class="o">.</span><span class="n">displacement</span><span class="p">()</span>
 </code></pre></div>
 
   <hr>
