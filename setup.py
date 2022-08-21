@@ -22,6 +22,7 @@ setup(
         "osmnx>=1.2.0",
         "geopandas>=0.10",
         "scikit-learn>=1.1.1",
+        "contextily>=1.2.0"
     ],
     python_requires=">=3.8",
     # entry_points={
