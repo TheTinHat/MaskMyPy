@@ -337,19 +337,19 @@
 <h2 id="street-masking">Street Masking<a class="headerlink" href="#street-masking" title="Permanent link">&para;</a></h2>
 <p>Street masking automatically downloads OpenStreetMap road network data and uses it to geographically mask your sensitive points. It works by first downloading the road network data, snapping each sensitive point to the nearest node on the network (an intersection or dead end), and then calculating the average network-distance between that node and a pool of the closest x number of nodes (e.g. the closest 20 nodes on the network, known as the search depth). This average distance is the target displacement distance. Finally, it selects a node from the pool whose network-distance from the starting node is closest to the target displacement distance.</p>
 <p><strong>Usage:</strong> To street mask a geodataframe containing sensitive points with a search-depth value of 20, the code would be as follows:</p>
-<pre><code class="language-python">from maskmypy import Street
-
-streetmask = Street(
-    sensitive, # Name of the sensitive geodataframe
-    depth=20, # The search depth value used to calculate displacement distances.
-    padding=2000, # Used to download road network data surrounding the study area. Needs to be sufficiently large to reduce edge effects. Increasing reduces edge effects, but uses more memory.
-    max_length=500) # Optional, but recommended that you read below for full explanation of what this does.
-
-
-streetmask.run() # Single threaded by default. Add `parallel=True` as parameter to run on all CPU cores, drastically increasing performance.
-
-masked = streetmask.mask
-</code></pre>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span> <span class="nn">maskmypy</span> <span class="kn">import</span> <span class="n">Street</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">streetmask</span> <span class="o">=</span> <span class="n">Street</span><span class="p">(</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">sensitive</span><span class="p">,</span> <span class="c1"># Name of the sensitive geodataframe</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">depth</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="c1"># The search depth value used to calculate displacement distances.</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">padding</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span> <span class="c1"># Used to download road network data surrounding the study area. Needs to be sufficiently large to reduce edge effects. Increasing reduces edge effects, but uses more memory.</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="n">max_length</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span> <span class="c1"># Optional, but recommended that you read below for full explanation of what this does.</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="n">streetmask</span><span class="o">.</span><span class="n">run</span><span class="p">()</span> <span class="c1"># Single threaded by default. Add `parallel=True` as parameter to run on all CPU cores, drastically increasing performance.</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="n">masked</span> <span class="o">=</span> <span class="n">streetmask</span><span class="o">.</span><span class="n">mask</span>
+</code></pre></div>
 <p><strong>About max_length</strong>: when snapping points to the street network, the algorithm checks to make sure that the nearest node is actually connected to the network and has neighbors that are no more than max_length away (in meters). If it does not, then the next closest viable node is selected, checked, and so on. This acts as a sanity check to prevent extremely large masking distances. Feel free to change this to whatever you feel is appropriate.</p>
 
   <hr>

@@ -338,35 +338,35 @@
 <p>Donut masking</p>
 <p><strong>Usage:</strong>
 To perform basic donut geomasking on a geodataframe containing sensitive points, with a maximum displacement distance of 500 meters and an minimum displacement distance of 20% of the maximum distance (i.e. 100 meters), the code would look like this:</p>
-<pre><code class="language-python">from maskmypy import Donut
-
-donutmask = Donut(
-    sensitive=sensitive, # Name of the sensitive geodataframe
-    max_distance=500, # The maximum possible distance that points are displaced
-    ratio=0.2, # The ratio used to define the minimum distance points are displaced
-    distribution='uniform', # The distribution to use when displacing points. Other options include 'gaussian' and 'areal'. 'Areal' distribution means points are more likely to be displaced further within the range.
-    container=container) # Optional, a geodataframe used to ensure that points do not leave a particular area.
-
-donutmask.run()
-
-masked = donutmask.mask
-</code></pre>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span> <span class="nn">maskmypy</span> <span class="kn">import</span> <span class="n">Donut</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">donutmask</span> <span class="o">=</span> <span class="n">Donut</span><span class="p">(</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">sensitive</span><span class="o">=</span><span class="n">sensitive</span><span class="p">,</span> <span class="c1"># Name of the sensitive geodataframe</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">max_distance</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="c1"># The maximum possible distance that points are displaced</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">ratio</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="c1"># The ratio used to define the minimum distance points are displaced</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="n">distribution</span><span class="o">=</span><span class="s1">&#39;uniform&#39;</span><span class="p">,</span> <span class="c1"># The distribution to use when displacing points. Other options include &#39;gaussian&#39; and &#39;areal&#39;. &#39;Areal&#39; distribution means points are more likely to be displaced further within the range.</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="n">container</span><span class="o">=</span><span class="n">container</span><span class="p">)</span> <span class="c1"># Optional, a geodataframe used to ensure that points do not leave a particular area.</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="n">donutmask</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="n">masked</span> <span class="o">=</span> <span class="n">donutmask</span><span class="o">.</span><span class="n">mask</span>
+</code></pre></div>
 <p>To perform full donut geomasking (i.e. using census data and a target k-anonymity range rather than distance range) with a maximum k-anonymity of 1000 and minimum of 200, and a census geodataframe called population, the code would appear as follows:</p>
-<pre><code class="language-python">from maskmypy import Donut_MaxK
-
-donutmask = Donut_MaxK(
-    sensitive, # Name of the sensitive geodataframe
-    population=population, # Name of the census geodataframe
-    pop_col='pop', # Name of the column containing the population field
-    max_k_anonymity=1000, # The maximum possible k-anonymity value
-    ratio=0.2, # The ratio used to define the minimum possible k-anonymity value.
-    distribution='uniform', # The distribution to use when displacing points. Other options include 'gaussian' and 'areal'. 'Areal' distribution means points are more likely to be displaced further within the range.
-    container=container) # Optional, a geodataframe used to ensure that points do not leave a particular area.
-
-donutmask.run()
-
-masked = donutmask.mask
-</code></pre>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span> <span class="nn">maskmypy</span> <span class="kn">import</span> <span class="n">Donut_MaxK</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">donutmask</span> <span class="o">=</span> <span class="n">Donut_MaxK</span><span class="p">(</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    <span class="n">sensitive</span><span class="p">,</span> <span class="c1"># Name of the sensitive geodataframe</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="n">population</span><span class="o">=</span><span class="n">population</span><span class="p">,</span> <span class="c1"># Name of the census geodataframe</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    <span class="n">pop_col</span><span class="o">=</span><span class="s1">&#39;pop&#39;</span><span class="p">,</span> <span class="c1"># Name of the column containing the population field</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    <span class="n">max_k_anonymity</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="c1"># The maximum possible k-anonymity value</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>    <span class="n">ratio</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="c1"># The ratio used to define the minimum possible k-anonymity value.</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>    <span class="n">distribution</span><span class="o">=</span><span class="s1">&#39;uniform&#39;</span><span class="p">,</span> <span class="c1"># The distribution to use when displacing points. Other options include &#39;gaussian&#39; and &#39;areal&#39;. &#39;Areal&#39; distribution means points are more likely to be displaced further within the range.</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>    <span class="n">container</span><span class="o">=</span><span class="n">container</span><span class="p">)</span> <span class="c1"># Optional, a geodataframe used to ensure that points do not leave a particular area.</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="n">donutmask</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="n">masked</span> <span class="o">=</span> <span class="n">donutmask</span><span class="o">.</span><span class="n">mask</span>
+</code></pre></div>
 
   <hr>
 <div class="md-source-file">
