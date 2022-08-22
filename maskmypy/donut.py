@@ -73,16 +73,18 @@ class Donut(Base):
         while min(self.mask["CONTAINED"]) == -1:
             uncontained = self.mask.loc[self.mask["CONTAINED"] == -1, :]
             for index, row in uncontained.iterrows():
-                x, y = self._random_xy(row["_r_min"], row["_r_max"])
-                self.mask.at[index, "geometry"] = translate(
-                    self.secret.at[index, "geometry"], xoff=x, yoff=y
+                self.mask.at[index, "geometry"] = self._displace_point(
+                    row, custom_geom=self.secret.at[index, "geometry"]
                 )
             self._containment(uncontained)
         return True
 
-    def _displace_point(self, row):
+    def _displace_point(self, row, custom_geom=""):
         x_off, y_off = self._random_xy(row["_r_min"], row["_r_max"])
-        return translate(row["geometry"], xoff=x_off, yoff=y_off)
+        if not custom_geom:
+            return translate(row["geometry"], xoff=x_off, yoff=y_off)
+        elif custom_geom:
+            return translate(custom_geom, xoff=x_off, yoff=y_off)
 
     def _apply_mask(self) -> GeoDataFrame:
         self._set_radii()
@@ -117,7 +119,6 @@ class Donut_MaxK(Donut):
                 _area_min=lambda x: (self.target_k * self.ratio) * x["_pop_area"] / x[self.pop_col]
             )
         )
-
         self.mask["_r_min"] = mask_pop.apply(lambda x: sqrt(x["_area_min"] / pi), axis=1)
         self.mask["_r_max"] = mask_pop.apply(lambda x: sqrt(x["_area_max"] / pi), axis=1)
 

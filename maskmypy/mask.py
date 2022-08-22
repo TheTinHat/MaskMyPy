@@ -51,7 +51,7 @@ class Base:
             return self.address
 
     def _crop(self, target, reference):
-        """Uses spatial index to reduce an secret (target) geodataframe to only
+        """Uses spatial index to reduce an target geodataframe to
         that which intersects with a reference geodataframe"""
         bb = reference.total_bounds
         if len(set(bb)) == 2:  # If reference is single point, skip crop
@@ -184,6 +184,7 @@ class Base:
                 self.mask.at[index, "CONTAINED"] = 1
         self.try_count += 1
         if self.try_count > self.max_tries:
+
             for index, row in target.iterrows():
                 self.mask.loc[index, "CONTAINED"] = 0
             warn(

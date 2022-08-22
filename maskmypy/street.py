@@ -4,7 +4,7 @@ from typing import Union
 from geopandas import GeoDataFrame
 from networkx import single_source_dijkstra_path_length
 from numpy import array_split
-from osmnx import graph_from_bbox, graph_to_gdfs
+from osmnx import graph_from_polygon, graph_to_gdfs
 from osmnx.distance import add_edge_lengths, nearest_nodes
 from osmnx.utils_graph import remove_isolated_nodes
 from pandas import concat
@@ -17,7 +17,7 @@ class Street(Base):
         self,
         *args,
         depth: int = 20,
-        padding: Union[int, float] = 2000,
+        padding: Union[int, float] = 500,
         max_length: Union[int, float] = 500,
         **kwargs,
     ):
@@ -27,22 +27,24 @@ class Street(Base):
         self.depth = depth
 
     def _get_osm(self):
-        selection = self.mask.buffer(self.padding)
-        selection = selection.to_crs(epsg=4326)
-        bb = selection.total_bounds
-        self.graph = graph_from_bbox(
-            north=bb[3],
-            south=bb[1],
-            east=bb[2],
-            west=bb[0],
-            network_type="drive",
-            simplify=True,
-            truncate_by_edge=True,
+        polygon = (
+            self.secret.copy()
+            .assign(geometry=lambda x: x.geometry.buffer(self.padding))
+            .to_crs(epsg=4326)
+            .geometry.unary_union.convex_hull
         )
-        self.graph = remove_isolated_nodes(self.graph)
-        self.graph = add_edge_lengths(self.graph)
+        self.graph = add_edge_lengths(
+            remove_isolated_nodes(
+                graph_from_polygon(
+                    polygon=polygon,
+                    network_type="drive",
+                    simplify=True,
+                    truncate_by_edge=True,
+                    clean_periphery=True,
+                )
+            )
+        )
         self.graph_gdf = graph_to_gdfs(self.graph)
-
         return True
 
     def _nearest_node(self, graph_tmp, geometry):
@@ -91,8 +93,9 @@ class Street(Base):
         return node
 
     def _street_mask(self, mask):
-        graph_tmp = self.graph.copy()
-        mask["_node"] = mask.apply(lambda x: self._nearest_node(graph_tmp, x["geometry"]), axis=1)
+        mask["_node"] = mask.apply(
+            lambda x: self._nearest_node(self.graph.copy(), x["geometry"]), axis=1
+        )
         mask["_node_new"] = mask.apply(lambda x: self._find_node(x["_node"]), axis=1)
         mask.geometry = mask.apply(
             lambda x: self.graph_gdf[0].at[x["_node_new"], "geometry"], axis=1
