@@ -1,6 +1,6 @@
 import geopandas as gpd
 import pytest
-from maskmypy import Donut, Donut_MaxK, Donut_Multiply, Street
+from maskmypy import Donut, Donut_MaxK, Donut_Multiply, Street, map_displacement
 from numpy import random
 
 # Load base data
@@ -17,18 +17,6 @@ def gen_seeds(n):
     return rng.integers(low=10000, high=100000, size=n)
 
 
-def basic_assertions(masking_class):
-    secret_length = len(masking_class.secret)
-    mask_length = len(masking_class.mask)
-
-    assert secret_length == mask_length
-
-    for i in range(mask_length):
-        assert not masking_class.secret.at[i, "geometry"].intersects(
-            masking_class.mask.at[i, "geometry"]
-        )
-
-
 @pytest.mark.parametrize("distributions", ["uniform", "gaussian", "areal"])
 @pytest.mark.parametrize("seeds", gen_seeds(i))
 def test_donut_mask_normal(distributions, seeds):
@@ -38,8 +26,6 @@ def test_donut_mask_normal(distributions, seeds):
         distribution=distributions,
     )
     DonutMasker.run()
-    DonutMasker.displacement()
-    basic_assertions(DonutMasker)
 
 
 @pytest.mark.parametrize("distributions", ["uniform", "gaussian", "areal"])
@@ -49,8 +35,6 @@ def test_donut_mask_contained(distributions, seeds):
         secret=points, container=populations, distribution=distributions, seed=seeds
     )
     DonutMasker.run()
-    DonutMasker.displacement()
-    basic_assertions(DonutMasker)
     assert DonutMasker.mask["CONTAINED"].min() == 1
 
 
@@ -66,9 +50,6 @@ def test_donut_mask_max_k(distributions):
         ratio=0.1,
     )
     DonutMasker.run()
-    DonutMasker.displacement()
-    DonutMasker.estimate_k()
-    basic_assertions(DonutMasker)
 
 
 @pytest.mark.parametrize("distributions", ["uniform", "gaussian", "areal"])
@@ -82,8 +63,15 @@ def test_donut_mask_pop_multiplier(distributions):
         max_distance=100,
     )
     DonutMasker.run()
-    DonutMasker.displacement()
-    basic_assertions(DonutMasker)
+
+
+def test_map_displacement():
+    map_displacement(
+        points,
+        Donut(points, seed=gen_seeds(1)).run(),
+        "tests/results/displacement_map_test_extended.png",
+        address,
+    )
 
 
 def test_street_mask():
@@ -94,9 +82,6 @@ def test_street_mask():
         address=address,
     )
     StreetMasker.run()
-    StreetMasker.displacement()
-    StreetMasker.calculate_k()
-    basic_assertions(StreetMasker)
 
 
 def test_street_mask_parallel():
@@ -104,5 +89,3 @@ def test_street_mask_parallel():
         secret=points,
     )
     StreetMasker.run(parallel=True)
-    StreetMasker.displacement()
-    basic_assertions(StreetMasker)

@@ -10,6 +10,7 @@ from osmnx.utils_graph import remove_isolated_nodes
 from pandas import concat
 
 from .mask import Base
+from .tools import displacement
 
 
 class Street(Base):
@@ -124,7 +125,7 @@ class Street(Base):
         return True
 
     def _sanity_check(self):
-        self.displacement()
+        mask_tmp = displacement(self.secret, self.mask)
         assert len(self.secret) == len(self.mask)
-        assert self.mask["_distance"].min() > 0
-        assert self.mask["_distance"].max() < self.depth * self.max_length
+        assert mask_tmp["_distance"].min() > 0
+        assert mask_tmp["_distance"].max() < self.depth * self.max_length

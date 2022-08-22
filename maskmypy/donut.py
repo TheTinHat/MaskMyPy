@@ -7,6 +7,7 @@ from numpy import random
 from shapely.affinity import translate
 
 from .mask import Base
+from .tools import displacement
 
 
 class Donut(Base):
@@ -97,11 +98,11 @@ class Donut(Base):
         return True
 
     def _sanity_check(self):
-        self.displacement()
+        mask_tmp = displacement(self.secret, self.mask)
         max = self.max_distance if self.distribution != "gaussian" else self.max_distance * 1.5
         min = self.max_distance * self.ratio if self.distribution != "gaussian" else 0
-        assert self.mask["_distance"].min() > min
-        assert self.mask["_distance"].max() < max
+        assert mask_tmp["_distance"].min() > min
+        assert mask_tmp["_distance"].max() < max
         assert len(self.secret) == len(self.mask)
 
 
@@ -123,8 +124,8 @@ class Donut_MaxK(Donut):
         self.mask["_r_max"] = mask_pop.apply(lambda x: sqrt(x["_area_max"] / pi), axis=1)
 
     def _sanity_check(self):
-        self.displacement()
-        assert self.mask["_distance"].min() > 0
+        mask_tmp = displacement(self.secret, self.mask)
+        assert mask_tmp["_distance"].min() > 0
         assert len(self.secret) == len(self.mask)
 
 
@@ -150,6 +151,6 @@ class Donut_Multiply(Donut):
         self.mask["_r_min"] = self.mask.apply(lambda x: x["_r_max"] * self.ratio, axis=1)
 
     def _sanity_check(self):
-        self.displacement()
-        assert self.mask["_distance"].min() > 0
+        mask_tmp = displacement(self.secret, self.mask)
+        assert mask_tmp["_distance"].min() > 0
         assert len(self.secret) == len(self.mask)

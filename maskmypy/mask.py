@@ -1,10 +1,9 @@
 from typing import Optional
 from warnings import warn
 
-import contextily as ctx
-import matplotlib.pyplot as plt
 from geopandas import GeoDataFrame, sjoin
-from shapely.geometry import LineString
+
+from .tools import sanitize
 
 
 class Base:
@@ -25,6 +24,9 @@ class Base:
         self._load_population(population, pop_col)
         self._load_container(container)
         self._load_address(address)
+
+    def __call__(self):
+        return self.run()
 
     def _load_population(self, population, pop_col="pop"):
         """Loads a geodataframe of population data for donut masking and/or k-anonymity estimation."""
@@ -70,10 +72,6 @@ class Base:
     def _apply_mask(self):
         pass
 
-    def _sanitize(self):
-        self.mask = self.mask.loc[:, ~self.mask.columns.str.startswith("_")]
-        return True
-
     def run(self, parallel=False) -> GeoDataFrame:
         self.try_count = 0
         self.mask = self.secret.copy()
@@ -84,110 +82,23 @@ class Base:
             self._apply_mask()
 
         self._sanity_check()
-        self._sanitize()
-        return self.mask
+        return sanitize(self.mask)
 
-    def displacement(self) -> GeoDataFrame:
-        """Calculate dispalcement distance for each point after masking."""
-        self.mask["_distance"] = self.mask.geometry.distance(self.secret.geometry)
-        return self.mask
-
-    def map_displacement(self, filename=""):
-        lines = self.mask.copy()
-        lines = lines.join(self.secret, how="left", rsuffix="_secret")
-        lines.geometry = lines.apply(
-            lambda x: LineString([x["geometry"], x["geometry_secret"]]), axis=1
-        )
-        ax = lines.plot(color="black", zorder=1, linewidth=1, figsize=[10, 10])
-        ax = self.secret.plot(ax=ax, color="red", zorder=2, markersize=12)
-        ax = self.mask.plot(ax=ax, color="blue", zorder=3, markersize=12)
-        if hasattr(self, "container"):
-            ax = self.container.plot(ax=ax, color="grey", zorder=0, linewidth=1)
-        if hasattr(self, "address"):
-            ax = self.address.plot(ax=ax, color="grey", markersize=2)
-        ctx.add_basemap(ax, crs=self.crs, source=ctx.providers.OpenStreetMap.Mapnik)
-        plt.title("Displacement Distances", fontsize=16)
-        plt.figtext(
-            0.5,
-            0.025,
-            "Secret points (red), Masked points (blue). \n KEEP CONFIDENTIAL",
-            wrap=True,
-            horizontalalignment="center",
-            fontsize=12,
-        )
-        if filename:
-            plt.savefig(filename)
-        else:
-            plt.show()
-        return True
-
-    def estimate_k(
-        self, population: Optional[GeoDataFrame] = None, pop_col: str = "pop"
-    ) -> GeoDataFrame:
-        """Estimates k-anoynmity based on population data."""
-        if population:
-            self._load_population(population, pop_col)
-
-        self.population["_pop_area"] = self.population.area
-
-        self.mask["k_est"] = (
-            self.displacement()
-            .assign(geometry=lambda x: x.geometry.buffer(x["_distance"]), axis=1)
-            .pipe(self._disaggregate_population)
-            .groupby("_index_2")["_pop_adjusted"]
-            .sum()
-            .round()
-        )
-        return self.mask
-
-    def calculate_k(self, address: Optional[GeoDataFrame] = None) -> GeoDataFrame:
-        """Calculates k-anonymity based on the number of address points that are closer
-        to the masked point than secret point"""
-        if address:
-            self._load_address(address)
-
-        mask_tmp = self.displacement().assign(geometry=lambda x: x.buffer(x["_distance"]))
-        self.mask["k_calc"] = (
-            sjoin(self.address, mask_tmp, how="left", rsuffix="mask").groupby("index_mask").size()
-        )
-        self.mask.fillna({"k_calc": 0}, inplace=True)
-        return self.mask
-
-    def _disaggregate_population(self, target):
-        """Used for estimating k-anonymity. Disaggregates population within
-        buffers based on population polygon data"""
-        target = (
-            sjoin(target, self.population, how="left", rsuffix="pop")
-            .rename_axis("_index_2")
-            .reset_index()
-        )
-        target.geometry = target.apply(
-            lambda x: x.geometry.intersection(self.population.at[x["index_pop"], "geometry"]),
-            axis=1,
-        )
-        target["_intersected_area"] = target.geometry.area
-        for i, _ in enumerate(target.index):
-            polygon_fragments = target.loc[target["_index_2"] == i, :]
-            for index, row in polygon_fragments.iterrows():
-                area_pct = row["_intersected_area"] / row["_pop_area"]
-                target.at[index, "_pop_adjusted"] = row[self.pop_col] * area_pct
-        return target
-
-    def _containment(self, target):
+    def _containment(self, gdf):
         """Checks whether or not mask points are within the same containment
         polygon as their original locations."""
         if "index_cont" not in self.secret.columns:
             self.secret = sjoin(self.secret, self.container, how="left", rsuffix="cont")
-        target = sjoin(target, self.container, how="left", rsuffix="cont")
-        for index, row in target.iterrows():
+        gdf = sjoin(gdf, self.container, how="left", rsuffix="cont")
+        for index, row in gdf.iterrows():
             if row["index_cont"] == self.secret.at[index, "index_cont"]:
                 self.mask.at[index, "CONTAINED"] = 1
         self.try_count += 1
         if self.try_count > self.max_tries:
 
-            for index, row in target.iterrows():
+            for index, row in gdf.iterrows():
                 self.mask.loc[index, "CONTAINED"] = 0
             warn(
-                f"One or more points were masked but could not be contained. Target points are listed as 0 in the 'CONTAINED' field"
+                f"One or more points were masked but could not be contained. Uncontained points are listed as 0 in the 'CONTAINED' field"
             )
         return self.mask
