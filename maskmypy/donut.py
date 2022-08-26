@@ -106,7 +106,7 @@ class Donut(Base):
         assert len(self.secret) == len(self.mask)
 
 
-class Donut_MaxK(Donut):
+class Donut_K(Donut):
     def __init__(self, *args, min_k_anonymity, max_k_anonymity, **kwargs):
         super().__init__(*args, **kwargs)
         self.min_k: int = min_k_anonymity

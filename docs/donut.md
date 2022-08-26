@@ -27,9 +27,9 @@ masked = donutmask.mask
 To perform full donut geomasking (i.e. using census data and a target k-anonymity range rather than distance range) with a maximum k-anonymity of 1000 and minimum of 200, and a census geodataframe called population, the code would appear as follows:
 
 ```python
-from maskmypy import Donut_MaxK
+from maskmypy import Donut_K
 
-donutmask = Donut_MaxK(
+donutmask = Donut_K(
     sensitive, # Name of the sensitive geodataframe
     population=population, # Name of the census geodataframe
     pop_col='pop', # Name of the column containing the population field
