@@ -90,7 +90,7 @@ def test_estimate_k(data):
     test_donut = Donut(
         data["point"],
         population=data["population"],
-        min_distance=19,
+        min_distance=19.9,
         max_distance=20,
     )
     test_donut.run()
@@ -98,7 +98,7 @@ def test_estimate_k(data):
     assert mask_temp.loc[0, "k_est"] == 4.0
 
     test_donut.max_distance = 50
-    test_donut.min_distance = 49
+    test_donut.min_distance = 49.9
     test_donut.run()
     mask_temp = estimate_k(test_donut.secret, test_donut.mask, population=data["population"])
     assert mask_temp.loc[0, "k_est"] == 25.0
