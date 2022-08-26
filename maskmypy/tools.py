@@ -4,8 +4,8 @@ from geopandas import GeoDataFrame, sjoin
 from shapely.geometry import LineString
 
 
-def displacement(secret: GeoDataFrame, mask: GeoDataFrame) -> GeoDataFrame:
-    mask["_distance"] = mask.geometry.distance(secret.geometry)
+def displacement(secret: GeoDataFrame, mask: GeoDataFrame, colname="_distance") -> GeoDataFrame:
+    mask[colname] = mask.geometry.distance(secret.geometry)
     return mask
 
 
