@@ -1,8 +1,10 @@
 import geopandas as gpd
 import pytest
 from maskmypy import *
+from maskmypy.tools import *
 from numpy import random
-from scipy.stats import normaltest
+
+# from scipy.stats import normaltest
 from shapely.geometry import Point
 
 """   INITIALIZATION   """
@@ -195,16 +197,16 @@ def test_random_xy(data, distribution):
         assert offset_coords[0] < 100 and offset_coords[1] < 100
 
 
-def test_random_xy_gaussian(data):
-    distance_list = []
-    for seed in data["seeds"]:
-        test_donut = Donut(
-            data["point"], distribution="gaussian", max_distance=100, min_distance=0, seed=seed
-        )
-        test_donut.run()
-        test_donut.mask = displacement(test_donut.secret, test_donut.mask)
-        distance_list.append(test_donut.mask.loc[0, "_distance"])
-    assert normaltest(distance_list)[1] > 0.1
+# def test_random_xy_gaussian(data):
+#     distance_list = []
+#     for seed in data["seeds"]:
+#         test_donut = Donut(
+#             data["point"], distribution="gaussian", max_distance=100, min_distance=0, seed=seed
+#         )
+#         test_donut.run()
+#         test_donut.mask = displacement(test_donut.secret, test_donut.mask)
+#         distance_list.append(test_donut.mask.loc[0, "_distance"])
+#     assert normaltest(distance_list)[1] > 0.1
 
 
 def test_donut_set_radii(data):

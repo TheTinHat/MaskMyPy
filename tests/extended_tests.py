@@ -1,6 +1,7 @@
 import geopandas as gpd
 import pytest
-from maskmypy import Donut, Donut_K, Donut_Multiply, Street, map_displacement
+from maskmypy import Donut, Donut_K, Donut_Multiply, Street
+from maskmypy.tools import map_displacement
 from numpy import random
 
 # Load base data

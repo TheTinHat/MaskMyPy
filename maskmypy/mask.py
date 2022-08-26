@@ -27,9 +27,6 @@ class Base:
         self._load_container(container)
         self._load_address(address)
 
-    def __call__(self):
-        return self.run()
-
     def _load_population(self, population, pop_col="pop"):
         """Loads a geodataframe of population data for donut masking and/or k-anonymity estimation."""
         if isinstance(population, GeoDataFrame):

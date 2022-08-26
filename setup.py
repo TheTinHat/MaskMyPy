@@ -22,8 +22,17 @@ setup(
         "osmnx>=1.2.0",
         "geopandas>=0.10",
         "scikit-learn>=1.1.1",
-        "contextily>=1.2.0"
     ],
+    extras_require={
+        "develop": [
+            "pytest",
+            "black",
+            "mkdocs-material",
+            "mkdocs-roamlinks-plugin",
+            "mkdocs-git-revision-date-localized-plugin",
+        ],
+        "extra": ["contextily>=1.2.0"],
+    },
     python_requires=">=3.8",
     # entry_points={
     #     "console_scripts": ["maskmypy=maskmypy.cli:cli"],

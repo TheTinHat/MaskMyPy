@@ -1,5 +1,3 @@
-import contextily as ctx
-import matplotlib.pyplot as plt
 from geopandas import GeoDataFrame, sjoin
 from shapely.geometry import LineString
 
@@ -58,6 +56,9 @@ def disaggregate(gdf_a, gdf_b, gdf_b_col):
 
 
 def map_displacement(secret, mask, filename="", address=""):
+    import contextily as ctx
+    import matplotlib.pyplot as plt
+
     lines = secret.copy()
     lines = lines.join(mask, how="left", rsuffix="_mask")
     lines.geometry = lines.apply(lambda x: LineString([x["geometry"], x["geometry_mask"]]), axis=1)
