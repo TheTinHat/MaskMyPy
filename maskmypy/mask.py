@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Union
 from warnings import warn
 
 from geopandas import GeoDataFrame, sjoin
@@ -16,11 +16,13 @@ class Base:
         pop_col: str = "pop",
         container: Optional[GeoDataFrame] = None,
         address: Optional[GeoDataFrame] = None,
+        padding: Union[int, float, None] = None,
         max_tries: int = 1000,
     ):
         self.secret = secret.copy()
         self.crs = self.secret.crs
         self.max_tries = max_tries
+        self.padding = self._calculate_padding(padding)
         self._load_population(population, pop_col)
         self._load_container(container)
         self._load_address(address)
@@ -52,18 +54,25 @@ class Base:
             self.address = self._crop(address.copy(), self.secret).loc[:, ["geometry"]]
             return self.address
 
+    def _calculate_padding(self, padding):
+        if padding is None:
+            bb = self.secret.total_bounds
+            pad_x = (bb[2] - bb[0]) / 5
+            pad_y = (bb[3] - bb[1]) / 5
+            padding = max(pad_x, pad_y)
+        return padding
+
     def _crop(self, target, reference):
         """Uses spatial index to reduce an target geodataframe to
         that which intersects with a reference geodataframe"""
         bb = reference.total_bounds
         if len(set(bb)) == 2:  # If reference is single point, skip crop
             return target
-        x = (bb[2] - bb[0]) / 2
-        y = (bb[3] - bb[1]) / 2
-        bb[0] = bb[0] - x
-        bb[1] = bb[1] - y
-        bb[2] = bb[2] + x
-        bb[3] = bb[3] + y
+
+        bb[0] = bb[0] - self.padding
+        bb[1] = bb[1] - self.padding
+        bb[2] = bb[2] + self.padding
+        bb[3] = bb[3] + self.padding
         return target.cx[bb[0] : bb[2], bb[1] : bb[3]]
 
     def _sanity_check(self):

@@ -228,8 +228,8 @@ def test_donut_container(data):
     assert test_donut.mask.loc[0, "CONTAINED"] == 1
 
 
-def test_donut_maxk_set_radii(data):
-    test_donut = Donut_MaxK(
+def test_donut_k_set_radii(data):
+    test_donut = Donut_K(
         data["point"], population=data["population"], max_k_anonymity=100, min_k_anonymity=10
     )
     test_donut.mask = test_donut.secret
@@ -244,12 +244,12 @@ def test_donut_multiply_set_radii(data):
         population=data["population"],
         population_multiplier=5,
         max_distance=100,
-        min_distance=10,
+        min_distance=15,
     )
     test_donut.mask = test_donut.secret.copy()
     test_donut._set_radii()
     assert test_donut.mask.loc[0, "_r_max"] == 500
-    assert test_donut.mask.loc[0, "_r_min"] == 50
+    assert test_donut.mask.loc[0, "_r_min"] == 75
 
 
 def test_displacement_map(data):

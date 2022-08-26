@@ -1,9 +1,10 @@
 from multiprocessing import Pool, cpu_count
-from typing import Union
+from random import SystemRandom
+from typing import Union, Optional
 
 from geopandas import GeoDataFrame
 from networkx import single_source_dijkstra_path_length
-from numpy import array_split
+from numpy import array_split, random
 from osmnx import graph_from_polygon, graph_to_gdfs
 from osmnx.distance import add_edge_lengths, nearest_nodes
 from osmnx.utils_graph import remove_isolated_nodes
@@ -17,15 +18,23 @@ class Street(Base):
     def __init__(
         self,
         *args,
-        depth: int = 20,
-        padding: Union[int, float] = 500,
+        min_depth: int = 15,
+        max_depth: int = 20,
         max_length: Union[int, float] = 500,
+        seed: Optional[int] = None,
         **kwargs,
     ):
         super().__init__(*args, **kwargs)
-        self.padding = padding
         self.max_length = max_length
-        self.depth = depth
+        self.min_depth = min_depth
+        self.max_depth = max_depth
+
+        if not seed:
+            self.seed = int(SystemRandom().random() * (10**10))
+        elif seed:
+            self.seed = seed
+
+        self.rng = random.default_rng(seed=self.seed)
 
     def _get_osm(self):
         polygon = (
@@ -68,7 +77,7 @@ class Street(Base):
     def _find_node(self, node):
         node_count = 0
         distance = 250
-        threshold = self.depth
+        threshold = self.rng.integers(self.min_depth, self.max_depth, endpoint=False)
 
         while node_count < threshold:
             paths = single_source_dijkstra_path_length(self.graph, node, distance, "length")
@@ -128,4 +137,4 @@ class Street(Base):
         mask_tmp = displacement(self.secret, self.mask)
         assert len(self.secret) == len(self.mask)
         assert mask_tmp["_distance"].min() > 0
-        assert mask_tmp["_distance"].max() < self.depth * self.max_length
+        assert mask_tmp["_distance"].max() < self.max_depth * self.max_length

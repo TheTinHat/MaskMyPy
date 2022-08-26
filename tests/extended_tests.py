@@ -1,6 +1,6 @@
 import geopandas as gpd
 import pytest
-from maskmypy import Donut, Donut_MaxK, Donut_Multiply, Street, map_displacement
+from maskmypy import Donut, Donut_K, Donut_Multiply, Street, map_displacement
 from numpy import random
 
 # Load base data
@@ -9,7 +9,6 @@ populations = gpd.read_file("tests/test_data/test_population.shp")
 address = gpd.read_file("tests/test_data/1000_test_addresses.shp")
 
 i = 10
-
 rng = random.default_rng(seed=12345)
 
 
@@ -40,7 +39,7 @@ def test_donut_mask_contained(distributions, seeds):
 
 @pytest.mark.parametrize("distributions", ["uniform", "gaussian", "areal"])
 def test_donut_mask_max_k(distributions):
-    DonutMasker = Donut_MaxK(
+    DonutMasker = Donut_K(
         secret=points,
         population=populations,
         pop_col="POP",
@@ -81,6 +80,8 @@ def test_street_mask():
         population=populations,
         pop_col="POP",
         address=address,
+        seed=gen_seeds(1),
+        padding=250,
     )
     StreetMasker.run()
 
@@ -88,5 +89,7 @@ def test_street_mask():
 def test_street_mask_parallel():
     StreetMasker = Street(
         secret=points,
+        seed=gen_seeds(1),
+        padding=250,
     )
     StreetMasker.run(parallel=True)
