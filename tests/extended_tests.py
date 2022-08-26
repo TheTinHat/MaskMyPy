@@ -47,7 +47,7 @@ def test_donut_mask_max_k(distributions):
         distribution=distributions,
         address=address,
         max_k_anonymity=20,
-        ratio=0.1,
+        min_k_anonymity=2,
     )
     DonutMasker.run()
 
@@ -61,6 +61,7 @@ def test_donut_mask_pop_multiplier(distributions):
         distribution=distributions,
         population_multiplier=5,
         max_distance=100,
+        min_distance=10,
     )
     DonutMasker.run()
 

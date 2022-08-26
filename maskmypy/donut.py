@@ -14,16 +14,16 @@ class Donut(Base):
     def __init__(
         self,
         *args,
+        min_distance: Union[int, float] = 50,
         max_distance: Union[int, float] = 500,
-        ratio: float = 0.2,
         distribution: str = "uniform",
         seed: Optional[int] = None,
         **kwargs
     ):
         super().__init__(*args, **kwargs)
+        self.min_distance = min_distance
         self.max_distance = max_distance
         self.distribution = distribution
-        self.ratio = ratio
 
         if not seed:
             self.seed = int(SystemRandom().random() * (10**10))
@@ -66,7 +66,7 @@ class Donut(Base):
         return (x, y)
 
     def _set_radii(self):
-        self.mask.loc[:, "_r_min"] = self.max_distance * self.ratio
+        self.mask.loc[:, "_r_min"] = self.min_distance
         self.mask.loc[:, "_r_max"] = self.max_distance
 
     def _mask_within_container(self):
@@ -100,25 +100,24 @@ class Donut(Base):
     def _sanity_check(self):
         mask_tmp = displacement(self.secret, self.mask)
         max = self.max_distance if self.distribution != "gaussian" else self.max_distance * 1.5
-        min = self.max_distance * self.ratio if self.distribution != "gaussian" else 0
+        min = self.min_distance if self.distribution != "gaussian" else 0
         assert mask_tmp["_distance"].min() > min
         assert mask_tmp["_distance"].max() < max
         assert len(self.secret) == len(self.mask)
 
 
 class Donut_MaxK(Donut):
-    def __init__(self, *args, max_k_anonymity, **kwargs):
+    def __init__(self, *args, min_k_anonymity, max_k_anonymity, **kwargs):
         super().__init__(*args, **kwargs)
-        self.target_k: int = max_k_anonymity
+        self.min_k: int = min_k_anonymity
+        self.max_k: int = max_k_anonymity
 
     def _set_radii(self):
         self.population["_pop_area"] = self.population.area
         mask_pop = (
             sjoin(self.mask, self.population, how="left")
-            .assign(_area_max=lambda x: self.target_k * x["_pop_area"] / x[self.pop_col])
-            .assign(
-                _area_min=lambda x: (self.target_k * self.ratio) * x["_pop_area"] / x[self.pop_col]
-            )
+            .assign(_area_max=lambda x: self.max_k * x["_pop_area"] / x[self.pop_col])
+            .assign(_area_min=lambda x: self.min_k * x["_pop_area"] / x[self.pop_col])
         )
         self.mask["_r_min"] = mask_pop.apply(lambda x: sqrt(x["_area_min"] / pi), axis=1)
         self.mask["_r_max"] = mask_pop.apply(lambda x: sqrt(x["_area_max"] / pi), axis=1)
@@ -148,7 +147,9 @@ class Donut_Multiply(Donut):
         self.mask["_r_max"] = mask_pop.apply(
             lambda x: (x["_pop_score"] * self.max_distance) + self.max_distance, axis=1
         )
-        self.mask["_r_min"] = self.mask.apply(lambda x: x["_r_max"] * self.ratio, axis=1)
+        self.mask["_r_min"] = mask_pop.apply(
+            lambda x: (x["_pop_score"] * self.min_distance) + self.min_distance, axis=1
+        )
 
     def _sanity_check(self):
         mask_tmp = displacement(self.secret, self.mask)

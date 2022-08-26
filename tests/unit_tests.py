@@ -88,13 +88,17 @@ def test_displacement(data):
 
 def test_estimate_k(data):
     test_donut = Donut(
-        data["point"], population=data["population"], max_distance=20, ratio=0.99999
+        data["point"],
+        population=data["population"],
+        min_distance=19,
+        max_distance=20,
     )
     test_donut.run()
     mask_temp = estimate_k(test_donut.secret, test_donut.mask, population=data["population"])
     assert mask_temp.loc[0, "k_est"] == 4.0
 
     test_donut.max_distance = 50
+    test_donut.min_distance = 49
     test_donut.run()
     mask_temp = estimate_k(test_donut.secret, test_donut.mask, population=data["population"])
     assert mask_temp.loc[0, "k_est"] == 25.0
@@ -125,7 +129,7 @@ def test_calculate_k_no_distance(data):
         data["point"],
         address=data["address"],
         max_distance=1,
-        ratio=0.99999,
+        min_distance=0.9,
         seed=data["seeds"][0],
     )
     test_donut.run()
@@ -138,7 +142,7 @@ def test_calculate_k(data):
         data["point"],
         address=data["address"],
         max_distance=100,
-        ratio=0.99999,
+        min_distance=99,
         seed=data["seeds"][0],
     )
     test_donut.run()
@@ -195,7 +199,7 @@ def test_random_xy_gaussian(data):
     distance_list = []
     for seed in data["seeds"]:
         test_donut = Donut(
-            data["point"], distribution="gaussian", max_distance=100, ratio=0, seed=seed
+            data["point"], distribution="gaussian", max_distance=100, min_distance=0, seed=seed
         )
         test_donut.run()
         test_donut.mask = displacement(test_donut.secret, test_donut.mask)
@@ -204,7 +208,7 @@ def test_random_xy_gaussian(data):
 
 
 def test_donut_set_radii(data):
-    test_donut = Donut(data["point"], max_distance=100, ratio=0.1)
+    test_donut = Donut(data["point"], max_distance=100, min_distance=10)
     test_donut.mask = data["point"]
     test_donut._set_radii()
     assert test_donut.mask.loc[0, "_r_min"] == 10
@@ -215,7 +219,7 @@ def test_donut_container(data):
     test_donut = Donut(
         data["point"],
         max_distance=900,
-        ratio=0.01,
+        min_distance=1,
         container=data["population"],
         seed=data["seeds"][0],
     )
@@ -226,7 +230,7 @@ def test_donut_container(data):
 
 def test_donut_maxk_set_radii(data):
     test_donut = Donut_MaxK(
-        data["point"], population=data["population"], max_k_anonymity=100, ratio=0.1
+        data["point"], population=data["population"], max_k_anonymity=100, min_k_anonymity=10
     )
     test_donut.mask = test_donut.secret
     test_donut._set_radii()
@@ -240,7 +244,7 @@ def test_donut_multiply_set_radii(data):
         population=data["population"],
         population_multiplier=5,
         max_distance=100,
-        ratio=0.1,
+        min_distance=10,
     )
     test_donut.mask = test_donut.secret.copy()
     test_donut._set_radii()
