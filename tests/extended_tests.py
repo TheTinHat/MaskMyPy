@@ -5,9 +5,9 @@ from maskmypy.tools import map_displacement
 from numpy import random
 
 # Load base data
-points = gpd.read_file("tests/test_data/100_test_points.shp")
-populations = gpd.read_file("tests/test_data/test_population.shp")
-address = gpd.read_file("tests/test_data/1000_test_addresses.shp")
+points = gpd.read_file("tests/data/100_test_points.shp")
+populations = gpd.read_file("tests/data/test_population.shp")
+address = gpd.read_file("tests/data/1000_test_addresses.shp")
 
 i = 10
 rng = random.default_rng(seed=12345)
@@ -70,7 +70,7 @@ def test_map_displacement():
     map_displacement(
         points,
         Donut(points, seed=gen_seeds(1)).run(),
-        "tests/results/displacement_map_test_extended.png",
+        "tests/results/donut_map_extended.png",
         address,
     )
 

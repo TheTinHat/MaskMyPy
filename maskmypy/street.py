@@ -18,7 +18,7 @@ class Street(Base):
     def __init__(
         self,
         *args,
-        min_depth: int = 15,
+        min_depth: int = 18,
         max_depth: int = 20,
         max_length: Union[int, float] = 500,
         seed: Optional[int] = None,
@@ -76,13 +76,12 @@ class Street(Base):
 
     def _find_node(self, node):
         node_count = 0
-        distance = 250
+        distance = 500
         threshold = self.rng.integers(self.min_depth, self.max_depth, endpoint=False)
-
         while node_count < threshold:
             paths = single_source_dijkstra_path_length(self.graph, node, distance, "length")
             node_count = len(paths)
-            distance += 250
+            distance += 500
 
         nodes = []
         distances = []

@@ -3,8 +3,7 @@ import pytest
 from maskmypy import *
 from maskmypy.tools import *
 from numpy import random
-
-# from scipy.stats import normaltest
+from scipy.stats import normaltest
 from shapely.geometry import Point
 
 """   INITIALIZATION   """
@@ -197,16 +196,16 @@ def test_random_xy(data, distribution):
         assert offset_coords[0] < 100 and offset_coords[1] < 100
 
 
-# def test_random_xy_gaussian(data):
-#     distance_list = []
-#     for seed in data["seeds"]:
-#         test_donut = Donut(
-#             data["point"], distribution="gaussian", max_distance=100, min_distance=0, seed=seed
-#         )
-#         test_donut.run()
-#         test_donut.mask = displacement(test_donut.secret, test_donut.mask)
-#         distance_list.append(test_donut.mask.loc[0, "_distance"])
-#     assert normaltest(distance_list)[1] > 0.1
+def test_random_xy_gaussian(data):
+    distance_list = []
+    for seed in data["seeds"]:
+        test_donut = Donut(
+            data["point"], distribution="gaussian", max_distance=100, min_distance=0, seed=seed
+        )
+        test_donut.run()
+        test_donut.mask = displacement(test_donut.secret, test_donut.mask)
+        distance_list.append(test_donut.mask.loc[0, "_distance"])
+    assert normaltest(distance_list)[1] > 0.1
 
 
 def test_donut_set_radii(data):
@@ -260,27 +259,24 @@ def test_displacement_map(data):
     map_displacement(
         data["point"],
         mask,
-        "tests/results/displacement_map_test_image.png",
+        "tests/results/donut_map.png",
     )
 
 
-def test_displacement_map_layered(data):
-    dubius_donut = Donut(data["point"], seed=data["seeds"][0])
-    mask = dubius_donut.run()
-    map_displacement(
-        data["point"],
-        mask,
-        "tests/results/displacement_map_test_image_layered.png",
-        data["address"],
-    )
+def test_street(data):
+    street = Street(data["point"], min_depth=4, max_depth=5, padding=500, seed=data["seeds"][0])
+    street.run()
 
+    assert isinstance(street.graph_gdf[0], GeoDataFrame)
+    assert round(displacement(data["point"], street.mask).loc[0, "_distance"]) == 127
 
-def test_get_osm(data):
-    dubious_street = Street(data["point"])
+    graph_nodes_geom = street.graph_gdf[0].loc[:, "geometry"]
+    masked_point = street.mask.to_crs(epsg=4326).loc[0, "geometry"]
+    assert round(masked_point.x, 7) in list(graph_nodes_geom.x)
+    assert round(masked_point.y, 7) in list(graph_nodes_geom.y)
 
 
 # STREET
-# _get_osm
 # _nearest_node
 # _find_neighbors
 # _street_mask
