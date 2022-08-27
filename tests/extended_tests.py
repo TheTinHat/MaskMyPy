@@ -1,7 +1,6 @@
 import geopandas as gpd
 import pytest
 from maskmypy import Donut, Donut_K, Donut_Multiply, Street
-from maskmypy.tools import map_displacement
 from numpy import random
 
 # Load base data
@@ -64,15 +63,6 @@ def test_donut_mask_pop_multiplier(distributions):
         min_distance=10,
     )
     DonutMasker.run()
-
-
-def test_map_displacement():
-    map_displacement(
-        points,
-        Donut(points, seed=gen_seeds(1)).run(),
-        "tests/results/donut_map_extended.png",
-        address,
-    )
 
 
 def test_street_mask():
