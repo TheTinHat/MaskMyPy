@@ -3,6 +3,22 @@ from shapely.geometry import LineString
 
 
 def displacement(secret: GeoDataFrame, mask: GeoDataFrame, colname="_distance") -> GeoDataFrame:
+    """Calculates the displacement distance between secret and masked points.
+
+    Parameters
+    ----------
+    secret : GeoDataFrame
+        Secret points prior to masking.
+    mask : GeoDataFrame
+        Points after masking
+    colname : str, optional
+        Name for the output displacement distance column, by default "_distance"
+
+    Returns
+    -------
+    GeoDataFrame
+        A GeoDataFrame with an added column of displacement distances
+    """
     mask[colname] = mask.geometry.distance(secret.geometry)
     return mask
 
@@ -10,7 +26,24 @@ def displacement(secret: GeoDataFrame, mask: GeoDataFrame, colname="_distance") 
 def estimate_k(
     secret: GeoDataFrame, mask: GeoDataFrame, population: GeoDataFrame, pop_col: str = "pop"
 ) -> GeoDataFrame:
+    """Estimates
 
+    Parameters
+    ----------
+    secret : GeoDataFrame
+        _description_
+    mask : GeoDataFrame
+        _description_
+    population : GeoDataFrame
+        _description_
+    pop_col : str, optional
+        _description_, by default "pop"
+
+    Returns
+    -------
+    GeoDataFrame
+        _description_
+    """
     pop_col_adjusted = "_".join([pop_col, "adjusted"])
     mask["k_est"] = (
         displacement(secret, mask)

@@ -1,14 +1,14 @@
+from random import SystemRandom
 from typing import Optional, Union
 from warnings import warn
 
 from geopandas import GeoDataFrame, sjoin
+from numpy import random
 
 from .tools import sanitize
 
 
 class Base:
-    """Base class for masking methods"""
-
     def __init__(
         self,
         secret: GeoDataFrame,
@@ -18,6 +18,7 @@ class Base:
         address: Optional[GeoDataFrame] = None,
         padding: Union[int, float, None] = None,
         max_tries: int = 1000,
+        seed: Optional[int] = None,
     ):
         self.secret = secret.copy()
         self.crs = self.secret.crs
@@ -27,8 +28,14 @@ class Base:
         self._load_container(container)
         self._load_address(address)
 
+        if not seed:
+            self.seed = int(SystemRandom().random() * (10**10))
+        elif seed:
+            self.seed = seed
+
+        self.rng = random.default_rng(seed=self.seed)
+
     def _load_population(self, population, pop_col="pop"):
-        """Loads a geodataframe of population data for donut masking and/or k-anonymity estimation."""
         if isinstance(population, GeoDataFrame):
             assert population.crs == self.crs
             self.pop_col = pop_col
@@ -38,14 +45,12 @@ class Base:
             return self.population
 
     def _load_container(self, container):
-        """Loads a geodataframe of polygons to contain points while donut masking"""
         if isinstance(container, GeoDataFrame):
             assert container.crs == self.crs
             self.container = self._crop(container.copy(), self.secret).loc[:, ["geometry"]]
             return self.container
 
     def _load_address(self, address):
-        """Loads geodataframe containing address data for k-anonymity calculation"""
         if isinstance(address, GeoDataFrame):
             assert address.crs == self.crs
             self.address = self._crop(address.copy(), self.secret).loc[:, ["geometry"]]
@@ -60,8 +65,6 @@ class Base:
         return padding
 
     def _crop(self, target, reference):
-        """Uses spatial index to reduce an target geodataframe to
-        that which intersects with a reference geodataframe"""
         bb = reference.total_bounds
         if len(set(bb)) == 2:  # If reference is single point, skip crop
             return target
@@ -78,21 +81,7 @@ class Base:
     def _apply_mask(self):
         pass
 
-    def run(self, parallel=False) -> GeoDataFrame:
-        self.try_count = 0
-        self.mask = self.secret.copy()
-
-        if parallel is True:
-            self._apply_mask(parallel=True)
-        else:
-            self._apply_mask()
-
-        self._sanity_check()
-        return sanitize(self.mask)
-
     def _containment(self, gdf):
-        """Checks whether or not mask points are within the same containment
-        polygon as their original locations."""
         if "index_cont" not in self.secret.columns:
             self.secret = sjoin(self.secret, self.container, how="left", rsuffix="cont")
         gdf = sjoin(gdf, self.container, how="left", rsuffix="cont")
@@ -108,3 +97,17 @@ class Base:
                 f"One or more points were masked but could not be contained. Uncontained points are listed as 0 in the 'CONTAINED' field"
             )
         return self.mask
+
+    def run(self) -> GeoDataFrame:
+        """Initiates the masking procedure.
+
+        Returns
+        -------
+        GeoDataFrame
+            A GeoDataFrame containing masked points.
+        """
+        self.try_count = 0
+        self.mask = self.secret.copy()
+        self._apply_mask()
+        self._sanity_check()
+        return sanitize(self.mask)

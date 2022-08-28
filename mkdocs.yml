@@ -19,6 +19,12 @@ markdown_extensions:
 plugins:
   - search
   - roamlinks
+  - mkdocstrings:
+      handlers:
+        python:
+          selection:
+            docstring_style: numpy
+          paths: [.]
   - git-revision-date-localized:
       timezone: America/Vancouver
 

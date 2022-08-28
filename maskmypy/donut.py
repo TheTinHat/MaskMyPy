@@ -1,9 +1,7 @@
 from math import pi, sqrt
-from random import SystemRandom
-from typing import Optional, Union
+from typing import Union
 
 from geopandas import GeoDataFrame, sjoin
-from numpy import random
 from shapely.affinity import translate
 
 from .mask import Base
@@ -11,26 +9,31 @@ from .tools import displacement
 
 
 class Donut(Base):
+    """Donut masking class. Randomly displaces points between a given
+    minimum and maximum distance.
+
+    Parameters
+    ----------
+    Base : _type_
+        _description_
+    min_distance : int, float
+        The minimum distance that points should be displaced
+    max_distance : int, float
+        The maximum distance that points should be displaced
+    """
+
     def __init__(
         self,
         *args,
         min_distance: Union[int, float] = 50,
         max_distance: Union[int, float] = 500,
         distribution: str = "uniform",
-        seed: Optional[int] = None,
         **kwargs
     ):
         super().__init__(*args, **kwargs)
         self.min_distance = min_distance
         self.max_distance = max_distance
         self.distribution = distribution
-
-        if not seed:
-            self.seed = int(SystemRandom().random() * (10**10))
-        elif seed:
-            self.seed = seed
-
-        self.rng = random.default_rng(seed=self.seed)
 
     def _random_xy(self, min, max):
         if self.distribution == "uniform":

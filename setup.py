@@ -30,11 +30,12 @@ setup(
             "mkdocs-material",
             "mkdocs-roamlinks-plugin",
             "mkdocs-git-revision-date-localized-plugin",
+            "mkdocstrings-python",
         ],
         "extra": ["contextily>=1.2.0"],
     },
     python_requires=">=3.8",
-    # entry_points={
-    #     "console_scripts": ["maskmypy=maskmypy.cli:cli"],
-    # },
+    entry_points={
+        "console_scripts": ["maskmypy=maskmypy.cli:cli"],
+    },
 )
