@@ -75,12 +75,3 @@ def test_street_mask():
         padding=250,
     )
     StreetMasker.run()
-
-
-def test_street_mask_parallel():
-    StreetMasker = Street(
-        secret=points,
-        seed=gen_seeds(1),
-        padding=250,
-    )
-    StreetMasker.run(parallel=True)
