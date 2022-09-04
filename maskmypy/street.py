@@ -1,16 +1,13 @@
 from typing import Union
 from warnings import warn
 
-from geopandas import GeoDataFrame
 from networkx import single_source_dijkstra_path_length
-from numpy import array_split
 from osmnx import graph_from_polygon, graph_to_gdfs
 from osmnx.distance import add_edge_lengths, nearest_nodes
 from osmnx.utils_graph import remove_isolated_nodes
-from pandas import concat
 
 from .mask import Base
-from .tools import displacement
+import maskmypy.tools as tools
 
 
 class Street(Base):
@@ -22,13 +19,46 @@ class Street(Base):
         max_length: Union[int, float] = 500,
         **kwargs,
     ):
+        """Constructs a street masking class that anonymizes points by randomly displacing them
+        based on the surrounding street network using OpenStreetMap.
+
+        Parameters
+        ----------
+        secret : GeoDataFrame
+            Secret layer of points that require anonymization.
+            All other GeoDataFrame inputs must match the CRS of the secret point layer. Required.
+        min_depth : int, optional
+            _description_. Default: `18`
+        max_depth : int, optional
+            _description_. Default: `20`
+        max_length : int, float, optional
+            _description_, by default 500
+        population : GeoDataFrame, optional
+            A polygon layer with a column describing population count.
+        pop_col : str, optional
+            The name of the population count column in the population polygon layer. Default: `pop`
+        address : GeoDataFrame, optional
+            A layer containing address points.
+        padding : int, float, optional
+            Supplementary layers (e.g. population, address, container, street network) are
+            automatically cropped to the extent of the secret layer, plus some amount of padding
+            to reduce edge effects. By default, padding is set to one fifth the *x* or *y*
+            extent, whichever is larger. This parameter allows you to instead specify an exact
+            amount of padding to be added. Recommended if the extent of the secret layer is either
+            very small or very large. Units should match that of the secret layer's CRS.
+        seed : int, optional
+            Used to seed the random number generator so that masks are reproducible.
+            In other words, given a certain seed, MaskMyPy will always mask data the exact same way.
+            Default: randomly selected using `SystemRandom`
+        """
         super().__init__(*args, **kwargs)
         self.max_length = max_length
         self.min_depth = min_depth
         self.max_depth = max_depth
 
     def _load_container(self, container):
-        warn("Street masking does not support containment.")
+        if container is not None:
+            warn("Street masking does not support containment.")
 
     def _get_osm(self):
         polygon = (
@@ -114,7 +144,7 @@ class Street(Base):
         return True
 
     def _sanity_check(self):
-        mask_tmp = displacement(self.secret, self.mask)
+        mask_tmp = tools.displacement(self.secret, self.mask)
         assert len(self.secret) == len(self.mask)
         assert mask_tmp["_distance"].min() > 0
         assert mask_tmp["_distance"].max() < self.max_depth * self.max_length

@@ -5,7 +5,7 @@ from warnings import warn
 from geopandas import GeoDataFrame, sjoin
 from numpy import random
 
-from .tools import sanitize
+import maskmypy.tools as tools
 
 
 class Base:
@@ -20,6 +20,41 @@ class Base:
         max_tries: int = 1000,
         seed: Optional[int] = None,
     ):
+        """Constructs a base masking class to be inherited by other masking classes.
+
+        Parameters
+        ----------
+        secret : GeoDataFrame
+            Secret layer of points that require anonymization.
+            All other GeoDataFrame inputs must match the CRS of the secret point layer. Required.
+        population : GeoDataFrame, optional
+            A polygon layer with a column describing population count.
+        pop_col : str, optional
+            The name of the population count column in the population polygon layer. Default: `pop`
+        container : GeoDataFrame, optional
+            A layer containing polygons within which intersecting secret points should remain
+            after masking is complete. This works by masking a point, checking if it intersects
+            the same polygon prior to masking, and retrying until it does. The number of attempts
+            is controlled by the `max_tries` parameter. Useful for preserving statistical values,
+            such as from census tracts, or to ensure that points are not displaced into impossible
+            locations, such as the ocean.
+        address : GeoDataFrame, optional
+            A layer containing address points.
+        padding : int, float, optional
+            Supplementary layers (e.g. population, address, container, street network) are
+            automatically cropped to the extent of the secret layer, plus some amount of padding
+            to reduce edge effects. By default, padding is set to one fifth the *x* or *y*
+            extent, whichever is larger. This parameter allows you to instead specify an exact
+            amount of padding to be added. Recommended if the extent of the secret layer is either
+            very small or very large. Units should match that of the secret layer's CRS.
+        max_tries : int, optional
+            The maximum number of times that MaskMyPy should re-mask a point until it is
+            contained within the corresponding polygon (see `container` parameter). Default: `1000`
+        seed : int, optional
+            Used to seed the random number generator so that masks are reproducible.
+            In other words, given a certain seed, MaskMyPy will always mask data the exact same way.
+            Default: randomly selected using `SystemRandom`
+        """
         self.secret = secret.copy()
         self.crs = self.secret.crs
         self.max_tries = max_tries
@@ -94,20 +129,44 @@ class Base:
             for index, row in gdf.iterrows():
                 self.mask.loc[index, "CONTAINED"] = 0
             warn(
-                f"One or more points were masked but could not be contained. Uncontained points are listed as 0 in the 'CONTAINED' field"
+                "One or more points were masked but could not be contained. "
+                "Uncontained points are listed as 0 in the 'CONTAINED' field"
             )
         return self.mask
 
-    def run(self) -> GeoDataFrame:
-        """Initiates the masking procedure.
+    def run(
+        self, displacement=False, estimate_k=False, calculate_k=False, map_displacement=False
+    ) -> GeoDataFrame:
+        """_summary_
+
+        Parameters
+        ----------
+        displacement : bool, optional
+            _description_, by default False
+        estimate_k : bool, optional
+            _description_, by default False
+        calculate_k : bool, optional
+            _description_, by default False
+        map_displacement : bool, optional
+            _description_, by default False
 
         Returns
         -------
         GeoDataFrame
-            A GeoDataFrame containing masked points.
+            _description_
         """
         self.try_count = 0
         self.mask = self.secret.copy()
         self._apply_mask()
         self._sanity_check()
-        return sanitize(self.mask)
+        self.mask = tools.sanitize(self.mask)
+
+        if displacement:
+            self.mask = tools.displacement(self.secret, self.mask, "distance")
+        if estimate_k:
+            self.mask = tools.estimate_k(self.secret, self.mask, self.population, self.pop_col)
+        if calculate_k:
+            self.mask = tools.calculate_k(self.secret, self.mask, self.address)
+        if map_displacement:
+            tools.map_displacement(self.secret, self.mask, "displacement_map.png")
+        return self.mask
