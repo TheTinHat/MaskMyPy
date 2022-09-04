@@ -1,5 +1,5 @@
 ---
-title: Metric Calculation
+title: Tools
 ---
 
 
@@ -31,3 +31,7 @@ To add a column to the masked geodataframe that includes the actual displacement
 ```python
 mask.displacement()
 ```
+
+
+### tools.displacement()
+::: maskmypy.tools.displacement
