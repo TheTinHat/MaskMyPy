@@ -230,9 +230,7 @@ def test_donut_container(data):
 
 
 def test_donut_k_set_radii(data):
-    test_donut = Donut_K(
-        data["point"], population=data["population"], max_k_anonymity=100, min_k_anonymity=10
-    )
+    test_donut = Donut_K(data["point"], population=data["population"], max_k=100, min_k=10)
     test_donut.mask = test_donut.secret
     test_donut._set_radii()
     assert round(test_donut.mask.loc[0, "_r_max"]) == 100
@@ -264,7 +262,13 @@ def test_displacement_map(data):
 
 
 def test_street(data):
-    street = Street(data["point"], min_depth=4, max_depth=5, padding=500, seed=data["seeds"][0])
+    street = Street(
+        data["point"],
+        min_depth=4,
+        max_depth=5,
+        padding=500,
+        seed=data["seeds"][0],
+    )
     street.run()
 
     assert isinstance(street.graph_gdf[0], GeoDataFrame)
@@ -274,12 +278,3 @@ def test_street(data):
     masked_point = street.mask.to_crs(epsg=4326).loc[0, "geometry"]
     assert round(masked_point.x, 7) in list(graph_nodes_geom.x)
     assert round(masked_point.y, 7) in list(graph_nodes_geom.y)
-
-
-# STREET
-# _nearest_node
-# _find_neighbors
-# _street_mask
-# _apply_street_mask
-# run
-# run_parallel

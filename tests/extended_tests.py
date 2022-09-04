@@ -45,8 +45,8 @@ def test_donut_mask_max_k(distributions):
         pop_col="POP",
         distribution=distributions,
         address=address,
-        max_k_anonymity=20,
-        min_k_anonymity=2,
+        max_k=20,
+        min_k=2,
     )
     DonutMasker.run()
 
