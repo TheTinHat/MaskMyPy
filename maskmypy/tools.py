@@ -12,12 +12,12 @@ def displacement(secret: GeoDataFrame, mask: GeoDataFrame, colname="_distance") 
     mask : GeoDataFrame
         Points after masking
     colname : str, optional
-        Name for the output displacement distance column, by default "_distance"
+        Name for the output displacement distance column. Default: `_distance`.
 
     Returns
     -------
     GeoDataFrame
-        A GeoDataFrame with an added column of displacement distances
+        A GeoDataFrame with a column describing displacement distances
     """
     mask[colname] = mask.geometry.distance(secret.geometry)
     return mask
@@ -26,23 +26,25 @@ def displacement(secret: GeoDataFrame, mask: GeoDataFrame, colname="_distance") 
 def estimate_k(
     secret: GeoDataFrame, mask: GeoDataFrame, population: GeoDataFrame, pop_col: str = "pop"
 ) -> GeoDataFrame:
-    """Estimates
+    """Estimate the k-anonymity of each anonymized point based on surrounding population density.
+    Note that unlike in `Donut_K`, neighboring polygons will be disaggregated and included to more
+    accurately estimate k-anonymity. Typically less accurate the `calculate_k`.
 
     Parameters
     ----------
     secret : GeoDataFrame
-        _description_
+        Secret points prior to masking.
     mask : GeoDataFrame
-        _description_
+        Points after masking
     population : GeoDataFrame
-        _description_
+        A polygon layer with a column describing population count.
     pop_col : str, optional
-        _description_, by default "pop"
+        The name of the population count column in the population polygon layer. Default: `pop`.
 
     Returns
     -------
     GeoDataFrame
-        _description_
+        A GeoDataFrame with a `k_est` column describing k-anonymity.
     """
     pop_col_adjusted = "_".join([pop_col, "adjusted"])
     mask["k_est"] = (
@@ -53,16 +55,33 @@ def estimate_k(
         .sum()
         .round()
     )
-    return mask
+    return sanitize(mask)
 
 
 def calculate_k(secret: GeoDataFrame, mask: GeoDataFrame, address: GeoDataFrame) -> GeoDataFrame:
+    """Calculate the k-anonymity of each anonymized point based on surrounding address points.
+    Typically more accurate the `estimate_k`.
+
+    Parameters
+    ----------
+    secret : GeoDataFrame
+        Secret points prior to masking.
+    mask : GeoDataFrame
+        Points after masking
+    address : GeoDataFrame, optional
+            A layer containing address points.
+
+    Returns
+    -------
+    GeoDataFrame
+        A GeoDataFrame with a `k_calc` column describing k-anonymity.
+    """
     mask_tmp = displacement(secret, mask).assign(geometry=lambda x: x.buffer(x["_distance"]))
     mask["k_calc"] = (
         sjoin(address, mask_tmp, how="left", rsuffix="mask").groupby("index_mask").size()
     )
     mask.fillna({"k_calc": 0}, inplace=True)
-    return mask
+    return sanitize(mask)
 
 
 def sanitize(gdf):
@@ -88,7 +107,26 @@ def disaggregate(gdf_a, gdf_b, gdf_b_col):
     return gdf
 
 
-def map_displacement(secret, mask, filename="", address=""):
+def map_displacement(secret, mask, filename=None, address=None):
+    """Creates a map visualizing the displacement of each point between its
+    original and masked location.
+
+    Parameters
+    ----------
+    secret : GeoDataFrame
+        Secret points prior to masking.
+    mask : GeoDataFrame
+        Points after masking
+    filename : str, optional
+        If specified, saves the output map to a file.
+    address : GeoDataFrame, optional
+            A layer containing address points.
+
+    Returns
+    -------
+    matplotlib.pyplot.plt
+        A plot depicting secret and masked points connected by lines.
+    """
     import contextily as ctx
     import matplotlib.pyplot as plt
 
@@ -113,6 +151,5 @@ def map_displacement(secret, mask, filename="", address=""):
     )
     if filename:
         plt.savefig(filename)
-    else:
-        plt.show()
-        return plt
+
+    return plt

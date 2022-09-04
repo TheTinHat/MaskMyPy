@@ -8,7 +8,7 @@ from numpy import random
 import maskmypy.tools as tools
 
 
-class Base:
+class Mask:
     def __init__(
         self,
         secret: GeoDataFrame,
@@ -20,28 +20,15 @@ class Base:
         max_tries: int = 1000,
         seed: Optional[int] = None,
     ):
-        """Constructs a base masking class to be inherited by other masking classes.
+        """A base class that all masks inherit from. Do not use this class for masking.
 
         Parameters
         ----------
         secret : GeoDataFrame
             Secret layer of points that require anonymization.
-            All other GeoDataFrame inputs must match the CRS of the secret point layer. Required.
-        population : GeoDataFrame, optional
-            A polygon layer with a column describing population count.
-        pop_col : str, optional
-            The name of the population count column in the population polygon layer. Default: `pop`
-        container : GeoDataFrame, optional
-            A layer containing polygons within which intersecting secret points should remain
-            after masking is complete. This works by masking a point, checking if it intersects
-            the same polygon prior to masking, and retrying until it does. The number of attempts
-            is controlled by the `max_tries` parameter. Useful for preserving statistical values,
-            such as from census tracts, or to ensure that points are not displaced into impossible
-            locations, such as the ocean.
-        address : GeoDataFrame, optional
-            A layer containing address points.
+            All other GeoDataFrame inputs must match the CRS of the secret point layer.
         padding : int, float, optional
-            Supplementary layers (e.g. population, address, container, street network) are
+            Context layers (e.g. population, address, container, street network) are
             automatically cropped to the extent of the secret layer, plus some amount of padding
             to reduce edge effects. By default, padding is set to one fifth the *x* or *y*
             extent, whichever is larger. This parameter allows you to instead specify an exact
@@ -49,11 +36,24 @@ class Base:
             very small or very large. Units should match that of the secret layer's CRS.
         max_tries : int, optional
             The maximum number of times that MaskMyPy should re-mask a point until it is
-            contained within the corresponding polygon (see `container` parameter). Default: `1000`
+            contained within the corresponding polygon (see `container` parameter). Default: `1000`.
         seed : int, optional
             Used to seed the random number generator so that masks are reproducible.
             In other words, given a certain seed, MaskMyPy will always mask data the exact same way.
-            Default: randomly selected using `SystemRandom`
+            If left unspecified, a seed is randomly selected using `SystemRandom`
+        population : GeoDataFrame, optional
+            A polygon layer with a column describing population count.
+        pop_col : str, optional
+            The name of the population count column in the population polygon layer. Default: `pop`.
+        container : GeoDataFrame, optional
+            A layer containing polygons within which intersecting secret points should remain
+            after masking. This works by masking a point, checking if it intersects
+            the same polygon prior to masking, and retrying until it does. The number of attempts
+            is controlled by the `max_tries` parameter. Useful for preserving statistical values,
+            such as from census tracts, or to ensure that points are not displaced into impossible
+            locations, such as the ocean.
+        address : GeoDataFrame, optional
+            A layer containing address points.
         """
         self.secret = secret.copy()
         self.crs = self.secret.crs
@@ -137,23 +137,26 @@ class Base:
     def run(
         self, displacement=False, estimate_k=False, calculate_k=False, map_displacement=False
     ) -> GeoDataFrame:
-        """_summary_
+        """Run the masking procedure to anonymize secret points.
 
         Parameters
         ----------
         displacement : bool, optional
-            _description_, by default False
+            If `True`, add a `distance` column containing the displacement distance.
         estimate_k : bool, optional
-            _description_, by default False
+            If `True`, estimate the k-anonymity of each anonymized point based on surrounding
+            population density. Requires a population layer to be loaded into the masking object.
         calculate_k : bool, optional
-            _description_, by default False
+            If `True`, calculate the k-anonymity of each anonymized point based on nearby address
+            points. Requires an address layer to be loaded into the masking class.
         map_displacement : bool, optional
-            _description_, by default False
+            If `True`, output a file called `displacement_map.png` that visualizes displacement
+            distance between secret and masked points.
 
         Returns
         -------
         GeoDataFrame
-            _description_
+            A GeoDataFrame of anonymized points.
         """
         self.try_count = 0
         self.mask = self.secret.copy()

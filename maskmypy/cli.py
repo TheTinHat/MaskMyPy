@@ -3,7 +3,6 @@ import geopandas as gpd
 
 from .donut import Donut
 from .street import Street
-from .tools import map_displacement, estimate_k, calculate_k
 
 
 @click.group()
@@ -52,7 +51,7 @@ def cli():
 @click.option(
     "--padding",
     type=click.FLOAT,
-    help="Distance to add around edges of secret points before clipping supplementary layers. Default: one fifth the extent of secret points.",
+    help="Distance to add around edges of secret points before clipping context layers. Default: one fifth the extent of secret points.",
 )
 @click.option(
     "--seed",
@@ -70,27 +69,27 @@ def donut(secret_input, masked_output, **kwargs):
 @click.option(
     "--min-depth",
     type=click.INT,
-    help="",
+    help="The minimum number of nodes to traverse along the street network. Default: 18.",
 )
 @click.option(
     "--max-depth",
     type=click.INT,
-    help="",
+    help="The maximum number of nodes to traverse along the street network. Default: 20.",
 )
 @click.option(
     "--max-length",
     type=click.FLOAT,
-    help="Measured in meters only. Streets longer than this distance will be ignored when analyzing the road network. Prevents very long street segments (e.g. highways) from exaggerating masking distances.",
+    help="Sets a limit for street length, such that any street segments longer than this value will be ignored. Useful for ignoring very long streets that would skew the results, uch as highways.",
 )
 @click.option(
     "--padding",
     type=click.FLOAT,
-    help="Distance to add around edges of secret points before clipping supplementary layers. Default: one fifth the extent of secret points.",
+    help="Distance to add around edges of secret points before clipping context layers. Default: one fifth the extent of secret points.",
 )
 @click.option(
     "--seed",
     type=click.INT,
-    help="If specified, ensures that masks are reproducible such that a given seed always returns the same masked result.",
+    help="Used to seed the random number generator so that masks are reproducible. In other words, given a certain seed, MaskMyPy will always mask data the exact same way. If left unspecified, a seed is randomly selected using SystemRandom",
 )
 def street(secret_input, masked_output, **kwargs):
     pruned_kwargs = {k: v for k, v in kwargs.items() if v}

@@ -4,11 +4,11 @@ from typing import Union
 from geopandas import GeoDataFrame, sjoin
 from shapely.affinity import translate
 
-from .mask import Base
+from .mask import Mask
 import maskmypy.tools as tools
 
 
-class Donut(Base):
+class Donut(Mask):
     def __init__(
         self,
         *args,
@@ -17,8 +17,8 @@ class Donut(Base):
         distribution: str = "uniform",
         **kwargs
     ):
-        """Constructs a donut masking class that anonymizes points by randomly displacing them
-        between a minimum and maximum distance.
+        """Constructs a donut masking class that (when run) anonymizes points by randomly
+        displacing them between a minimum and maximum distance.
 
         Parameters
         ----------
@@ -26,9 +26,9 @@ class Donut(Base):
             Secret layer of points that require anonymization.
             All other GeoDataFrame inputs must match the CRS of the secret point layer.
         min_distance : int, float
-            The minimum distance that points should be displaced. Default: `50`
+            The minimum distance that points should be displaced. Default: `50`.
         max_distance : int, float
-            The maximum distance that points should be displaced. Default: `500`
+            The maximum distance that points should be displaced. Default: `500`.
         distribution : str, optional
             The distribution used to determine masking distances. The default `uniform` provides
             a flat distribution where any value between the minimum and maximum distance is
@@ -36,22 +36,9 @@ class Donut(Base):
             distances that are further away. The `gaussian` distribution uses a normal
             distribution, where values towards the middle of the range are most likely to be
             selected. Note that gaussian distribution has a small chance of selecting values
-            beyond the defined minimum and maximum. Default: `uniform`
-        population : GeoDataFrame, optional
-            A polygon layer with a column describing population count.
-        pop_col : str, optional
-            The name of the population count column in the population polygon layer. Default: `pop`
-        container : GeoDataFrame, optional
-            A layer containing polygons within which intersecting secret points should remain
-            after masking is complete. This works by masking a point, checking if it intersects
-            the same polygon prior to masking, and retrying until it does. The number of attempts
-            is controlled by the `max_tries` parameter. Useful for preserving statistical values,
-            such as from census tracts, or to ensure that points are not displaced into impossible
-            locations, such as the ocean.
-        address : GeoDataFrame, optional
-            A layer containing address points.
+            beyond the defined minimum and maximum. Default: `uniform`.
         padding : int, float, optional
-            Supplementary layers (e.g. population, address, container, street network) are
+            Context layers (e.g. population, address, container, street network) are
             automatically cropped to the extent of the secret layer, plus some amount of padding
             to reduce edge effects. By default, padding is set to one fifth the *x* or *y*
             extent, whichever is larger. This parameter allows you to instead specify an exact
@@ -59,13 +46,25 @@ class Donut(Base):
             very small or very large. Units should match that of the secret layer's CRS.
         max_tries : int, optional
             The maximum number of times that MaskMyPy should re-mask a point until it is
-            contained within the corresponding polygon (see `container` parameter). Default: `1000`
+            contained within the corresponding polygon (see `container` parameter). Default: `1000`.
         seed : int, optional
             Used to seed the random number generator so that masks are reproducible.
             In other words, given a certain seed, MaskMyPy will always mask data the exact same way.
-            Default: randomly selected using `SystemRandom`
-        Supplementary Layers:
-        ---------------------
+            If left unspecified, a seed is randomly selected using `SystemRandom`
+        population : GeoDataFrame, optional
+            A polygon layer with a column describing population count.
+        pop_col : str, optional
+            The name of the population count column in the population polygon layer. Default: `pop`.
+        container : GeoDataFrame, optional
+            A layer containing polygons within which intersecting secret points should remain
+            after masking. This works by masking a point, checking if it intersects
+            the same polygon prior to masking, and retrying until it does. The number of attempts
+            is controlled by the `max_tries` parameter. Useful for preserving statistical values,
+            such as from census tracts, or to ensure that points are not displaced into impossible
+            locations, such as the ocean.
+        address : GeoDataFrame, optional
+            A layer containing address points.
+
         """
         super().__init__(*args, **kwargs)
         self.min_distance = min_distance
@@ -148,12 +147,10 @@ class Donut(Base):
 
 class Donut_K(Donut):
     def __init__(self, *args, min_k: int, max_k: int, **kwargs):
-        """Constructs a masking class that anonymizes points by randomly displacing them according
-        to a desired k-anonymity range. Note that the k-anonymity values only reflect the
-        population density at the point location itself, and do not take into account any
-        surrounding area. This is in contrast to the `estimate_k` tool, which will actually
-        disaggregate nearby population polygons to construct a more accurate estimate of
-        k-anonymity.
+        """Constructs a masking class that (when run) anonymizes points by randomly displacing
+        them according to a desired k-anonymity range. Note that the k-anonymity values only
+        reflect the population density of the immediate polygon the point falls within,
+        and do not take into account any neighboring polygons.
 
         Requires a population layer.
 
@@ -161,36 +158,15 @@ class Donut_K(Donut):
         ----------
         secret : GeoDataFrame
             Secret layer of points that require anonymization.
-            All other GeoDataFrame inputs must match the CRS of the secret point layer. Required.
+            All other GeoDataFrame inputs must match the CRS of the secret point layer.
         min_k : int
             The minimum desired k-anonymity for each point. Please read description above to learn
-            the limitations of this calculation. Required.
+            the limitations of this calculation.
         max_k : int
             The maximum desired k-anonymity for each point. Please read description above to learn
-            the limitations of this calculation. Required.
-        distribution : str, optional
-            The distribution used to determine masking distances. The default `uniform` provides
-            a flat distribution where any value between the minimum and maximum distance is
-            equally likely to be selected. The `areal` distribution is more likely to select
-            distances that are further away. The `gaussian` distribution uses a normal
-            distribution, where values towards the middle of the range are most likely to be
-            selected. Note that `gaussian` distribution has a small chance of selecting values
-            beyond the defined minimum and maximum. Default: `uniform`
-        population : GeoDataFrame
-            A polygon layer with a column describing population count.
-        pop_col : str, optional
-            The name of the population count column in the population polygon layer. Default: `pop`
-        container : GeoDataFrame, optional
-            A layer containing polygons within which intersecting secret points should remain
-            after masking is complete. This works by masking a point, checking if it intersects
-            the same polygon prior to masking, and retrying until it does. The number of attempts
-            is controlled by the `max_tries` parameter. Useful for preserving statistical values,
-            such as from census tracts, or to ensure that points are not displaced into impossible
-            locations, such as the ocean.
-        address : GeoDataFrame, optional
-            A layer containing address points.
+            the limitations of this calculation.
         padding : int, float, optional
-            Supplementary layers (e.g. population, address, container, street network) are
+            Context layers (e.g. population, address, container, street network) are
             automatically cropped to the extent of the secret layer, plus some amount of padding
             to reduce edge effects. By default, padding is set to one fifth the *x* or *y*
             extent, whichever is larger. This parameter allows you to instead specify an exact
@@ -198,11 +174,24 @@ class Donut_K(Donut):
             very small or very large. Units should match that of the secret layer's CRS.
         max_tries : int, optional
             The maximum number of times that MaskMyPy should re-mask a point until it is
-            contained within the corresponding polygon (see `container` parameter). Default: `1000`
+            contained within the corresponding polygon (see `container` parameter). Default: `1000`.
         seed : int, optional
             Used to seed the random number generator so that masks are reproducible.
             In other words, given a certain seed, MaskMyPy will always mask data the exact same way.
-            Default: randomly selected using `SystemRandom`
+            If left unspecified, a seed is randomly selected using `SystemRandom`
+        population : GeoDataFrame, optional
+            A polygon layer with a column describing population count.
+        pop_col : str, optional
+            The name of the population count column in the population polygon layer. Default: `pop`.
+        container : GeoDataFrame, optional
+            A layer containing polygons within which intersecting secret points should remain
+            after masking. This works by masking a point, checking if it intersects
+            the same polygon prior to masking, and retrying until it does. The number of attempts
+            is controlled by the `max_tries` parameter. Useful for preserving statistical values,
+            such as from census tracts, or to ensure that points are not displaced into impossible
+            locations, such as the ocean.
+        address : GeoDataFrame, optional
+            A layer containing address points.
         """
         super().__init__(*args, **kwargs)
         self.min_k: int = min_k
@@ -226,13 +215,13 @@ class Donut_K(Donut):
 
 class Donut_Multiply(Donut):
     def __init__(self, *args, population_multiplier: Union[int, float] = 5, **kwargs):
-        """Constructs a masking class that anonymizes points by randomly displacing them according
-        to a minimum and maximum distance, but with an added multiplier to help take population
-        density into account. Points in most population-dense areas will have their minimum
-        and maximum masking distances multiplied by 1. This multiplier will increase linearly as
-        population density decreases, with points in the least population-dense areas having
-        their minimum and maximum masking distances multiplied by the full `population_mulitplier`
-        value.
+        """Constructs a masking class that (when run) anonymizes points by randomly displacing
+        them according to a minimum and maximum distance, but with an additional multiplier
+        to help take population density into account. Points in the most population-dense polygons
+        will have their minimum and maximum masking distances multiplied by 1. This multiplier
+        will increase linearly as population density decreases, with points in the least
+        population-dense polygons having their minimum and maximum masking distances multiplied
+        by the full `population_mulitplier` value.
 
         Requires a population layer.
 
@@ -242,35 +231,14 @@ class Donut_Multiply(Donut):
             Secret layer of points that require anonymization.
             All other GeoDataFrame inputs must match the CRS of the secret point layer.
         min_distance : int, float
-            The minimum distance that points should be displaced. Default: `50`
+            The minimum distance that points should be displaced.
         max_distance : int, float
-            The maximum distance that points should be displaced. Default: `500`
+            The maximum distance that points should be displaced.
         population_multiplier : int, float
             The maximum possible multiplier used to extend masking distances according to
-            population density. Default: `5`
-        distribution : str, optional
-            The distribution used to determine masking distances. The default `uniform` provides
-            a flat distribution where any value between the minimum and maximum distance is
-            equally likely to be selected. The `areal` distribution is more likely to select
-            distances that are further away. The `gaussian` distribution uses a normal
-            distribution, where values towards the middle of the range are most likely to be
-            selected. Note that gaussian distribution has a small chance of selecting values
-            beyond the defined minimum and maximum. Default: `uniform`
-        population : GeoDataFrame, optional
-            A polygon layer with a column describing population count.
-        pop_col : str, optional
-            The name of the population count column in the population polygon layer. Default: `pop`
-        container : GeoDataFrame, optional
-            A layer containing polygons within which intersecting secret points should remain
-            after masking is complete. This works by masking a point, checking if it intersects
-            the same polygon prior to masking, and retrying until it does. The number of attempts
-            is controlled by the `max_tries` parameter. Useful for preserving statistical values,
-            such as from census tracts, or to ensure that points are not displaced into impossible
-            locations, such as the ocean.
-        address : GeoDataFrame, optional
-            A layer containing address points.
+            population density.
         padding : int, float, optional
-            Supplementary layers (e.g. population, address, container, street network) are
+            Context layers (e.g. population, address, container, street network) are
             automatically cropped to the extent of the secret layer, plus some amount of padding
             to reduce edge effects. By default, padding is set to one fifth the *x* or *y*
             extent, whichever is larger. This parameter allows you to instead specify an exact
@@ -278,11 +246,24 @@ class Donut_Multiply(Donut):
             very small or very large. Units should match that of the secret layer's CRS.
         max_tries : int, optional
             The maximum number of times that MaskMyPy should re-mask a point until it is
-            contained within the corresponding polygon (see `container` parameter). Default: `1000`
+            contained within the corresponding polygon (see `container` parameter). Default: `1000`.
         seed : int, optional
             Used to seed the random number generator so that masks are reproducible.
             In other words, given a certain seed, MaskMyPy will always mask data the exact same way.
-            Default: randomly selected using `SystemRandom`
+            If left unspecified, a seed is randomly selected using `SystemRandom`
+        population : GeoDataFrame, optional
+            A polygon layer with a column describing population count.
+        pop_col : str, optional
+            The name of the population count column in the population polygon layer. Default: `pop`.
+        container : GeoDataFrame, optional
+            A layer containing polygons within which intersecting secret points should remain
+            after masking. This works by masking a point, checking if it intersects
+            the same polygon prior to masking, and retrying until it does. The number of attempts
+            is controlled by the `max_tries` parameter. Useful for preserving statistical values,
+            such as from census tracts, or to ensure that points are not displaced into impossible
+            locations, such as the ocean.
+        address : GeoDataFrame, optional
+            A layer containing address points.
 
         """
         super().__init__(*args, **kwargs)

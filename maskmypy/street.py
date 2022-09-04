@@ -6,11 +6,11 @@ from osmnx import graph_from_polygon, graph_to_gdfs
 from osmnx.distance import add_edge_lengths, nearest_nodes
 from osmnx.utils_graph import remove_isolated_nodes
 
-from .mask import Base
+from .mask import Mask
 import maskmypy.tools as tools
 
 
-class Street(Base):
+class Street(Mask):
     def __init__(
         self,
         *args,
@@ -19,28 +19,28 @@ class Street(Base):
         max_length: Union[int, float] = 500,
         **kwargs,
     ):
-        """Constructs a street masking class that anonymizes points by randomly displacing them
-        based on the surrounding street network using OpenStreetMap.
+        """Constructs a street masking class that (when run) anonymizes points by randomly
+        displacing them based on the surrounding street network using OpenStreetMap.
+
+        Does not support containment.
 
         Parameters
         ----------
         secret : GeoDataFrame
             Secret layer of points that require anonymization.
-            All other GeoDataFrame inputs must match the CRS of the secret point layer. Required.
+            All other GeoDataFrame inputs must match the CRS of the secret point layer.
         min_depth : int, optional
-            _description_. Default: `18`
+            The minimum number of nodes to traverse along the street network. Default: `18`
         max_depth : int, optional
-            _description_. Default: `20`
+            The maximum number of nodes to traverse along the street network. Default: `20`
         max_length : int, float, optional
-            _description_, by default 500
-        population : GeoDataFrame, optional
-            A polygon layer with a column describing population count.
-        pop_col : str, optional
-            The name of the population count column in the population polygon layer. Default: `pop`
-        address : GeoDataFrame, optional
-            A layer containing address points.
+            When initially locating each point on the street network, MaskMyPy verifies
+            that the nearest node is actually connected to the network and has neighbors
+            that are no more than `max_length` away (in meters). If not, the next closest point
+            is selected and checked the same way. This acts as a sanity check to prevent
+            extremely large masking distances, such as might be caused by highways. Default: `500`.
         padding : int, float, optional
-            Supplementary layers (e.g. population, address, container, street network) are
+            Context layers (e.g. population, address, container, street network) are
             automatically cropped to the extent of the secret layer, plus some amount of padding
             to reduce edge effects. By default, padding is set to one fifth the *x* or *y*
             extent, whichever is larger. This parameter allows you to instead specify an exact
@@ -49,7 +49,14 @@ class Street(Base):
         seed : int, optional
             Used to seed the random number generator so that masks are reproducible.
             In other words, given a certain seed, MaskMyPy will always mask data the exact same way.
-            Default: randomly selected using `SystemRandom`
+            If left unspecified, a seed is randomly selected using `SystemRandom`
+        population : GeoDataFrame, optional
+            A polygon layer with a column describing population count.
+        pop_col : str, optional
+            The name of the population count column in the population polygon layer. Default: `pop`.
+        address : GeoDataFrame, optional
+            A layer containing address points.
+
         """
         super().__init__(*args, **kwargs)
         self.max_length = max_length

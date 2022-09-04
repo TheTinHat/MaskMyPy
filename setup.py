@@ -8,7 +8,7 @@ setup(
     version="0.0.8",
     author="David Swanlund",
     author_email="david.swanlund@gmail.com",
-    description="Geographic masking tools for spatial data anonymization",
+    description="Python tools for anonymizing geographic data.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     packages=find_packages(),
