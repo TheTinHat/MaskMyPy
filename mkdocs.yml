@@ -24,6 +24,10 @@ plugins:
         python:
           selection:
             docstring_style: numpy
+            show_source: false
+            merge_init_into_class: true
+            docstring_section_style: list
+            line_length: 99
           paths: [.]
   - git-revision-date-localized:
       timezone: America/Vancouver
