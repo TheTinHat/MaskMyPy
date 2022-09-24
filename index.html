@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://thetinhat.github.io/MaskMyPy/">
       
       <link rel="icon" href="assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.3.1, mkdocs-material-8.4.2">
+      <meta name="generator" content="mkdocs-1.3.1, mkdocs-material-8.5.3">
     
     
       
@@ -21,13 +21,14 @@
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.69437709.min.css">
+      <link rel="stylesheet" href="assets/stylesheets/main.7a952b86.min.css">
       
         
         <link rel="stylesheet" href="assets/stylesheets/palette.cbb835fc.min.css">
         
       
       
+
     
     
     
@@ -48,6 +49,7 @@
     
       
 
+    
     
     
   </head>
@@ -123,7 +125,7 @@
       </label>
       <nav class="md-search__options" aria-label="Search">
         
-        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
         </button>
       </nav>
@@ -255,6 +257,21 @@
   
   
     <li class="md-nav__item">
+      <a href="api_reference/" class="md-nav__link">
+        API Reference
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
       <a href="donut/" class="md-nav__link">
         Donut Masking
       </a>
@@ -362,10 +379,11 @@
               </div>
             
           
-          <div class="md-content" data-md-component="content">
-            <article class="md-content__inner md-typeset">
-              
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
                 
+                  
 
 
 <div style="text-align:center; width: 100%;"><img src="assets/logo.png" width=400px style="max-width: 400px;"></div>
@@ -377,13 +395,13 @@
 <a href="https://pypi.org/project/maskmypy/"><img alt="PyPi" src="https://img.shields.io/pypi/v/maskmypy" /></a></p>
 <h1 id="introduction">Introduction<a class="headerlink" href="#introduction" title="Permanent link">&para;</a></h1>
 <p><a href="https://github.com/TheTinHat/MaskMyPy">MaskMyPy</a> is a Python package that performs geographic masking on <a href="http://geopandas.org/data_structures.html">GeoDataFrames</a>. It offers two main methods: <a href="donut/">donut masking</a> and <a href="street/">street masking</a>.</p>
-<p>MaskMyPy also supports <a href="metrics.md">calculating metrics</a> to help optimize and validate masking parameters. Currently, it offers k-anonymity estimation using population data, k-anonymity calculation using address data, and displacement distance calculation between sensitive and masked points.</p>
+<p>MaskMyPy also supports <a href="tools/">calculating metrics</a> to help optimize and validate masking parameters. Currently, it offers k-anonymity estimation using population data, k-anonymity calculation using address data, and displacement distance calculation between sensitive and masked points.</p>
 <p><strong>Disclaimer</strong>: <em>MaskMyPy is offered as-is, without warranty of any kind. Geographic masking is a hard problem that requires informed decisions and validation. MaskMyPy provides helpful tools for geographic masking, but does not replace expertise.</em></p>
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip install maskmypy
 </code></pre></div>
 <h2 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h2>
-<p>The following snippet applies a 500 meter* donut mask to a GeoDataFrame of sensitive (e.g. secret) points:</p>
+<p>The following snippet applies a 500 meter donut mask to a GeoDataFrame of sensitive (e.g. secret) points:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">maskmypy</span> <span class="kn">import</span> <span class="n">Donut</span>
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">geopandas</span> <span class="k">as</span> <span class="nn">gpd</span>
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">secret</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="s1">&#39;secret_points&#39;</span><span class="p">)</span>
@@ -396,37 +414,38 @@
 <a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="mi">4</span>      <span class="mi">5</span>  <span class="n">POINT</span> <span class="p">(</span><span class="o">-</span><span class="mf">13703200.338</span> <span class="mf">6313847.431</span><span class="p">)</span>
 <a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>
 <a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">masked_points</span> <span class="o">=</span> <span class="n">Donut</span><span class="p">(</span><span class="n">secret</span><span class="p">,</span> <span class="n">max_distance</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">masked_points</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
-<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>     <span class="n">CID</span>                           <span class="n">geometry</span>
-<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="mi">0</span>      <span class="mi">1</span>  <span class="n">POINT</span> <span class="p">(</span><span class="o">-</span><span class="mf">13703383.941</span> <span class="mf">6313989.161</span><span class="p">)</span>
-<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="mi">1</span>      <span class="mi">2</span>  <span class="n">POINT</span> <span class="p">(</span><span class="o">-</span><span class="mf">13703227.863</span> <span class="mf">6313973.121</span><span class="p">)</span>
-<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="mi">2</span>      <span class="mi">3</span>  <span class="n">POINT</span> <span class="p">(</span><span class="o">-</span><span class="mf">13703313.001</span> <span class="mf">6314172.582</span><span class="p">)</span>
-<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="mi">3</span>      <span class="mi">4</span>  <span class="n">POINT</span> <span class="p">(</span><span class="o">-</span><span class="mf">13703107.232</span> <span class="mf">6313614.978</span><span class="p">)</span>
-<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="mi">4</span>      <span class="mi">5</span>  <span class="n">POINT</span> <span class="p">(</span><span class="o">-</span><span class="mf">13702837.385</span> <span class="mf">6314140.874</span><span class="p">)</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">masked_points</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>     <span class="n">CID</span>                           <span class="n">geometry</span>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="mi">0</span>      <span class="mi">1</span>  <span class="n">POINT</span> <span class="p">(</span><span class="o">-</span><span class="mf">13703383.941</span> <span class="mf">6313989.161</span><span class="p">)</span>
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="mi">1</span>      <span class="mi">2</span>  <span class="n">POINT</span> <span class="p">(</span><span class="o">-</span><span class="mf">13703227.863</span> <span class="mf">6313973.121</span><span class="p">)</span>
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="mi">2</span>      <span class="mi">3</span>  <span class="n">POINT</span> <span class="p">(</span><span class="o">-</span><span class="mf">13703313.001</span> <span class="mf">6314172.582</span><span class="p">)</span>
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="mi">3</span>      <span class="mi">4</span>  <span class="n">POINT</span> <span class="p">(</span><span class="o">-</span><span class="mf">13703107.232</span> <span class="mf">6313614.978</span><span class="p">)</span>
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="mi">4</span>      <span class="mi">5</span>  <span class="n">POINT</span> <span class="p">(</span><span class="o">-</span><span class="mf">13702837.385</span> <span class="mf">6314140.874</span><span class="p">)</span>
 </code></pre></div>
-<p>Chaining a given masking class (in this case <code>Donut()</code>) to the <code>run()</code> method is a quick way to return a masked GeoDataFrame. Alternatively, we can store an instance of the masking class to start accessing more functionality, like calculating displacement distance:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">donut</span> <span class="o">=</span> <span class="n">Donut</span><span class="p">(</span><span class="n">secret</span><span class="p">,</span> <span class="n">max_distance</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span> <span class="c1"># Instantiate  the class</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">donut</span><span class="o">.</span><span class="n">run</span><span class="p">()</span> <span class="c1"># Execute the masking procedure</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">donut</span><span class="o">.</span><span class="n">displacement</span><span class="p">()</span> <span class="c1"># Add column containing displacement distance</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">donut</span><span class="o">.</span><span class="n">mask</span><span class="o">.</span><span class="n">head</span><span class="p">()</span> <span class="c1"># Access the masked geodataframe from .mask</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>     <span class="n">CID</span>                           <span class="n">geometry</span>   <span class="n">_distance</span>
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="mi">0</span>      <span class="mi">1</span>  <span class="n">POINT</span> <span class="p">(</span><span class="o">-</span><span class="mf">13703383.941</span> <span class="mf">6313989.161</span><span class="p">)</span>  <span class="mf">189.404946</span>
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="mi">1</span>      <span class="mi">2</span>  <span class="n">POINT</span> <span class="p">(</span><span class="o">-</span><span class="mf">13703227.863</span> <span class="mf">6313973.121</span><span class="p">)</span>  <span class="mf">251.267943</span>
-<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="mi">2</span>      <span class="mi">3</span>  <span class="n">POINT</span> <span class="p">(</span><span class="o">-</span><span class="mf">13703313.001</span> <span class="mf">6314172.582</span><span class="p">)</span>  <span class="mf">388.997713</span>
-<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="mi">3</span>      <span class="mi">4</span>  <span class="n">POINT</span> <span class="p">(</span><span class="o">-</span><span class="mf">13703107.232</span> <span class="mf">6313614.978</span><span class="p">)</span>  <span class="mf">207.639785</span>
-<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="mi">4</span>      <span class="mi">5</span>  <span class="n">POINT</span> <span class="p">(</span><span class="o">-</span><span class="mf">13702837.385</span> <span class="mf">6314140.874</span><span class="p">)</span>  <span class="mf">466.738146</span>
+<p>Unless specified, MaskMyPy uses the same units of distance as the CRS of the input secret points. If our secret points instead used a CRS that is in feet, then our mask would have had a maximum distance of 500 feet.</p>
+<p>We can also add some parameters to the <code>.run()</code> method to help us better evaluate our mask. For instance, we can visually inspect the masking process by creating a map of displacement distances like so:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">masked_points</span> <span class="o">=</span> <span class="n">Donut</span><span class="p">(</span><span class="n">secret</span><span class="p">,</span> <span class="n">max_distance</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">map_displacement</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </code></pre></div>
-<p>We can also create a quick map of the displacement distance so that we can visually inspect the masking process:
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">donut</span><span class="o">.</span><span class="n">map_displacement</span><span class="p">(</span><span class="s1">&#39;assets/displacement_map.png&#39;</span><span class="p">)</span>
-</code></pre></div></p>
 <p><img alt="Displacement Map" src="assets/displacement_map.png" /></p>
-<p>* <em>Note that the <code>max_distance</code> parameter assumes that the supplied distance is in the same unit as the GeoDataFrame. For example, if your GeoDataFrame is projected to a CRS that uses feet, then <code>max_distance=500</code> will displace points up to 500 feet.</em></p>
+<p>Alternatively, we could add a <em>context layer</em> of address points and use it to calculate the k-anonymity of each masked point:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">address_points</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="s1">&#39;addresses.shp&#39;</span><span class="p">)</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">masked_points</span> <span class="o">=</span> <span class="n">Donut</span><span class="p">(</span><span class="n">secret</span><span class="p">,</span> <span class="n">max_distance</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="n">address_points</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">calculate_k</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">masked_points</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>     <span class="n">CID</span>                           <span class="n">geometry</span>  <span class="n">k_calc</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="mi">0</span>      <span class="mi">1</span>  <span class="n">POINT</span> <span class="p">(</span><span class="o">-</span><span class="mf">13703383.941</span> <span class="mf">6313989.161</span><span class="p">)</span>      <span class="mi">19</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="mi">1</span>      <span class="mi">2</span>  <span class="n">POINT</span> <span class="p">(</span><span class="o">-</span><span class="mf">13703227.863</span> <span class="mf">6313973.121</span><span class="p">)</span>      <span class="mi">15</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="mi">2</span>      <span class="mi">3</span>  <span class="n">POINT</span> <span class="p">(</span><span class="o">-</span><span class="mf">13703313.001</span> <span class="mf">6314172.582</span><span class="p">)</span>      <span class="mi">43</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="mi">3</span>      <span class="mi">4</span>  <span class="n">POINT</span> <span class="p">(</span><span class="o">-</span><span class="mf">13703107.232</span> <span class="mf">6313614.978</span><span class="p">)</span>      <span class="mi">23</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="mi">4</span>      <span class="mi">5</span>  <span class="n">POINT</span> <span class="p">(</span><span class="o">-</span><span class="mf">13702837.385</span> <span class="mf">6314140.874</span><span class="p">)</span>      <span class="mi">51</span>
+</code></pre></div>
+<p>See <a href="api_reference/#maskmypy.mask.Mask.run">here</a> to find other useful <code>.run()</code> parameters.</p>
 <h2 id="roadmap">Roadmap<a class="headerlink" href="#roadmap" title="Permanent link">&para;</a></h2>
 <p>The following features are currently planned:</p>
 <ul>
 <li>Location Swapping/Verified Neighbor masks</li>
 <li>Mask metadata export</li>
-<li>Minimum displacement values rather than ratios</li>
 </ul>
 
   <hr>
@@ -434,7 +453,7 @@
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">August 21, 2022</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 24, 2022</span>
       
     
   </small>
@@ -443,10 +462,12 @@
 
 
 
-              
-            </article>
-            
-          </div>
+
+                
+              </article>
+            </div>
+          
+          
         </div>
         
       </main>
@@ -458,13 +479,13 @@
       
       
         
-        <a href="donut/" class="md-footer__link md-footer__link--next" aria-label="Next: Donut Masking" rel="next">
+        <a href="api_reference/" class="md-footer__link md-footer__link--next" aria-label="Next: API Reference" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Donut Masking
+              API Reference
             </div>
           </div>
           <div class="md-footer__button md-icon">
@@ -495,10 +516,10 @@
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": ".", "features": [], "search": "assets/javascripts/workers/search.ecf98df9.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": ".", "features": [], "search": "assets/javascripts/workers/search.5bf1dace.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
-      <script src="assets/javascripts/bundle.9c69f0bc.min.js"></script>
+      <script src="assets/javascripts/bundle.37e9125f.min.js"></script>
       
     
   </body>

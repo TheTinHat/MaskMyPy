@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://thetinhat.github.io/MaskMyPy/street/">
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.3.1, mkdocs-material-8.4.2">
+      <meta name="generator" content="mkdocs-1.3.1, mkdocs-material-8.5.3">
     
     
       
@@ -21,13 +21,14 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.69437709.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.7a952b86.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.cbb835fc.min.css">
         
       
       
+
     
     
     
@@ -48,6 +49,7 @@
     
       
 
+    
     
     
   </head>
@@ -123,7 +125,7 @@
       </label>
       <nav class="md-search__options" aria-label="Search">
         
-        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
         </button>
       </nav>
@@ -200,6 +202,21 @@
   
   
     <li class="md-nav__item">
+      <a href="../api_reference/" class="md-nav__link">
+        API Reference
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../donut/" class="md-nav__link">
         Donut Masking
       </a>
@@ -247,6 +264,20 @@
         <li class="md-nav__item">
   <a href="#street-masking" class="md-nav__link">
     Street Masking
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#maskmypystreet" class="md-nav__link">
+    maskmypy.Street
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#maskmypy.street.Street.__init__" class="md-nav__link">
+    __init__()
   </a>
   
 </li>
@@ -320,6 +351,20 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#maskmypystreet" class="md-nav__link">
+    maskmypy.Street
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#maskmypy.street.Street.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -328,21 +373,22 @@
               </div>
             
           
-          <div class="md-content" data-md-component="content">
-            <article class="md-content__inner md-typeset">
-              
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
                 
+                  
 
 
   <h1>Street Masking</h1>
 
 <h2 id="street-masking">Street Masking<a class="headerlink" href="#street-masking" title="Permanent link">&para;</a></h2>
 <p>Street masking automatically downloads OpenStreetMap road network data and uses it to geographically mask your sensitive points. It works by first downloading the road network data, snapping each sensitive point to the nearest node on the network (an intersection or dead end), and then calculating the average network-distance between that node and a pool of the closest x number of nodes (e.g. the closest 20 nodes on the network, known as the search depth). This average distance is the target displacement distance. Finally, it selects a node from the pool whose network-distance from the starting node is closest to the target displacement distance.</p>
-<p><strong>Usage:</strong> To street mask a geodataframe containing sensitive points with a search-depth value of 20, the code would be as follows:</p>
+<p><strong>Usage:</strong> To street mask a GeoDataFrame containing sensitive points with a search-depth value of 20, the code would be as follows:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span> <span class="nn">maskmypy</span> <span class="kn">import</span> <span class="n">Street</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">streetmask</span> <span class="o">=</span> <span class="n">Street</span><span class="p">(</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">sensitive</span><span class="p">,</span> <span class="c1"># Name of the sensitive geodataframe</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">sensitive</span><span class="p">,</span> <span class="c1"># Name of the sensitive GeoDataFrame</span>
 <a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">depth</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="c1"># The search depth value used to calculate displacement distances.</span>
 <a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">padding</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span> <span class="c1"># Used to download road network data surrounding the study area. Needs to be sufficiently large to reduce edge effects. Increasing reduces edge effects, but uses more memory.</span>
 <a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="n">max_length</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span> <span class="c1"># Optional, but recommended that you read below for full explanation of what this does.</span>
@@ -353,13 +399,81 @@
 <a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="n">masked</span> <span class="o">=</span> <span class="n">streetmask</span><span class="o">.</span><span class="n">mask</span>
 </code></pre></div>
 <p><strong>About max_length</strong>: when snapping points to the street network, the algorithm checks to make sure that the nearest node is actually connected to the network and has neighbors that are no more than max_length away (in meters). If it does not, then the next closest viable node is selected, checked, and so on. This acts as a sanity check to prevent extremely large masking distances. Feel free to change this to whatever you feel is appropriate.</p>
+<h2 id="maskmypystreet">maskmypy.Street<a class="headerlink" href="#maskmypystreet" title="Permanent link">&para;</a></h2>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="maskmypy.street.Street.__init__" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">maskmypy</span><span class="o">.</span><span class="n">street</span><span class="o">.</span><span class="n">Street</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">min_depth</span><span class="o">=</span><span class="mi">18</span><span class="p">,</span> <span class="n">max_depth</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+<a href="#maskmypy.street.Street.__init__" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+  <div class="doc doc-contents first">
+  
+      <p>Constructs a street masking class that (when run) anonymizes points by randomly
+displacing them based on the surrounding street network using OpenStreetMap.</p>
+<p>Does not support containment.</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>min_depth</code></td>
+          <td>
+                <code>int, optional</code>
+          </td>
+          <td><p>The minimum number of nodes to traverse along the street network. Default: <code>18</code></p></td>
+          <td>
+                <code>18</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>max_depth</code></td>
+          <td>
+                <code>int, optional</code>
+          </td>
+          <td><p>The maximum number of nodes to traverse along the street network. Default: <code>20</code></p></td>
+          <td>
+                <code>20</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>max_length</code></td>
+          <td>
+                <code>int, float, optional</code>
+          </td>
+          <td><p>Sets a limit for street length, such that any street segments longer than this value
+will be ignored. Useful for ignoring very long streets that would skew the results,
+such as highways.</p></td>
+          <td>
+                <code>500</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
 
   <hr>
 <div class="md-source-file">
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">August 20, 2022</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 24, 2022</span>
       
     
   </small>
@@ -368,10 +482,12 @@
 
 
 
-              
-            </article>
-            
-          </div>
+
+                
+              </article>
+            </div>
+          
+          
         </div>
         
       </main>
@@ -435,10 +551,10 @@
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.ecf98df9.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.5bf1dace.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.9c69f0bc.min.js"></script>
+      <script src="../assets/javascripts/bundle.37e9125f.min.js"></script>
       
     
   </body>
