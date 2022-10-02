@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://thetinhat.github.io/MaskMyPy/street/">
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.0, mkdocs-material-8.5.4">
+      <meta name="generator" content="mkdocs-1.4.0, mkdocs-material-8.5.5">
     
     
       
@@ -355,7 +355,9 @@
 
 <h2 id="what-is-street-masking">What is Street Masking<a class="headerlink" href="#what-is-street-masking" title="Permanent link">&para;</a></h2>
 <p>Street masking automatically downloads OpenStreetMap road network data and uses it to geographically mask your sensitive points. It works by first downloading the road network data, snapping each sensitive point to the nearest node on the network (an intersection or dead end), and then calculating the average network-distance between that node and a pool of the closest x number of nodes (e.g. the closest 20 nodes on the network, known as the search depth). This average distance is the target displacement distance. Finally, it selects a node from the pool whose network-distance from the starting node is closest to the target displacement distance.</p>
-<p>Street masking is described in more detail in <a href="https://ij-healthgeographics.biomedcentral.com/articles/10.1186/s12942-020-00219-z">this peer reviewed article</a></p>
+<p>You can read more about street masking in <a href="https://ij-healthgeographics.biomedcentral.com/articles/10.1186/s12942-020-00219-z">this peer reviewed article</a>.</p>
+<p><img alt="Street masking diagram" src="../assets/streetmasking.png" />
+<em>(Note: this diagram is slightly dated as street masking now includes a randomization element. Specifically, depth values are now provided as a range within which a value is selected at random for each point. This makes it more difficult for an attacker to re-identify any given masked point.)</em></p>
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
 <p>To street mask a GeoDataFrame containing sensitive points with a search-depth value of 20, the code would be as follows:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span> <span class="nn">maskmypy</span> <span class="kn">import</span> <span class="n">Street</span>
@@ -378,7 +380,7 @@
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 30, 2022</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 1, 2022</span>
       
     
   </small>
