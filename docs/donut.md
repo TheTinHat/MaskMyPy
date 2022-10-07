@@ -13,7 +13,7 @@ Donut masking can be further strengthened by adding some form of population data
 
 [`Donut_K`][maskmypy.Donut_K] works a bit differently. Rather than taking a range of masking distances as input, `Donut_K` takes a desired level of anonymity as input, then figures out the masking distances that are required to achieve that. This level of anonymity is known as *k-anonymity*, and essentially refers to the size of crowd that the point (theoretically) blends into.
 
-There is a caveat to these population-based methods, however: MaskMyPy is only able to factor in the population density of the immediate polygon that the point falls within. This means that if there are neighboring polygons with significantly different population densities, they will not be accounted for. Note that the [`estimate_k`](../tools/#maskmypy.tools.estimate_k) tool *will* do this disaggregation and will therefore return different, but more accurate values. So as always, be careful, understand your data, and validate that the masked data is sufficiently protected.
+There is a caveat to these population-based methods, however: MaskMyPy is only able to factor in the population density of the immediate polygon that the point falls within. This means that if there are neighboring polygons with significantly different population densities, they will not be accounted for. Note that the [`estimate_k`](/MaskMyPy/tools/#maskmypy.tools.estimate_k) tool *will* do this disaggregation and will therefore return different, but more accurate values. So as always, be careful, understand your data, and validate that the masked data is sufficiently protected.
 
 
 ## Example Usage
