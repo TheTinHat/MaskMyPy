@@ -113,14 +113,14 @@ maskmypy street --max-depth 25 secret_points.shp masked_points.shp
 To find out more, just run `maskmypy --help`.
 
 ## Roadmap
-The following features are currently planned:
+The following features are currently planned for development:
 
 - Location Swapping/Verified Neighbor masks
 - Mask metadata export
 - Data suppression tools
 
 ## Contribute
-Any and all efforts to contribute are welcome, whether they include actual code or just feedback. In particular, I could use some help with:
+Any and all efforts to contribute are welcome, whether they include actual code or just feedback. Please find the GitHub repo [here](https://github.com/TheTinHat/MaskMyPy). In particular, I could use some help with:
 
 - Architecture. Don't hesitate to point out things that look downright weird.
 - Tests. A range of unit tests are already included for donut masking, but the street mask tests are currently a bit thin comparatively. The CLI could also use some tests.
