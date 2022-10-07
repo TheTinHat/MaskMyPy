@@ -10,3 +10,17 @@
 }
 
 img[alt="MaskMyPy Logo"] { width: 400px;}
+
+.func-heading {
+  font-size: 1.1rem;
+  font-family: 'Roboto Mono', monospace;
+  letter-spacing: -0.05rem;
+}
+
+.md-typeset h2 {
+  font-weight: 300;
+}
+
+.md-typeset h3 {
+  font-weight: 200;
+}

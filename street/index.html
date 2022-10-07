@@ -202,21 +202,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../api_reference/" class="md-nav__link">
-        API Reference
-      </a>
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../donut/" class="md-nav__link">
         Donut Masking
       </a>
@@ -269,9 +254,29 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#usage" class="md-nav__link">
-    Usage
+  <a href="#example-usage" class="md-nav__link">
+    Example Usage
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reference" class="md-nav__link">
+    Reference
+  </a>
+  
+    <nav class="md-nav" aria-label="Reference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#maskmypy.Street" class="md-nav__link">
+    maskmypy.Street
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -292,7 +297,7 @@
   
     <li class="md-nav__item">
       <a href="../tools/" class="md-nav__link">
-        Tools
+        Evaluation Tools
       </a>
     </li>
   
@@ -330,9 +335,29 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#usage" class="md-nav__link">
-    Usage
+  <a href="#example-usage" class="md-nav__link">
+    Example Usage
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reference" class="md-nav__link">
+    Reference
+  </a>
+  
+    <nav class="md-nav" aria-label="Reference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#maskmypy.Street" class="md-nav__link">
+    maskmypy.Street
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -354,33 +379,132 @@
   <h1>Street Masking</h1>
 
 <h2 id="what-is-street-masking">What is Street Masking<a class="headerlink" href="#what-is-street-masking" title="Permanent link">&para;</a></h2>
-<p>Street masking automatically downloads OpenStreetMap road network data and uses it to geographically mask your sensitive points. It works by first downloading the road network data, snapping each sensitive point to the nearest node on the network (an intersection or dead end), and then calculating the average network-distance between that node and a pool of the closest x number of nodes (e.g. the closest 20 nodes on the network, known as the search depth). This average distance is the target displacement distance. Finally, it selects a node from the pool whose network-distance from the starting node is closest to the target displacement distance.</p>
+<p>Street masking automatically downloads OpenStreetMap data and uses it to geographically mask your secret points. It provides some of the advantages of population-based masks without requiring the user to hunt down any additional data. It works by first downloading the road network, snapping each secret point to the nearest node on the network (e.g. an intersection or dead end), and then calculating the average network-distance between that node and a pool of the closest <em>n</em> nodes. Note that <em>n</em> is randomly determined for each point from a specified range between <code>min_depth</code> and <code>max_depth</code>. This average distance is used as the target displacement distance. Finally, it selects a node from the pool whose network-distance from the starting node is closest to the target displacement distance.</p>
 <p>You can read more about street masking in <a href="https://ij-healthgeographics.biomedcentral.com/articles/10.1186/s12942-020-00219-z">this peer reviewed article</a>.</p>
 <p><img alt="Street masking diagram" src="../assets/streetmasking.png" />
 <em>(Note: this diagram is slightly dated as street masking now includes a randomization element. Specifically, depth values are now provided as a range within which a value is selected at random for each point. This makes it more difficult for an attacker to re-identify any given masked point.)</em></p>
-<h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
-<p>To street mask a GeoDataFrame containing sensitive points with a search-depth value of 20, the code would be as follows:</p>
+<h2 id="example-usage">Example Usage<a class="headerlink" href="#example-usage" title="Permanent link">&para;</a></h2>
+<p>To street mask a GeoDataFrame containing secret points with a search-depth range of 20-30 nodes into the street network:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span> <span class="nn">maskmypy</span> <span class="kn">import</span> <span class="n">Street</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">streetmask</span> <span class="o">=</span> <span class="n">Street</span><span class="p">(</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">sensitive</span><span class="p">,</span> <span class="c1"># Name of the sensitive GeoDataFrame</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">depth</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="c1"># The search depth value used to calculate displacement distances.</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">padding</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span> <span class="c1"># Used to download road network data surrounding the study area. Needs to be sufficiently large to reduce edge effects. Increasing reduces edge effects, but uses more memory.</span>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="n">max_length</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span> <span class="c1"># Optional, but recommended that you read below for full explanation of what this does.</span>
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">secret</span><span class="o">=</span><span class="n">my_secret_gdf</span><span class="p">,</span> <span class="c1"># Name of the secret GeoDataFrame.</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">min_depth</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="c1"># The minimum depth into the street network that will be traversed.</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">max_depth</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="c1"># The maximum depth into the street network that will be traversed.</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="n">seed</span><span class="o">=</span><span class="mi">12957134581</span><span class="p">,</span> <span class="c1"># A seed value to ensure reproducible results.</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="n">address</span><span class="o">=</span><span class="n">address_points_gdf</span><span class="p">)</span> <span class="c1"># Layer of address points used in the next line to calculate k-anonymity.</span>
 <a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="n">streetmask</span><span class="o">.</span><span class="n">run</span><span class="p">()</span> <span class="c1"># Single threaded by default. Add `parallel=True` as parameter to run on all CPU cores, drastically increasing performance.</span>
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="n">masked</span> <span class="o">=</span> <span class="n">streetmask</span><span class="o">.</span><span class="n">mask</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="n">streetmask</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">calculate_k</span><span class="o">=</span><span class="n">true</span><span class="p">)</span> <span class="c1"># Execute the mask and add a column describing the k-anonymity of each point.</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="n">masked</span> <span class="o">=</span> <span class="n">streetmask</span><span class="o">.</span><span class="n">mask</span>
 </code></pre></div>
-<p><strong>About max_length</strong>: when snapping points to the street network, the algorithm checks to make sure that the nearest node is actually connected to the network and has neighbors that are no more than max_length away (in meters). If it does not, then the next closest viable node is selected, checked, and so on. This acts as a sanity check to prevent extremely large masking distances. Feel free to change this to whatever you feel is appropriate.</p>
+<h2 id="reference">Reference<a class="headerlink" href="#reference" title="Permanent link">&para;</a></h2>
+<div class="func-heading">maskmypy.Street(secret)</div>
+
+
+<div class="doc doc-object doc-class">
+
+
+<a id="maskmypy.Street"></a>
+  <div class="doc doc-contents first">
+      <p class="doc doc-class-bases">
+        Bases: <code><span title="maskmypy.mask.Mask">Mask</span></code></p>
+
+
+  
+      <p>Constructs a street masking class that (when run) anonymizes points by randomly
+displacing them based on the surrounding street network using OpenStreetMap.</p>
+<p>Does not support containment.</p>
+
+  <p>Parameters:</p>
+  <ul>
+      <li class="field-body">
+        <b>secret</b>
+            (<code>GeoDataFrame</code>)
+        – <p>Secret layer of points that require anonymization.
+All other GeoDataFrame inputs must match the CRS of the secret point layer.</p>
+      </li>
+      <li class="field-body">
+        <b>min_depth</b>
+            (<code>int, optional</code>)
+        – <p>The minimum number of nodes to traverse along the street network. Default: <code>18</code></p>
+      </li>
+      <li class="field-body">
+        <b>max_depth</b>
+            (<code>int, optional</code>)
+        – <p>The maximum number of nodes to traverse along the street network. Default: <code>20</code></p>
+      </li>
+      <li class="field-body">
+        <b>max_length</b>
+            (<code>int, float, optional</code>)
+        – <p>When initially locating each point on the street network, MaskMyPy verifies
+that the nearest node is actually connected to the network and has neighbors
+that are no more than <code>max_length</code> away (in meters). If not, the next closest point
+is selected and checked the same way. This acts as a sanity check to prevent
+extremely large masking distances, such as might be caused by highways. Default: <code>500</code>.</p>
+      </li>
+      <li class="field-body">
+        <b>padding</b>
+            (<code>int, float, optional</code>)
+        – <p>Context layers (e.g. population, address, container, street network) are
+automatically cropped to the extent of the secret layer, plus some amount of padding
+to reduce edge effects. By default, padding is set to one fifth the <em>x</em> or <em>y</em>
+extent, whichever is larger. This parameter allows you to instead specify an exact
+amount of padding to be added. Recommended if the extent of the secret layer is either
+very small or very large. Units should match that of the secret layer's CRS.</p>
+      </li>
+      <li class="field-body">
+        <b>seed</b>
+            (<code>int, optional</code>)
+        – <p>Used to seed the random number generator so that masks are reproducible.
+In other words, given a certain seed, MaskMyPy will always mask data the exact same way.
+If left unspecified, a seed is randomly selected using <code>SystemRandom</code></p>
+      </li>
+      <li class="field-body">
+        <b>population</b>
+            (<code>GeoDataFrame, optional</code>)
+        – <p>A polygon layer with a column describing population count.</p>
+      </li>
+      <li class="field-body">
+        <b>pop_col</b>
+            (<code>str, optional</code>)
+        – <p>The name of the population count column in the population polygon layer. Default: <code>pop</code>.</p>
+      </li>
+      <li class="field-body">
+        <b>address</b>
+            (<code>GeoDataFrame, optional</code>)
+        – <p>A layer containing address points.</p>
+      </li>
+  </ul>
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
 
   <hr>
 <div class="md-source-file">
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 1, 2022</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 7, 2022</span>
       
     
   </small>
@@ -421,13 +545,13 @@
       
       
         
-        <a href="../tools/" class="md-footer__link md-footer__link--next" aria-label="Next: Tools" rel="next">
+        <a href="../tools/" class="md-footer__link md-footer__link--next" aria-label="Next: Evaluation Tools" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Tools
+              Evaluation Tools
             </div>
           </div>
           <div class="md-footer__button md-icon">

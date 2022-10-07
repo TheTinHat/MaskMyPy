@@ -17,7 +17,7 @@
     
     
       
-        <title>Tools - MaskMyPy Documentation</title>
+        <title>Evaluation Tools - MaskMyPy Documentation</title>
       
     
     
@@ -102,7 +102,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Tools
+              Evaluation Tools
             
           </span>
         </div>
@@ -202,21 +202,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../api_reference/" class="md-nav__link">
-        API Reference
-      </a>
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../donut/" class="md-nav__link">
         Donut Masking
       </a>
@@ -255,12 +240,12 @@
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          Tools
+          Evaluation Tools
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
-        Tools
+        Evaluation Tools
       </a>
       
         
@@ -285,15 +270,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#estimate-k-anonymity" class="md-nav__link">
-    Estimate K-Anonymity
+  <a href="#maskmypy.tools.estimate_k" class="md-nav__link">
+    maskmypy.tools.estimate_k
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#calculate-k-anonymity" class="md-nav__link">
-    Calculate K-Anonymity
+  <a href="#maskmypy.tools.calculate_k" class="md-nav__link">
+    maskmypy.tools.calculate_k
   </a>
   
 </li>
@@ -312,21 +297,28 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#toolsdisplacement" class="md-nav__link">
-    tools.displacement()
+  <a href="#maskmypy.tools.displacement" class="md-nav__link">
+    maskmypy.tools.displacement
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#maskmypy.tools.displacement" class="md-nav__link">
-    displacement()
+  <a href="#maskmypy.tools.map_displacement" class="md-nav__link">
+    maskmypy.tools.map_displacement
   </a>
   
 </li>
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#shortcut-evaluation-using-run" class="md-nav__link">
+    Shortcut: Evaluation Using .run()
+  </a>
   
 </li>
       
@@ -371,15 +363,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#estimate-k-anonymity" class="md-nav__link">
-    Estimate K-Anonymity
+  <a href="#maskmypy.tools.estimate_k" class="md-nav__link">
+    maskmypy.tools.estimate_k
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#calculate-k-anonymity" class="md-nav__link">
-    Calculate K-Anonymity
+  <a href="#maskmypy.tools.calculate_k" class="md-nav__link">
+    maskmypy.tools.calculate_k
   </a>
   
 </li>
@@ -398,21 +390,28 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#toolsdisplacement" class="md-nav__link">
-    tools.displacement()
+  <a href="#maskmypy.tools.displacement" class="md-nav__link">
+    maskmypy.tools.displacement
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#maskmypy.tools.displacement" class="md-nav__link">
-    displacement()
+  <a href="#maskmypy.tools.map_displacement" class="md-nav__link">
+    maskmypy.tools.map_displacement
   </a>
   
 </li>
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#shortcut-evaluation-using-run" class="md-nav__link">
+    Shortcut: Evaluation Using .run()
+  </a>
   
 </li>
       
@@ -431,116 +430,248 @@
                   
 
 
-  <h1>Tools</h1>
+  <h1>Evaluation Tools</h1>
 
+<p><strong>Warning</strong>: Do not release datasets containing displacement distances or k-anonymity values. These are only to assist the person masking the data. Releasing such values may compromise privacy and aid attackers seeking to re-identify point locations. Always remove these columns before sharing the data.</p>
 <h2 id="k-anonymity">K-Anonymity<a class="headerlink" href="#k-anonymity" title="Permanent link">&para;</a></h2>
-<p>Maskmypy is able to calculate the k-anonymity of each point after masking. Two methods are available for this: estimates, and exact calculations. Estimates of k-anoynmity are inferred from census data, and assume a homogeneously distributed population within each census polygon. Address-based k-anonymity is more accurate and uses actual home address data to calculate k-anonymity.</p>
-<h3 id="estimate-k-anonymity">Estimate K-Anonymity<a class="headerlink" href="#estimate-k-anonymity" title="Permanent link">&para;</a></h3>
-<p><strong>Usage:</strong>
-After the data has been masked, estimating k-anoynmity using census data would look like this and will add a column to the masked geodataframe:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">mask</span><span class="o">.</span><span class="n">estimate_k</span><span class="p">(</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">population</span><span class="o">=</span><span class="n">population</span><span class="p">,</span> <span class="c1"># Name of the census geodataframe. Not necessary if you already included this parameter in the original masking steps.</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">pop_col</span><span class="o">=</span><span class="s1">&#39;pop&#39;</span><span class="p">)</span> <span class="c1"># Name of the column containing the population field. Not necessary if you already included this parameter in the original masking steps.</span>
-</code></pre></div>
-<h3 id="calculate-k-anonymity">Calculate K-Anonymity<a class="headerlink" href="#calculate-k-anonymity" title="Permanent link">&para;</a></h3>
-<p><strong>Usage:</strong>
-After the data has been masked, calcualting address-based k-anoynmity would look like this and will add a column to the masked geodataframe:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">mask</span><span class="o">.</span><span class="n">calculate_k</span><span class="p">(</span><span class="n">address</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="c1"># Name of the geodataframe including address points.</span>
-</code></pre></div>
-<h2 id="displacement-distance">Displacement Distance<a class="headerlink" href="#displacement-distance" title="Permanent link">&para;</a></h2>
-<p><strong>Usage:</strong>
-To add a column to the masked geodataframe that includes the actual displacement distances (in meters), one can just run:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">mask</span><span class="o">.</span><span class="n">displacement</span><span class="p">()</span>
-</code></pre></div>
-<h3 id="toolsdisplacement">tools.displacement()<a class="headerlink" href="#toolsdisplacement" title="Permanent link">&para;</a></h3>
+<p>Maskmypy is able to calculate the k-anonymity of each point after masking. Two methods are available for this: <a href="#maskmypy.tools.estimate_k"><code>estimate_k</code></a> and <a href="#maskmypy.tools.calculate_k"><code>calculate_k</code></a>. Estimates of k-anonymity are inferred from population data, and assume a homogeneously distributed population within each population (i.e. census) polygon. Address-based k-anonymity is more accurate and uses actual address data to calculate k-anonymity.</p>
+<div class="func-heading">maskmypy.tools.estimate_k(secret, mask, population)</div>
 
 
 <div class="doc doc-object doc-function">
 
 
+<a id="maskmypy.tools.estimate_k"></a>
+  <div class="doc doc-contents first">
+  
+      <p>Estimate the k-anonymity of each anonymized point based on surrounding population density.
+Note that unlike in <code>Donut_K</code>, neighboring polygons will be disaggregated and included to more
+accurately estimate k-anonymity. Typically less accurate the <code>calculate_k</code>.</p>
 
-<h3 id="maskmypy.tools.displacement" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">maskmypy</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">displacement</span><span class="p">(</span><span class="n">secret</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">colname</span><span class="o">=</span><span class="s1">&#39;_distance&#39;</span><span class="p">)</span></code>
+  <p>Parameters:</p>
+  <ul>
+      <li class="field-body">
+        <b>secret</b>
+            (<code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>)
+        – <p>Secret points prior to masking.</p>
+      </li>
+      <li class="field-body">
+        <b>mask</b>
+            (<code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>)
+        – <p>Points after masking</p>
+      </li>
+      <li class="field-body">
+        <b>population</b>
+            (<code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>)
+        – <p>A polygon layer with a column describing population count.</p>
+      </li>
+      <li class="field-body">
+        <b>pop_col</b>
+            (<code>str, optional</code>)
+        – <p>The name of the population count column in the population polygon layer. Default: <code>pop</code>.</p>
+      </li>
+  </ul>
 
-<a href="#maskmypy.tools.displacement" class="headerlink" title="Permanent link">&para;</a></h3>
+  <p>Returns:</p>
+  <ul>
+      <li class="field-body">
+            <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
+        – <p>A GeoDataFrame with a <code>k_est</code> column describing k-anonymity.</p>
+      </li>
+  </ul>
+
+  </div>
+
+</div><hr />
+<div class="func-heading">maskmypy.tools.calculate_k(secret, mask, address)</div>
 
 
+<div class="doc doc-object doc-function">
+
+
+<a id="maskmypy.tools.calculate_k"></a>
+  <div class="doc doc-contents first">
+  
+      <p>Calculate the k-anonymity of each anonymized point based on surrounding address points.
+Typically more accurate the <code>estimate_k</code>.</p>
+
+  <p>Parameters:</p>
+  <ul>
+      <li class="field-body">
+        <b>secret</b>
+            (<code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>)
+        – <p>Secret points prior to masking.</p>
+      </li>
+      <li class="field-body">
+        <b>mask</b>
+            (<code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>)
+        – <p>Points after masking</p>
+      </li>
+      <li class="field-body">
+        <b>address</b>
+            (<code><span title="geopandas.GeoDataFrame">GeoDataFrame</span>, optional</code>)
+        – <p>A layer containing address points.</p>
+      </li>
+  </ul>
+
+  <p>Returns:</p>
+  <ul>
+      <li class="field-body">
+            <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
+        – <p>A GeoDataFrame with a <code>k_calc</code> column describing k-anonymity.</p>
+      </li>
+  </ul>
+
+  </div>
+
+</div><h2 id="displacement-distance">Displacement Distance<a class="headerlink" href="#displacement-distance" title="Permanent link">&para;</a></h2>
+<p>Displacement distance refers to the distance that each point is moved from its original location during anonymization. They are helpful insofar as they allow you to assess how much your data has been distorted by the masking process, both in terms of too much or too little. For instance, you may find that one point was only moved 6 meters, which doesn't protect privacy much at all. Alternatively, you may find that some points were displaced too far, say 6000 meters. MaskMyPy can easily calculate the displacement distance of masked data as well as generate a quick map of displacement distances to help you visually inspect the anonymization results.</p>
+<div class="func-heading">maskmypy.tools.displacement(secret, mask)</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+<a id="maskmypy.tools.displacement"></a>
   <div class="doc doc-contents first">
   
       <p>Calculates the displacement distance between secret and masked points.</p>
 
-  <p><strong>Parameters:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td><code>secret</code></td>
-          <td>
-                <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
-          </td>
-          <td><p>Secret points prior to masking.</p></td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-        <tr>
-          <td><code>mask</code></td>
-          <td>
-                <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
-          </td>
-          <td><p>Points after masking</p></td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-        <tr>
-          <td><code>colname</code></td>
-          <td>
-                <code>str, optional</code>
-          </td>
-          <td><p>Name for the output displacement distance column, by default "_distance"</p></td>
-          <td>
-                <code>&#39;_distance&#39;</code>
-          </td>
-        </tr>
-    </tbody>
-  </table>
+  <p>Parameters:</p>
+  <ul>
+      <li class="field-body">
+        <b>secret</b>
+            (<code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>)
+        – <p>Secret points prior to masking.</p>
+      </li>
+      <li class="field-body">
+        <b>mask</b>
+            (<code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>)
+        – <p>Points after masking</p>
+      </li>
+      <li class="field-body">
+        <b>colname</b>
+            (<code>str, optional</code>)
+        – <p>Name for the output displacement distance column. Default: <code>_distance</code>.</p>
+      </li>
+  </ul>
 
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td>
-                <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
-          </td>
-          <td><p>A GeoDataFrame with a column describing displacement distances</p></td>
-        </tr>
-    </tbody>
-  </table>
+  <p>Returns:</p>
+  <ul>
+      <li class="field-body">
+            <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
+        – <p>A GeoDataFrame with a column describing displacement distances</p>
+      </li>
+  </ul>
 
   </div>
 
-</div>
+</div><hr />
+<div class="func-heading">maskmypy.tools.map_displacement(secret, mask)</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+<a id="maskmypy.tools.map_displacement"></a>
+  <div class="doc doc-contents first">
+  
+      <p>Creates a map visualizing the displacement of each point between its
+original and masked location.</p>
+
+  <p>Parameters:</p>
+  <ul>
+      <li class="field-body">
+        <b>secret</b>
+            (<code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>)
+        – <p>Secret points prior to masking.</p>
+      </li>
+      <li class="field-body">
+        <b>mask</b>
+            (<code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>)
+        – <p>Points after masking</p>
+      </li>
+      <li class="field-body">
+        <b>filename</b>
+            (<code>str, optional</code>)
+        – <p>If specified, saves the output map to a file.</p>
+      </li>
+      <li class="field-body">
+        <b>address</b>
+            (<code><span title="geopandas.GeoDataFrame">GeoDataFrame</span>, optional</code>)
+        – <p>A layer containing address points.</p>
+      </li>
+  </ul>
+
+  <p>Returns:</p>
+  <ul>
+      <li class="field-body">
+            <code>matplotlib.<span title="matplotlib.pyplot">pyplot</span>.<span title="matplotlib.pyplot.plt">plt</span></code>
+        – <p>A plot depicting secret and masked points connected by lines.</p>
+      </li>
+  </ul>
+
+  </div>
+
+</div><hr />
+<h2 id="shortcut-evaluation-using-run">Shortcut: Evaluation Using <code>.run()</code><a class="headerlink" href="#shortcut-evaluation-using-run" title="Permanent link">&para;</a></h2>
+<p>For convenience, several evaluation tools can be quickly executed by adding flags to the <code>.run()</code> method of each masking class. Here is the docstring for <code>.run()</code>:</p>
+<hr />
+
+
+<div class="doc doc-object doc-function">
+
+
+<a id="maskmypy.mask.Mask.run"></a>
+  <div class="doc doc-contents first">
+  
+      <p>Run the masking procedure to anonymize secret points.</p>
+
+  <p>Parameters:</p>
+  <ul>
+      <li class="field-body">
+        <b>displacement</b>
+            (<code>bool, optional</code>)
+        – <p>If <code>True</code>, add a <code>distance</code> column containing the displacement distance.</p>
+      </li>
+      <li class="field-body">
+        <b>estimate_k</b>
+            (<code>bool, optional</code>)
+        – <p>If <code>True</code>, estimate the k-anonymity of each anonymized point based on surrounding
+population density. Requires a population layer to be loaded into the masking object.</p>
+      </li>
+      <li class="field-body">
+        <b>calculate_k</b>
+            (<code>bool, optional</code>)
+        – <p>If <code>True</code>, calculate the k-anonymity of each anonymized point based on nearby address
+points. Requires an address layer to be loaded into the masking class.</p>
+      </li>
+      <li class="field-body">
+        <b>map_displacement</b>
+            (<code>bool, optional</code>)
+        – <p>If <code>True</code>, output a file called <code>displacement_map.png</code> that visualizes displacement
+distance between secret and masked points.</p>
+      </li>
+  </ul>
+
+  <p>Returns:</p>
+  <ul>
+      <li class="field-body">
+            <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
+        – <p>A GeoDataFrame of anonymized points.</p>
+      </li>
+  </ul>
+
+  </div>
+
+</div><hr />
 
   <hr>
 <div class="md-source-file">
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 4, 2022</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 7, 2022</span>
       
     
   </small>

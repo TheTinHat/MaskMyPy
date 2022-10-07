@@ -200,21 +200,6 @@
 
   
   
-  
-    <li class="md-nav__item">
-      <a href="../api_reference/" class="md-nav__link">
-        API Reference
-      </a>
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
     
   
   
@@ -254,9 +239,43 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#usage" class="md-nav__link">
-    Usage
+  <a href="#example-usage" class="md-nav__link">
+    Example Usage
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reference" class="md-nav__link">
+    Reference
+  </a>
+  
+    <nav class="md-nav" aria-label="Reference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#maskmypy.Donut" class="md-nav__link">
+    maskmypy.Donut
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#maskmypy.Donut_Multiply" class="md-nav__link">
+    maskmypy.Donut_Multiply
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#maskmypy.Donut_K" class="md-nav__link">
+    maskmypy.Donut_K
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -292,7 +311,7 @@
   
     <li class="md-nav__item">
       <a href="../tools/" class="md-nav__link">
-        Tools
+        Evaluation Tools
       </a>
     </li>
   
@@ -330,9 +349,43 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#usage" class="md-nav__link">
-    Usage
+  <a href="#example-usage" class="md-nav__link">
+    Example Usage
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reference" class="md-nav__link">
+    Reference
+  </a>
+  
+    <nav class="md-nav" aria-label="Reference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#maskmypy.Donut" class="md-nav__link">
+    maskmypy.Donut
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#maskmypy.Donut_Multiply" class="md-nav__link">
+    maskmypy.Donut_Multiply
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#maskmypy.Donut_K" class="md-nav__link">
+    maskmypy.Donut_K
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -354,49 +407,389 @@
   <h1>Donut Masking</h1>
 
 <h2 id="what-is-donut-masking">What is Donut Masking<a class="headerlink" href="#what-is-donut-masking" title="Permanent link">&para;</a></h2>
-<p>At its most basic, donut masking is an anonymization technique that works by randomly displacing each point between a specified minimum and maximum distance, as pictured below. This makes it a stronger form of random perturbation, which uses no minimum distance and thus runs the risk of insufficiently anonymizing points. MaskMyPy offers donut masking using the <code>Donut</code> masking class.</p>
+<p>At its most basic, donut masking is an anonymization technique that works by randomly displacing each point between a specified minimum and maximum distance, as pictured below. This makes it a stronger form of random perturbation, which uses no minimum distance and thus runs the risk of insufficiently anonymizing points. MaskMyPy offers donut masking using the <a class="autorefs autorefs-internal" href="#maskmypy.Donut"><code>Donut</code></a> masking class.</p>
 <p><img alt="Donut masking diagram" src="../assets/donutmasking.png" /></p>
 <p>Donut masking can be further strengthened by adding some form of population data into the mix. As one can imagine, a point in a downtown core won't need to be displaced nearly as far as a point in the surrounding suburbs to achieve similar levels of anonymity. As such, MaskMyPy offers two additional donut masking classes to help take population density into account: <code>Donut_Multiply</code> and <code>Donut_K</code>. Both masks require a context layer of polygons containing population counts (e.g. census tracts), but leverage this information in different ways.</p>
-<p><code>Donut_Multiply</code> works by multiplying masking distances based on the relative population density of the polygon it falls within. This means that points in the most dense areas of a given dataset will have their masking distance multiplied by 1, whereas points within the least dense areas of that same dataset will have their masking distance multiplied by 5. Of course, this multiplier is configurable, 5 is just the default.</p>
-<p><code>Donut_K</code> works a bit differently. Rather than taking a range of masking distances as input, <code>Donut_K</code> takes a desired level of anonymity as input, then figures out the masking distances that are required to achieve that. This level of anonymity is known as <em>k-anonymity</em>, and essentially refers to the size of crowd that the point (theoretically) blends into. There is a caveat, however: MaskMyPy is only able to factor in the population density of the immediate polygon that the point falls within. This means that if there's neighboring polygons with significantly different population densities, they will not be accounted for. So as always, be careful, understand your data, and validate that the masked data is sufficiently protected.</p>
-<h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
-<p>To perform basic donut geomasking on a geodataframe containing secret points, with a maximum displacement distance of 500 meters and an minimum displacement distance of 20% of the maximum distance (i.e. 100 meters), the code would look like this:</p>
+<p><a class="autorefs autorefs-internal" href="#maskmypy.Donut_Multiply"><code>Donut_Multiply</code></a> works by multiplying masking distances based on the relative population density of the polygon it falls within. This means that points in the most dense areas of a given dataset will have their masking distance multiplied by 1, whereas points within the least dense areas of that same dataset will have their masking distance multiplied by 5. Of course, this multiplier is configurable, 5 is just the default.</p>
+<p><a class="autorefs autorefs-internal" href="#maskmypy.Donut_K"><code>Donut_K</code></a> works a bit differently. Rather than taking a range of masking distances as input, <code>Donut_K</code> takes a desired level of anonymity as input, then figures out the masking distances that are required to achieve that. This level of anonymity is known as <em>k-anonymity</em>, and essentially refers to the size of crowd that the point (theoretically) blends into.</p>
+<p>There is a caveat to these population-based methods, however: MaskMyPy is only able to factor in the population density of the immediate polygon that the point falls within. This means that if there are neighboring polygons with significantly different population densities, they will not be accounted for. Note that the <a href="../tools/#maskmypy.tools.estimate_k"><code>estimate_k</code></a> tool <em>will</em> do this disaggregation and will therefore return different, but more accurate values. So as always, be careful, understand your data, and validate that the masked data is sufficiently protected.</p>
+<h2 id="example-usage">Example Usage<a class="headerlink" href="#example-usage" title="Permanent link">&para;</a></h2>
+<p>To perform donut masking on a GeoDataFrame containing secret points with a range of 100 to 1000 meters:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span> <span class="nn">maskmypy</span> <span class="kn">import</span> <span class="n">Donut</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">donutmask</span> <span class="o">=</span> <span class="n">Donut</span><span class="p">(</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">sensitive</span><span class="o">=</span><span class="n">sensitive</span><span class="p">,</span> <span class="c1"># Name of the sensitive geodataframe</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">max_distance</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="c1"># The maximum possible distance that points are displaced</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">ratio</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="c1"># The ratio used to define the minimum distance points are displaced</span>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="n">distribution</span><span class="o">=</span><span class="s1">&#39;uniform&#39;</span><span class="p">,</span> <span class="c1"># The distribution to use when displacing points. Other options include &#39;gaussian&#39; and &#39;areal&#39;. &#39;Areal&#39; distribution means points are more likely to be displaced further within the range.</span>
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="n">container</span><span class="o">=</span><span class="n">container</span><span class="p">)</span> <span class="c1"># Optional, a geodataframe used to ensure that points do not leave a particular area.</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">secret</span><span class="o">=</span><span class="n">my_secret_gdf</span><span class="p">,</span> <span class="c1"># Name of the secret GeoDataFrame.</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">min_distance</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="c1"># The minimum possible distance the points are displaced.</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">max_distance</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span> <span class="c1"># The maximum possible distance that points are displaced.</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="n">donutmask</span><span class="o">.</span><span class="n">run</span><span class="p">()</span> <span class="c1"># Execute the mask.</span>
 <a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="n">donutmask</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="n">masked</span> <span class="o">=</span> <span class="n">donutmask</span><span class="o">.</span><span class="n">mask</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="n">masked</span> <span class="o">=</span> <span class="n">donutmask</span><span class="o">.</span><span class="n">mask</span> <span class="c1"># A masked GeoDataFrame.</span>
 </code></pre></div>
-<p>To perform full donut geomasking (i.e. using census data and a target k-anonymity range rather than distance range) with a maximum k-anonymity of 1000 and minimum of 200, and a census geodataframe called population, the code would appear as follows:</p>
+<p>To perform more robust donut masking using census data to target a k-anonymity range, a containment layer to prevent points from being displaced to other counties, and a column describing the displacement distance of each point:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span> <span class="nn">maskmypy</span> <span class="kn">import</span> <span class="n">Donut_K</span>
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">donutmask</span> <span class="o">=</span> <span class="n">Donut_K</span><span class="p">(</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    <span class="n">sensitive</span><span class="p">,</span> <span class="c1"># Name of the sensitive geodataframe</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="n">population</span><span class="o">=</span><span class="n">population</span><span class="p">,</span> <span class="c1"># Name of the census geodataframe</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    <span class="n">pop_col</span><span class="o">=</span><span class="s1">&#39;pop&#39;</span><span class="p">,</span> <span class="c1"># Name of the column containing the population field</span>
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    <span class="n">max_k</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="c1"># The maximum possible k-anonymity value</span>
-<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>    <span class="n">ratio</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="c1"># The ratio used to define the minimum possible k-anonymity value.</span>
-<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>    <span class="n">distribution</span><span class="o">=</span><span class="s1">&#39;uniform&#39;</span><span class="p">,</span> <span class="c1"># The distribution to use when displacing points. Other options include &#39;gaussian&#39; and &#39;areal&#39;. &#39;Areal&#39; distribution means points are more likely to be displaced further within the range.</span>
-<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>    <span class="n">container</span><span class="o">=</span><span class="n">container</span><span class="p">)</span> <span class="c1"># Optional, a geodataframe used to ensure that points do not leave a particular area.</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    <span class="n">secret</span><span class="o">=</span><span class="n">my_secret_gdf</span><span class="p">,</span> <span class="c1"># Name of the secret GeoDataFrame</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="n">population</span><span class="o">=</span><span class="n">census_tracts</span><span class="p">,</span> <span class="c1"># Name of the GeoDataFrame containing population polygons.</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    <span class="n">pop_col</span><span class="o">=</span><span class="s1">&#39;pop&#39;</span><span class="p">,</span> <span class="c1"># Name of the column containing the population field.</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    <span class="n">min_k</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="c1"># The minimum target k-anonymity value.</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>    <span class="n">max_k</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="c1"># The maximum target k-anonymity value.</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>    <span class="n">distribution</span><span class="o">=</span><span class="s1">&#39;gaussian&#39;</span><span class="p">,</span> <span class="c1"># The distribution to use when displacing points.</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>    <span class="n">container</span><span class="o">=</span><span class="n">county_polygons</span><span class="p">)</span> <span class="c1"># Optional, a GeoDataFrame used to ensure that points do not leave a particular area.</span>
 <a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>
-<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="n">donutmask</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="n">donutmask</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">displacement</span><span class="o">=</span><span class="n">true</span><span class="p">)</span> <span class="c1"># Execute the mask and add a column describing displacement distance.</span>
 <a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>
 <a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="n">masked</span> <span class="o">=</span> <span class="n">donutmask</span><span class="o">.</span><span class="n">mask</span>
 </code></pre></div>
+<h2 id="reference">Reference<a class="headerlink" href="#reference" title="Permanent link">&para;</a></h2>
+<div class="func-heading">maskmypy.Donut(secret)</div>
+
+
+<div class="doc doc-object doc-class">
+
+
+<a id="maskmypy.Donut"></a>
+  <div class="doc doc-contents first">
+      <p class="doc doc-class-bases">
+        Bases: <code><span title="maskmypy.mask.Mask">Mask</span></code></p>
+
+
+  
+      <p>Constructs a donut masking class that (when run) anonymizes points by randomly
+displacing them between a minimum and maximum distance.</p>
+
+  <p>Parameters:</p>
+  <ul>
+      <li class="field-body">
+        <b>secret</b>
+            (<code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>)
+        – <p>Secret layer of points that require anonymization.
+All other GeoDataFrame inputs must match the CRS of the secret point layer.</p>
+      </li>
+      <li class="field-body">
+        <b>min_distance</b>
+            (<code>int, float</code>)
+        – <p>The minimum distance that points should be displaced. Default: <code>50</code>.</p>
+      </li>
+      <li class="field-body">
+        <b>max_distance</b>
+            (<code>int, float</code>)
+        – <p>The maximum distance that points should be displaced. Default: <code>500</code>.</p>
+      </li>
+      <li class="field-body">
+        <b>distribution</b>
+            (<code>str, optional</code>)
+        – <p>The distribution used to determine masking distances. The default <code>uniform</code> provides
+a flat distribution where any value between the minimum and maximum distance is
+equally likely to be selected. The <code>areal</code> distribution is more likely to select
+distances that are further away. The <code>gaussian</code> distribution uses a normal
+distribution, where values towards the middle of the range are most likely to be
+selected. Note that gaussian distribution has a small chance of selecting values
+beyond the defined minimum and maximum. Default: <code>uniform</code>.</p>
+      </li>
+      <li class="field-body">
+        <b>padding</b>
+            (<code>int, float, optional</code>)
+        – <p>Context layers (e.g. population, address, container, street network) are
+automatically cropped to the extent of the secret layer, plus some amount of padding
+to reduce edge effects. By default, padding is set to one fifth the <em>x</em> or <em>y</em>
+extent, whichever is larger. This parameter allows you to instead specify an exact
+amount of padding to be added. Recommended if the extent of the secret layer is either
+very small or very large. Units should match that of the secret layer's CRS.</p>
+      </li>
+      <li class="field-body">
+        <b>max_tries</b>
+            (<code>int, optional</code>)
+        – <p>The maximum number of times that MaskMyPy should re-mask a point until it is
+contained within the corresponding polygon (see <code>container</code> parameter). Default: <code>1000</code>.</p>
+      </li>
+      <li class="field-body">
+        <b>seed</b>
+            (<code>int, optional</code>)
+        – <p>Used to seed the random number generator so that masks are reproducible.
+In other words, given a certain seed, MaskMyPy will always mask data the exact same way.
+If left unspecified, a seed is randomly selected using <code>SystemRandom</code></p>
+      </li>
+      <li class="field-body">
+        <b>population</b>
+            (<code><span title="geopandas.GeoDataFrame">GeoDataFrame</span>, optional</code>)
+        – <p>A polygon layer with a column describing population count.</p>
+      </li>
+      <li class="field-body">
+        <b>pop_col</b>
+            (<code>str, optional</code>)
+        – <p>The name of the population count column in the population polygon layer. Default: <code>pop</code>.</p>
+      </li>
+      <li class="field-body">
+        <b>container</b>
+            (<code><span title="geopandas.GeoDataFrame">GeoDataFrame</span>, optional</code>)
+        – <p>A layer containing polygons within which intersecting secret points should remain
+after masking. This works by masking a point, checking if it intersects
+the same polygon prior to masking, and retrying until it does. The number of attempts
+is controlled by the <code>max_tries</code> parameter. Useful for preserving statistical values,
+such as from census tracts, or to ensure that points are not displaced into impossible
+locations, such as the ocean.</p>
+      </li>
+      <li class="field-body">
+        <b>address</b>
+            (<code><span title="geopandas.GeoDataFrame">GeoDataFrame</span>, optional</code>)
+        – <p>A layer containing address points.</p>
+      </li>
+  </ul>
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div><hr />
+<div class="func-heading">maskmypy.Donut_Multiply(secret)</div>
+
+
+<div class="doc doc-object doc-class">
+
+
+<a id="maskmypy.Donut_Multiply"></a>
+  <div class="doc doc-contents first">
+      <p class="doc doc-class-bases">
+        Bases: <code><a class="autorefs autorefs-internal" title="maskmypy.donut.Donut" href="#maskmypy.Donut">Donut</a></code></p>
+
+
+  
+      <p>Constructs a masking class that (when run) anonymizes points by randomly displacing
+them according to a minimum and maximum distance, but with an additional multiplier
+to help take population density into account. Points in the most population-dense polygons
+will have their minimum and maximum masking distances multiplied by 1. This multiplier
+will increase linearly as population density decreases, with points in the least
+population-dense polygons having their minimum and maximum masking distances multiplied
+by the full <code>population_mulitplier</code> value.</p>
+<p>Requires a population layer.</p>
+
+  <p>Parameters:</p>
+  <ul>
+      <li class="field-body">
+        <b>secret</b>
+            (<code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>)
+        – <p>Secret layer of points that require anonymization.
+All other GeoDataFrame inputs must match the CRS of the secret point layer.</p>
+      </li>
+      <li class="field-body">
+        <b>min_distance</b>
+            (<code>int, float</code>)
+        – <p>The minimum distance that points should be displaced.</p>
+      </li>
+      <li class="field-body">
+        <b>max_distance</b>
+            (<code>int, float</code>)
+        – <p>The maximum distance that points should be displaced.</p>
+      </li>
+      <li class="field-body">
+        <b>population_multiplier</b>
+            (<code>int, float</code>)
+        – <p>The maximum possible multiplier used to extend masking distances according to
+population density.</p>
+      </li>
+      <li class="field-body">
+        <b>padding</b>
+            (<code>int, float, optional</code>)
+        – <p>Context layers (e.g. population, address, container, street network) are
+automatically cropped to the extent of the secret layer, plus some amount of padding
+to reduce edge effects. By default, padding is set to one fifth the <em>x</em> or <em>y</em>
+extent, whichever is larger. This parameter allows you to instead specify an exact
+amount of padding to be added. Recommended if the extent of the secret layer is either
+very small or very large. Units should match that of the secret layer's CRS.</p>
+      </li>
+      <li class="field-body">
+        <b>max_tries</b>
+            (<code>int, optional</code>)
+        – <p>The maximum number of times that MaskMyPy should re-mask a point until it is
+contained within the corresponding polygon (see <code>container</code> parameter). Default: <code>1000</code>.</p>
+      </li>
+      <li class="field-body">
+        <b>seed</b>
+            (<code>int, optional</code>)
+        – <p>Used to seed the random number generator so that masks are reproducible.
+In other words, given a certain seed, MaskMyPy will always mask data the exact same way.
+If left unspecified, a seed is randomly selected using <code>SystemRandom</code></p>
+      </li>
+      <li class="field-body">
+        <b>population</b>
+            (<code><span title="geopandas.GeoDataFrame">GeoDataFrame</span>, optional</code>)
+        – <p>A polygon layer with a column describing population count.</p>
+      </li>
+      <li class="field-body">
+        <b>pop_col</b>
+            (<code>str, optional</code>)
+        – <p>The name of the population count column in the population polygon layer. Default: <code>pop</code>.</p>
+      </li>
+      <li class="field-body">
+        <b>container</b>
+            (<code><span title="geopandas.GeoDataFrame">GeoDataFrame</span>, optional</code>)
+        – <p>A layer containing polygons within which intersecting secret points should remain
+after masking. This works by masking a point, checking if it intersects
+the same polygon prior to masking, and retrying until it does. The number of attempts
+is controlled by the <code>max_tries</code> parameter. Useful for preserving statistical values,
+such as from census tracts, or to ensure that points are not displaced into impossible
+locations, such as the ocean.</p>
+      </li>
+      <li class="field-body">
+        <b>address</b>
+            (<code><span title="geopandas.GeoDataFrame">GeoDataFrame</span>, optional</code>)
+        – <p>A layer containing address points.</p>
+      </li>
+  </ul>
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div><hr />
+<div class="func-heading">maskmypy.Donut_K(secret)</div>
+
+
+<div class="doc doc-object doc-class">
+
+
+<a id="maskmypy.Donut_K"></a>
+  <div class="doc doc-contents first">
+      <p class="doc doc-class-bases">
+        Bases: <code><a class="autorefs autorefs-internal" title="maskmypy.donut.Donut" href="#maskmypy.Donut">Donut</a></code></p>
+
+
+  
+      <p>Constructs a masking class that (when run) anonymizes points by randomly displacing
+them according to a desired k-anonymity range. Note that the k-anonymity values only
+reflect the population density of the immediate polygon the point falls within,
+and do not take into account any neighboring polygons.</p>
+<p>Requires a population layer.</p>
+
+  <p>Parameters:</p>
+  <ul>
+      <li class="field-body">
+        <b>secret</b>
+            (<code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>)
+        – <p>Secret layer of points that require anonymization.
+All other GeoDataFrame inputs must match the CRS of the secret point layer.</p>
+      </li>
+      <li class="field-body">
+        <b>min_k</b>
+            (<code>int</code>)
+        – <p>The minimum desired k-anonymity for each point. Please read description above to learn
+the limitations of this calculation.</p>
+      </li>
+      <li class="field-body">
+        <b>max_k</b>
+            (<code>int</code>)
+        – <p>The maximum desired k-anonymity for each point. Please read description above to learn
+the limitations of this calculation.</p>
+      </li>
+      <li class="field-body">
+        <b>padding</b>
+            (<code>int, float, optional</code>)
+        – <p>Context layers (e.g. population, address, container, street network) are
+automatically cropped to the extent of the secret layer, plus some amount of padding
+to reduce edge effects. By default, padding is set to one fifth the <em>x</em> or <em>y</em>
+extent, whichever is larger. This parameter allows you to instead specify an exact
+amount of padding to be added. Recommended if the extent of the secret layer is either
+very small or very large. Units should match that of the secret layer's CRS.</p>
+      </li>
+      <li class="field-body">
+        <b>max_tries</b>
+            (<code>int, optional</code>)
+        – <p>The maximum number of times that MaskMyPy should re-mask a point until it is
+contained within the corresponding polygon (see <code>container</code> parameter). Default: <code>1000</code>.</p>
+      </li>
+      <li class="field-body">
+        <b>seed</b>
+            (<code>int, optional</code>)
+        – <p>Used to seed the random number generator so that masks are reproducible.
+In other words, given a certain seed, MaskMyPy will always mask data the exact same way.
+If left unspecified, a seed is randomly selected using <code>SystemRandom</code></p>
+      </li>
+      <li class="field-body">
+        <b>population</b>
+            (<code><span title="geopandas.GeoDataFrame">GeoDataFrame</span>, optional</code>)
+        – <p>A polygon layer with a column describing population count.</p>
+      </li>
+      <li class="field-body">
+        <b>pop_col</b>
+            (<code>str, optional</code>)
+        – <p>The name of the population count column in the population polygon layer. Default: <code>pop</code>.</p>
+      </li>
+      <li class="field-body">
+        <b>container</b>
+            (<code><span title="geopandas.GeoDataFrame">GeoDataFrame</span>, optional</code>)
+        – <p>A layer containing polygons within which intersecting secret points should remain
+after masking. This works by masking a point, checking if it intersects
+the same polygon prior to masking, and retrying until it does. The number of attempts
+is controlled by the <code>max_tries</code> parameter. Useful for preserving statistical values,
+such as from census tracts, or to ensure that points are not displaced into impossible
+locations, such as the ocean.</p>
+      </li>
+      <li class="field-body">
+        <b>address</b>
+            (<code><span title="geopandas.GeoDataFrame">GeoDataFrame</span>, optional</code>)
+        – <p>A layer containing address points.</p>
+      </li>
+  </ul>
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
 
   <hr>
 <div class="md-source-file">
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 6, 2022</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 7, 2022</span>
       
     
   </small>
@@ -421,7 +814,7 @@
     <nav class="md-footer__inner md-grid" aria-label="Footer" >
       
         
-        <a href="../api_reference/" class="md-footer__link md-footer__link--prev" aria-label="Previous: API Reference" rel="prev">
+        <a href=".." class="md-footer__link md-footer__link--prev" aria-label="Previous: Home" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
           </div>
@@ -430,7 +823,7 @@
               <span class="md-footer__direction">
                 Previous
               </span>
-              API Reference
+              Home
             </div>
           </div>
         </a>
