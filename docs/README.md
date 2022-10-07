@@ -75,7 +75,7 @@ Unless specified, MaskMyPy uses the same units of distance as the CRS of the inp
 
 
 ### Evaluation
-We can also add some parameters to the [`.run()`](tools/#shortcut-evaluation-using-run) method to help us better evaluate our masking results. For instance, we can visually inspect the masking process by creating a rudimentary map of displacement distances like so:
+We can also add some parameters to the [`.run()`](tools.md#shortcut-evaluation-using-run) method to help us better evaluate our masking results. For instance, we can visually inspect the masking process by creating a rudimentary map of displacement distances like so:
 
 ```python
 >>> masked_points = Donut(secret, min_distance=50, max_distance=500).run(map_displacement=True)
@@ -99,7 +99,7 @@ To more rigorously evaluate our results, we could add a *context layer* of addre
 ```
 Of course, there are also use cases for geographic masking that may not involve addresses at all. In such cases, one could load an alternative point-based population layer in as an 'address' and receive similar benefits.
 
-For more information on what's available in the .run() method, see [here](tools/#shortcut-evaluation-using-run).
+For more information on what's available in the .run() method, see [here](tools.md#shortcut-evaluation-using-run).
 
 
 ## Command Line Interface (CLI)
