@@ -18,7 +18,7 @@
 - A command line interface (CLI) for quick masking jobs.
 ## Introduction
 
-[MaskMyPy](https://github.com/TheTinHat/MaskMyPy) is a Python package that performs geographic masking on [GeoDataFrames](http://geopandas.org/data_structures.html). In other words, it helps with anonymizing point data, such as confidential home addresses. It currently offers two main approaches towards anonymization: [donut masking](donut.md) and [street masking](street.md).
+MaskMyPy ([GitHub](https://github.com/TheTinHat/MaskMyPy) | [Docs](https://thetinhat.github.io/MaskMyPy/)) is a Python package that performs geographic masking on [GeoDataFrames](http://geopandas.org/data_structures.html). In other words, it helps with anonymizing point data, such as confidential home addresses. It currently offers two main approaches towards anonymization: [donut masking](donut.md) and [street masking](street.md).
 
 MaskMyPy also [includes evaluation tools](tools.md) to help optimize and validate masking parameters. These include k-anonymity estimation using population data, k-anonymity calculation using address data, and displacement distance calculation between secret and masked points.
 
