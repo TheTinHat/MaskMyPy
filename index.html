@@ -70,7 +70,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#introduction" class="md-skip">
+        <a href="#maskmypy" class="md-skip">
           Skip to content
         </a>
       
@@ -221,6 +221,20 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#key-features" class="md-nav__link">
+    Key Features
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#introduction" class="md-nav__link">
+    Introduction
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#installation" class="md-nav__link">
     Installation
   </a>
@@ -228,8 +242,35 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#example" class="md-nav__link">
-    Example
+  <a href="#quick-usage" class="md-nav__link">
+    Quick Usage
+  </a>
+  
+    <nav class="md-nav" aria-label="Quick Usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#maskinganonymization" class="md-nav__link">
+    Masking/Anonymization
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#evaluation" class="md-nav__link">
+    Evaluation
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#command-line-interface-cli" class="md-nav__link">
+    Command Line Interface (CLI)
   </a>
   
 </li>
@@ -343,6 +384,20 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#key-features" class="md-nav__link">
+    Key Features
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#introduction" class="md-nav__link">
+    Introduction
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#installation" class="md-nav__link">
     Installation
   </a>
@@ -350,8 +405,35 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#example" class="md-nav__link">
-    Example
+  <a href="#quick-usage" class="md-nav__link">
+    Quick Usage
+  </a>
+  
+    <nav class="md-nav" aria-label="Quick Usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#maskinganonymization" class="md-nav__link">
+    Masking/Anonymization
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#evaluation" class="md-nav__link">
+    Evaluation
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#command-line-interface-cli" class="md-nav__link">
+    Command Line Interface (CLI)
   </a>
   
 </li>
@@ -388,18 +470,27 @@
 <div style="text-align:center; width: 100%;"><img src="assets/logo.png" width=400px style="max-width: 400px;"></div>
 
 <hr />
-<p>Python tools for anonymizing geographic data.</p>
 <p><img alt="Master Tests" src="https://img.shields.io/github/checks-status/TheTinHat/maskmyxyz/master" />
 <img alt="License" src="https://img.shields.io/github/license/TheTinHat/MaskMyPy" />
 <a href="https://pypi.org/project/maskmypy/"><img alt="PyPi" src="https://img.shields.io/pypi/v/maskmypy" /></a></p>
-<h1 id="introduction">Introduction<a class="headerlink" href="#introduction" title="Permanent link">&para;</a></h1>
+<h1 id="maskmypy">MaskMyPy<a class="headerlink" href="#maskmypy" title="Permanent link">&para;</a></h1>
+<h2 id="key-features">Key Features<a class="headerlink" href="#key-features" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Python tools for anonymizing geographic point data held in GeoDataFrames.</li>
+<li>Includes three approaches towards donut masking.</li>
+<li>Includes a new OpenStreetMap-based approach called street masking.</li>
+<li>Tools for assessing displacement distance &amp; spatial k-anonymity.</li>
+<li>A command line interface (CLI) for quick masking jobs.</li>
+</ul>
+<h2 id="introduction">Introduction<a class="headerlink" href="#introduction" title="Permanent link">&para;</a></h2>
 <p><a href="https://github.com/TheTinHat/MaskMyPy">MaskMyPy</a> is a Python package that performs geographic masking on <a href="http://geopandas.org/data_structures.html">GeoDataFrames</a>. In other words, MaskMyPy provides spatial anonymization functions for point data. It currently offers two main methods: <a href="donut/">donut masking</a> and <a href="street/">street masking</a>.</p>
 <p>MaskMyPy also <a href="tools/">includes tools</a> to help optimize and validate masking parameters. These include k-anonymity estimation using population data, k-anonymity calculation using address data, and displacement distance calculation between sensitive and masked points.</p>
 <p><strong>Disclaimer</strong>: <em>MaskMyPy is offered as-is, without warranty of any kind. Geographic masking is a hard problem that requires informed decisions and validation. MaskMyPy provides helpful tools for geographic masking, but does not replace expertise.</em></p>
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip install maskmypy
 </code></pre></div>
-<h2 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h2>
+<h2 id="quick-usage">Quick Usage<a class="headerlink" href="#quick-usage" title="Permanent link">&para;</a></h2>
+<h3 id="maskinganonymization">Masking/Anonymization<a class="headerlink" href="#maskinganonymization" title="Permanent link">&para;</a></h3>
 <p>The following snippet applies a 500 meter donut mask to a GeoDataFrame of sensitive (e.g. secret) points:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">maskmypy</span> <span class="kn">import</span> <span class="n">Donut</span>
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">geopandas</span> <span class="k">as</span> <span class="nn">gpd</span>
@@ -423,11 +514,12 @@
 <a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="mi">4</span>      <span class="mi">5</span>  <span class="n">POINT</span> <span class="p">(</span><span class="o">-</span><span class="mf">13702837.385</span> <span class="mf">6314140.874</span><span class="p">)</span>
 </code></pre></div>
 <p>Unless specified, MaskMyPy uses the same units of distance as the CRS of the input secret points. If our secret points instead used a CRS that is in feet, then our mask would have had a maximum distance of 500 feet.</p>
-<p>We can also add some parameters to the <code>.run()</code> method to help us better evaluate our mask. For instance, we can visually inspect the masking process by creating a map of displacement distances like so:</p>
+<h3 id="evaluation">Evaluation<a class="headerlink" href="#evaluation" title="Permanent link">&para;</a></h3>
+<p>We can also add some parameters to the <code>.run()</code> method to help us better evaluate our masking results. For instance, we can visually inspect the masking process by creating a rudimentary map of displacement distances like so:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">masked_points</span> <span class="o">=</span> <span class="n">Donut</span><span class="p">(</span><span class="n">secret</span><span class="p">,</span> <span class="n">max_distance</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">map_displacement</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </code></pre></div>
 <p><img alt="Displacement Map" src="assets/displacement_map.png" /></p>
-<p>Alternatively, we could add a <em>context layer</em> of address points and use it to calculate the k-anonymity of each masked point:</p>
+<p>To more rigorously evaluate our results, we could add a <em>context layer</em> of address points and use it to calculate the k-anonymity of each masked point:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">address_points</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="s1">&#39;addresses.shp&#39;</span><span class="p">)</span>
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">masked_points</span> <span class="o">=</span> <span class="n">Donut</span><span class="p">(</span><span class="n">secret</span><span class="p">,</span> <span class="n">max_distance</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="n">address_points</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">calculate_k</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
@@ -440,27 +532,31 @@
 <a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="mi">4</span>      <span class="mi">5</span>  <span class="n">POINT</span> <span class="p">(</span><span class="o">-</span><span class="mf">13702837.385</span> <span class="mf">6314140.874</span><span class="p">)</span>      <span class="mi">51</span>
 </code></pre></div>
 <p>See <a href="api_reference/#maskmypy.mask.Mask.run">here</a> to find other useful <code>.run()</code> parameters.</p>
+<h2 id="command-line-interface-cli">Command Line Interface (CLI)<a class="headerlink" href="#command-line-interface-cli" title="Permanent link">&para;</a></h2>
+<p>MaskMyPy also has a limited command line interface for quick jobs on shapefiles. The CLI contains commands for both Donut and Street masking classes (it does not support Donut_K or Donut_Multiply). Here's the command to Street mask a input shapefile of points and save it as <code>masked_points.shp</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>maskmypy street --max-depth <span class="m">25</span> secret_points.shp masked_points.shp
+</code></pre></div>
+<p>To find out more, just run <code>maskmypy --help</code>.</p>
 <h2 id="roadmap">Roadmap<a class="headerlink" href="#roadmap" title="Permanent link">&para;</a></h2>
 <p>The following features are currently planned:</p>
 <ul>
 <li>Location Swapping/Verified Neighbor masks</li>
 <li>Mask metadata export</li>
-<li>Command line interface</li>
 <li>Data suppression tools</li>
 </ul>
 <h2 id="contribute">Contribute<a class="headerlink" href="#contribute" title="Permanent link">&para;</a></h2>
 <p>Any and all efforts to contribute are welcome, whether they include actual code or just feedback. In particular, I could use some help with:</p>
 <ul>
-<li>Architecture. Don't hesitate to point out things that look downright weird and warrant refactoring.</li>
+<li>Architecture. Don't hesitate to point out things that look downright weird.</li>
 <li>Tests. A range of unit tests are already included for Donut masking, but the Street mask tests are currently a bit thin comparatively.</li>
-<li>Documentation. Even just pointing out areas where you feel the documentation is thin would be most helpful.</li>
+<li>Documentation. Even just pointing out areas where you feel could use more documentation would be most helpful.</li>
 </ul>
 <p>Developers, please keep the following in mind:</p>
 <ul>
 <li>You can install the necessary development tools by cloning the repo and running  <code>pip install -e .[develop]</code>.</li>
-<li>MaskMyPy uses <code>black</code> to format the codebase. Please run <code>black -l 99</code> before submitting any pull requests.</li>
-<li>Run <code>pytest</code> before submitting any code changes to ensure that your changes do not break anything.</li>
-<li>Please include unit tests with any feature contributions.</li>
+<li>MaskMyPy uses <code>black</code> with a line length of 99 to format the codebase. Please run <code>black -l 99</code> before submitting any pull requests.</li>
+<li>Run <code>pytest</code> from the project root before submitting any code changes to ensure that your changes do not break anything.</li>
+<li>Please include any appropriate unit tests with any feature contributions.</li>
 </ul>
 
   <hr>
@@ -468,7 +564,7 @@
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 5, 2022</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 6, 2022</span>
       
     
   </small>
