@@ -79,7 +79,7 @@ def donut(secret_input, masked_output, **kwargs):
 @click.option(
     "--max-length",
     type=click.FLOAT,
-    help="Sets a limit for street length, such that any street segments longer than this value will be ignored. Useful for ignoring very long streets that would skew the results, uch as highways.",
+    help="When initially locating each point on the street network, MaskMyPy verifies that the nearest node is connected to the network and has neighbors that are no more than `max_length` away (in meters). If not, the next closest point is selected and checked the same way. This acts as a sanity check to prevent extremely large masking distances, such as might be caused by highways. Default: `500`.",
 )
 @click.option(
     "--padding",
