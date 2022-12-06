@@ -7,7 +7,7 @@ from pathlib import Path
 from time import time, time_ns
 from collections import deque
 import geopandas as gpd
-import pandas as pd
+from pandas.util import hash_pandas_object
 from messages import *
 
 
@@ -39,7 +39,7 @@ class Atlas:
 
     @cached_property
     def checksum(self):
-        return sha256(pd.util.hash_pandas_object(self.sensitive).values).hexdigest()
+        return sha256(hash_pandas_object(self.sensitive).values).hexdigest()
 
     @property
     def gpkg_path(self):
@@ -163,7 +163,7 @@ class Candidate:
 
     @cached_property
     def checksum(self):
-        return sha256(pd.util.hash_pandas_object(self.df).values).hexdigest()
+        return sha256(hash_pandas_object(self.df).values).hexdigest()
 
     @property
     def layer_name(self):
