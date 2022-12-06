@@ -8,7 +8,7 @@ from time import time, time_ns
 from collections import deque
 import geopandas as gpd
 from pandas.util import hash_pandas_object
-from messages import *
+from .messages import *
 
 
 @dataclass
