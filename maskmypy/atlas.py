@@ -1,4 +1,4 @@
-import getpass
+from getpass import getuser
 import json
 from dataclasses import dataclass, field, asdict
 from functools import cached_property
@@ -147,7 +147,7 @@ class Candidate:
 
     def __post_init__(self):
         if "author" not in self.parameters:
-            self.parameters["author"] = getpass.getuser()
+            self.parameters["author"] = getuser()
 
         if "created_at" not in self.parameters:
             self.parameters["created_at"] = int(time_ns())
