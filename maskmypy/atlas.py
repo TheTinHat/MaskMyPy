@@ -15,15 +15,9 @@ from .messages import *
 
 @dataclass
 class Atlas:
-    sensitive: gpd.GeoDataFrame = field(
-        metadata={"exclude_from_dict": True}, repr=False
-    )
-    candidates: deque = field(
-        metadata={"exclude_from_dict": True}, default=None, repr=False
-    )
-    directory: Path = field(
-        metadata={"dict_type": str()}, default_factory=lambda: Path.cwd()
-    )
+    sensitive: gpd.GeoDataFrame = field(metadata={"exclude_from_dict": True}, repr=False)
+    candidates: deque = field(metadata={"exclude_from_dict": True}, default=None, repr=False)
+    directory: Path = field(metadata={"dict_type": str()}, default_factory=lambda: Path.cwd())
     autosave: bool = False
     autoflush: bool = False
     name: str = None
@@ -86,18 +80,13 @@ class Atlas:
     def save_candidate(self, index=None, flush=None):
         candidate = self.candidates[index]
         if isinstance(candidate.df, gpd.GeoDataFrame):
-            candidate.df.to_file(
-                self.gpkg_path, layer=candidate.layer_name, driver="GPKG"
-            )
+            candidate.df.to_file(self.gpkg_path, layer=candidate.layer_name, driver="GPKG")
             if flush or self.autoflush:
                 candidate.df = None
         return True
 
     def save_atlas(self):
-        candidate_parameters = {
-            cand.layer_name: cand.parameters for cand in self.candidates
-        }
-
+        candidate_parameters = {cand.layer_name: cand.parameters for cand in self.candidates}
         archive = {"metadata": self.metadata, "candidates": candidate_parameters}
 
         with open(self.archive_path, "w") as file:
@@ -169,9 +158,7 @@ class Candidate:
         if "checksum" not in self.parameters:
             self.parameters["checksum"] = self.checksum
         elif "checksum" in self.parameters:
-            assert (
-                self.parameters["checksum"] == self.checksum
-            ), candidate_checksum_mismatch_msg
+            assert self.parameters["checksum"] == self.checksum, candidate_checksum_mismatch_msg
 
     def __str__(self):
         return json.dumps(self.parameters)
