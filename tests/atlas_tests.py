@@ -135,20 +135,39 @@ def test_atlas_save_atlas(points, masked_points, tmpdir):
     assert "metadata" in archive
     assert "candidates" in archive
 
-    assert archive["metadata"]['directory'] == 'tmp' 
+    assert archive["metadata"]["directory"] == "tmp"
     assert atlas.get().layer_name in archive["candidates"]
 
 
-def test_atlas_open_atlas_without_name(points, masked_points, tmpdir):
+def test_atlas_open_atlas(points, masked_points, tmpdir):
+    # Create first atlas
     atlas = Atlas(points, name="atlas_open_test", directory="./tmp")
     atlas.set(Candidate(masked_points))
-    atlas.set(Candidate(masked_points))
-    atlas.set(Candidate(masked_points))
     atlas.save_atlas()
-    del atlas
 
+    # Test first atlas and autodetect the name
     atlas = Atlas.open_atlas(directory="./tmp")
-    assert atlas.get().parameters['checksum'][0:8] == "26b7538a"
+    assert atlas.get().parameters["checksum"][0:8] == "26b7538a"
     assert atlas.sensitive.equals(points)
     assert atlas.get().df.equals(masked_points)
 
+    # Create a second atlas
+    atlas = Atlas(points, name="atlas_open_test_two", directory="./tmp")
+    atlas.set(Candidate(masked_points))
+    atlas.set(Candidate(masked_points))
+    atlas.save_atlas()
+
+    # Test that atlas open fails without name specified
+    with pytest.raises(Exception):
+        atlas = Atlas.open_atlas(directory="./tmp")
+
+    # Test first atlas again with name specified
+    atlas = Atlas.open_atlas(directory="./tmp", name="atlas_open_test")
+    assert len(atlas.candidates) == 1
+
+    # Test second atlas
+    atlas = Atlas.open_atlas(directory="./tmp", name="atlas_open_test_two")
+    assert len(atlas.candidates) == 2
+    assert atlas.get().parameters["checksum"] == atlas.candidates[0].checksum
+    assert atlas.sensitive.equals(points)
+    assert atlas.get().df.equals(masked_points)
