@@ -9,6 +9,7 @@ import geopandas as gpd
 from pandas.util import hash_pandas_object
 
 from .candidate import Candidate
+from .masks import donut
 from .messages import *
 
 
@@ -55,7 +56,7 @@ class Atlas:
         return asdict(self, dict_factory=self.dict_factory)
 
     def set(self, candidate):
-        assert candidate.df.crs == self.crs, candidate_crs_mismatch_msg
+        assert candidate.gdf.crs == self.crs, candidate_crs_mismatch_msg
         assert candidate.checksum != self.checksum, candidate_identical_to_sensitive_msg
         self.candidates.append(candidate)
         if self.autosave:
@@ -64,24 +65,24 @@ class Atlas:
     def get(self, index=-1):
         candidate = self.candidates[index]
 
-        if candidate.df is None:
+        if candidate.gdf is None:
             try:
-                candidate.df = gpd.read_file(
+                candidate.gdf = gpd.read_file(
                     self.gpkg_path, layer=candidate.layer_name, driver="GPKG"
                 )
             except Exception as err:
                 print(f"Unable to load candidate dataframe: {err}")
-        elif not isinstance(candidate.df, gpd.GeoDataFrame):
+        elif not isinstance(candidate.gdf, gpd.GeoDataFrame):
             raise Exception("Candidate dataframe is an unknown data type.")
 
         return candidate
 
     def save_candidate(self, index=None, flush=None):
         candidate = self.candidates[index]
-        if isinstance(candidate.df, gpd.GeoDataFrame):
-            candidate.df.to_file(self.gpkg_path, layer=candidate.layer_name, driver="GPKG")
+        if isinstance(candidate.gdf, gpd.GeoDataFrame):
+            candidate.gdf.to_file(self.gpkg_path, layer=candidate.layer_name, driver="GPKG")
             if flush or self.autoflush:
-                candidate.df = None
+                candidate.gdf = None
         return True
 
     def save_atlas(self):
@@ -121,7 +122,7 @@ class Atlas:
         candidates = []
         for layer_name, parameters in sorted(archive["candidates"].items()):
             layer = gpd.read_file(gpkg_path, layer=layer_name, driver="GPKG")
-            candidates.append(Candidate(df=layer, parameters=parameters))
+            candidates.append(Candidate(gdf=layer, parameters=parameters))
 
         return cls(sensitive, candidates=candidates, **archive["metadata"])
 
@@ -137,3 +138,8 @@ class Atlas:
 
             dictionary[key] = value
         return dictionary
+
+    def donut(self, min, max, **kwargs):
+        candidate = donut(self.sensitive, min, max, **kwargs)
+        self.set(candidate)
+        return candidate

@@ -97,8 +97,8 @@ def test_atlas_autosave(points, masked_points, tmpdir):
 def test_atlas_get(points, masked_points):
     atlas = Atlas(points)
     atlas.set(Candidate(masked_points))
-    assert atlas.get().df.equals(masked_points)
-    assert atlas.get().df.equals(points) is False
+    assert atlas.get().gdf.equals(masked_points)
+    assert atlas.get().gdf.equals(points) is False
     assert "checksum" in atlas.get().parameters
     assert "test_key" not in atlas.get().parameters
 
@@ -107,18 +107,18 @@ def test_atlas_flush_candidate(points, masked_points, tmpdir):
     atlas = Atlas(points, directory="./tmp")
     atlas.set(Candidate(masked_points))
     atlas.save_candidate(0, flush=True)
-    assert atlas.candidates[0].df == None
+    assert atlas.candidates[0].gdf == None
     saved = gpd.read_file(atlas.gpkg_path, layer=atlas.get().layer_name)
-    assert saved.equals(atlas.get().df)
+    assert saved.equals(atlas.get().gdf)
 
 
 def test_atlas_autoflush_candidate(points, masked_points, tmpdir):
     atlas = Atlas(points, autoflush=True, directory="./tmp")
     atlas.set(Candidate(masked_points))
     atlas.save_candidate(0)
-    assert atlas.candidates[0].df == None
+    assert atlas.candidates[0].gdf == None
     saved = gpd.read_file(atlas.gpkg_path, layer=atlas.get().layer_name)
-    assert saved.equals(atlas.get().df)
+    assert saved.equals(atlas.get().gdf)
 
 
 def test_atlas_save_atlas(points, masked_points, tmpdir):
@@ -149,7 +149,7 @@ def test_atlas_open_atlas(points, masked_points, tmpdir):
     atlas = Atlas.open_atlas(directory="./tmp")
     assert atlas.get().parameters["checksum"][0:8] == "26b7538a"
     assert atlas.sensitive.equals(points)
-    assert atlas.get().df.equals(masked_points)
+    assert atlas.get().gdf.equals(masked_points)
 
     # Create a second atlas
     atlas = Atlas(points, name="atlas_open_test_two", directory="./tmp")
@@ -170,4 +170,15 @@ def test_atlas_open_atlas(points, masked_points, tmpdir):
     assert len(atlas.candidates) == 2
     assert atlas.get().parameters["checksum"] == atlas.candidates[0].checksum
     assert atlas.sensitive.equals(points)
-    assert atlas.get().df.equals(masked_points)
+    assert atlas.get().gdf.equals(masked_points)
+
+
+def test_donut(points):
+    atlas = Atlas(points)
+    with pytest.raises(TypeError):
+        donut = atlas.donut()
+
+    donut = atlas.donut(50, 500)
+    assert isinstance(donut.gdf, gpd.GeoDataFrame)
+    assert isinstance(donut.parameters["author"], str)
+    assert isinstance(donut.parameters["created_at"], int)

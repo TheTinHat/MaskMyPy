@@ -13,7 +13,7 @@ from .messages import *
 
 @dataclass
 class Candidate:
-    df: gpd.GeoDataFrame = field(repr=False)
+    gdf: gpd.GeoDataFrame = field(repr=False)
     parameters: dict = field(default_factory=lambda: dict())
 
     def __post_init__(self):
@@ -29,14 +29,16 @@ class Candidate:
         if "checksum" not in self.parameters:
             self.parameters["checksum"] = self.checksum
         elif "checksum" in self.parameters:
-            assert self.parameters["checksum"] == self.checksum, candidate_checksum_mismatch_msg
+            assert (
+                self.parameters["checksum"] == self.checksum
+            ), candidate_checksum_mismatch_msg
 
     def __str__(self):
         return json.dumps(self.parameters)
 
     @cached_property
     def checksum(self):
-        return sha256(hash_pandas_object(self.df.geometry).values).hexdigest()
+        return sha256(hash_pandas_object(self.gdf.geometry).values).hexdigest()
 
     @property
     def layer_name(self):

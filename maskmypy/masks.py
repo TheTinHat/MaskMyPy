@@ -1,21 +1,19 @@
-import geopandas as gpd
-from random import SystemRandom
 from math import sqrt
+from random import SystemRandom
+
+import geopandas as gpd
+from shapely.affinity import translate
+from shapely.geometry import LineString, Point, Polygon
+
+from .candidate import Candidate
+from .validation import *
 
 
-def mask(atlas):
-
-
-
-    
-
-
-def validate(gdf):
-    return True
-
-
-def parse_parameters(parameters):
-    return
+def donut(sensitive_gdf, min, max, container=None):
+    validate_input(**locals())
+    sensitive_gdf["geometry"] = sensitive_gdf.geometry.translate(0.01)
+    candidate = Candidate(sensitive_gdf, locals())
+    return candidate
 
 
 from random import SystemRandom
@@ -26,7 +24,6 @@ from geopandas import GeoDataFrame, sjoin
 from numpy import random
 
 import maskmypy.tools as tools
-
 
 
 class Mask:
@@ -101,7 +98,11 @@ class Mask:
         return self.mask
 
     def run(
-        self, displacement=False, estimate_k=False, calculate_k=False, map_displacement=False
+        self,
+        displacement=False,
+        estimate_k=False,
+        calculate_k=False,
+        map_displacement=False,
     ) -> GeoDataFrame:
         """Run the masking procedure to anonymize secret points.
 
