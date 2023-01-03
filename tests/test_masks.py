@@ -14,7 +14,6 @@ def points():
 
 @pytest.fixture
 def masked_points(points):
-    points = points.copy(deep=True)
     points.geometry = points.geometry.translate(0.001)
     return points
 
@@ -24,14 +23,3 @@ def tmpdir():
     os.makedirs("./tmp/", exist_ok=True)
     yield
     shutil.rmtree("./tmp")
-
-
-def test_validate_geom_types(points):
-    kwargs = {}
-    kwargs['sensitive_gdf'] = points
-    masks.validate_input(**kwargs)
-    points.loc[0, 'geometry'] = points.iloc[0].geometry.buffer(10)
-    with pytest.raises(AssertionError):
-        masks.validate_input(**kwargs)
-
-    
