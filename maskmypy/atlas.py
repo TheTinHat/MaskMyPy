@@ -9,7 +9,7 @@ import geopandas as gpd
 from pandas.util import hash_pandas_object
 
 from .candidate import Candidate
-from .masks import donut
+from .donut import donut
 from .messages import *
 
 

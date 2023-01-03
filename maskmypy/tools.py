@@ -2,6 +2,19 @@ from geopandas import GeoDataFrame, sjoin
 from shapely.geometry import LineString
 
 
+def crop(gdf, bbox, padding=None):
+    if padding is None:
+        pad_x = (bbox[2] - bbox[0]) / 5
+        pad_y = (bbox[3] - bbox[1]) / 5
+        padding = max(pad_x, pad_y)
+
+    bbox[0] = bbox[0] - padding
+    bbox[1] = bbox[1] - padding
+    bbox[2] = bbox[2] + padding
+    bbox[3] = bbox[3] + padding
+    return gdf.cx[bbox[0] : bbox[2], bbox[1] : bbox[3]]
+
+
 def displacement(secret: GeoDataFrame, mask: GeoDataFrame, colname="_distance") -> GeoDataFrame:
     """Calculates the displacement distance between secret and masked points.
 
