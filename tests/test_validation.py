@@ -3,7 +3,7 @@ import shutil
 
 import geopandas as gpd
 import pytest
-
+from shapely.geometry import Point, MultiPoint
 from maskmypy import Atlas, Candidate, masks, validation
 
 
@@ -26,10 +26,17 @@ def tmpdir():
     shutil.rmtree("./tmp")
 
 
-def test_validate_input_geom_types(points):
+def test_validate_input_geom(points):
     kwargs = {}
     kwargs["sensitive_gdf"] = points
     validation.validate_input(**kwargs)
-    points.loc[0, "geometry"] = points.iloc[0].geometry.buffer(10)
+    points.loc[0, "geometry"] = points.loc[0].geometry.buffer(10)
     with pytest.raises(AssertionError):
         validation.validate_input(**kwargs)
+
+
+def test_validate_input_multiple_args(points):
+    points.loc[0, "geometry"] = MultiPoint([(-123.06397, 49.24249), (-123.08397, 49.24249)])
+    with pytest.raises(AssertionError):
+        validation.assert_geom_type(points, "Point")
+    validation.assert_geom_type(points, "Point", "MultiPoint")
