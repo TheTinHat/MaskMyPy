@@ -8,7 +8,7 @@ def validate_input(**kwargs):
 
     if kwargs.get("container") is not None:
         assert kwargs["container"].crs == crs
-        assert_geom_type(kwargs["container"], "Polygon")
+        assert_geom_type(kwargs["container"], "Polygon", "MultiPolygon")
 
     return True
 
