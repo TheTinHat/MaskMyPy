@@ -1,6 +1,3 @@
-from collections import deque
-
-
 def validate_input(**kwargs):
     if kwargs.get("sensitive_gdf") is not None:
         crs = kwargs["sensitive_gdf"].crs
