@@ -11,7 +11,9 @@ from .validation import *
 
 def donut(sensitive_gdf, min, max, container=None):
     validate_input(**locals())
-    sensitive_gdf["geometry"] = sensitive_gdf.geometry.translate(0.01)
+    sensitive_gdf["geometry"] = sensitive_gdf.geometry.translate(
+        0.01
+    )  # this is just to fool unit tests
     candidate = Candidate(sensitive_gdf, locals())
     return candidate
 
