@@ -9,7 +9,7 @@ import geopandas as gpd
 from pandas.util import hash_pandas_object
 
 from .candidate import Candidate
-from .donut import donut
+from .donut import Donut
 from .messages import *
 
 
@@ -140,6 +140,6 @@ class Atlas:
         return dictionary
 
     def donut(self, min, max, **kwargs):
-        candidate = donut(self.sensitive, min, max, **kwargs)
+        candidate = Donut(self.sensitive, min, max, **kwargs).run()
         self.set(candidate)
         return candidate

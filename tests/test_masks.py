@@ -4,7 +4,7 @@ import shutil
 import geopandas as gpd
 import pytest
 
-from maskmypy import Atlas, Candidate, donut
+from maskmypy import Atlas, Candidate, Donut
 
 
 @pytest.fixture
@@ -31,12 +31,12 @@ def tmpdir():
 
 
 def test_random_seed(points):
-    candidate = donut(points, 10, 100)
+    candidate = Donut(points, 10, 100).run()
     assert isinstance(candidate.parameters["seed"], int)
 
-    candidate = donut(points, 10, 100, seed=123456)
+    candidate = Donut(points, 10, 100, seed=123456).run()
     assert candidate.parameters["seed"] == 123456
 
 
 def test_container(points, container):
-    candidate = donut(points, 0.0005, 0.005, container=container)
+    candidate = Donut(points, 0.01, 0.05, container=container).run()
