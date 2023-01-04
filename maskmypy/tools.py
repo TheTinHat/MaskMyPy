@@ -8,11 +8,17 @@ def crop(gdf, bbox, padding=None):
         pad_y = (bbox[3] - bbox[1]) / 5
         padding = max(pad_x, pad_y)
 
-    bbox[0] = bbox[0] - padding
-    bbox[1] = bbox[1] - padding
-    bbox[2] = bbox[2] + padding
-    bbox[3] = bbox[3] + padding
+    bbox[0] = bbox[0] - pad_x
+    bbox[1] = bbox[1] - pad_y
+    bbox[2] = bbox[2] + pad_x
+    bbox[3] = bbox[3] + pad_y
     return gdf.cx[bbox[0] : bbox[2], bbox[1] : bbox[3]]
+
+
+def assert_geom_type(gdf, *type_as_string):
+    geom_types = [True if geom_type in type_as_string else False for geom_type in gdf.geom_type]
+    assert all(geom_types)
+    return True
 
 
 def displacement(secret: GeoDataFrame, mask: GeoDataFrame, colname="_distance") -> GeoDataFrame:
