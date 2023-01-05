@@ -2,12 +2,9 @@ from geopandas import GeoDataFrame, sjoin
 from shapely.geometry import LineString
 
 
-def crop(gdf, bbox, padding=None):
-    if padding is None:
-        pad_x = (bbox[2] - bbox[0]) / 5
-        pad_y = (bbox[3] - bbox[1]) / 5
-        padding = max(pad_x, pad_y)
-
+def crop(gdf, bbox, padding):
+    pad_x = (bbox[2] - bbox[0]) * padding
+    pad_y = (bbox[3] - bbox[1]) * padding
     bbox[0] = bbox[0] - pad_x
     bbox[1] = bbox[1] - pad_y
     bbox[2] = bbox[2] + pad_x
