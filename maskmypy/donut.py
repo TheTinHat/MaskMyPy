@@ -23,26 +23,26 @@ class Donut:
     padding: float = None
 
     def __post_init__(self):
+        # Initialize random number generator
+        self.seed = int(SystemRandom().random() * (10**10)) if not self.seed else self.seed
         self._rng = random.default_rng(seed=self.seed)
-        self.gdf = self.gdf.copy(deep=True)
-        tools.assert_geom_type(self.gdf, "Point")
-        self.crs = self.gdf.crs
-        assert self.max > self.min
 
-        if self.seed is None:
-            self.seed = int(SystemRandom().random() * (10**10))
+        # Validate and initialize input parameters
+        tools.validate_geom_type(self.gdf, "Point")
+        self.gdf = self.gdf.copy(deep=True)
+
+        if self.min >= self.max:
+            raise ValueError("Minimum displacement distance is larger than or equal to maximum.")
 
         if self.container is not None:
-            assert self.container.crs == self.crs
-            tools.assert_geom_type(self.container, "Polygon", "MultiPolygon")
+            tools.validate_geom_type(self.container, "Polygon", "MultiPolygon")
+            if self.container.crs != self.gdf.crs:
+                raise ValueError("Container CRS does not match that of sensitive GeoDataFrame.")
             self.container = self.container.copy(deep=True)
             self.container = tools.crop(self.container, self.gdf.total_bounds, self.padding)
             self.container = self.container.loc[:, [self.container.geometry.name]]
 
-    def _validate_input(self):
-        self.cr
-
-    def _random_xy(self):
+    def _generate_random_xy(self):
         if self.distribution == "uniform":
             hypotenuse = self._rng.uniform(self.min, self.max)
             x = self._rng.uniform(0, hypotenuse)
@@ -60,7 +60,7 @@ class Donut:
                     hypotenuse = r1
             x = self._rng.uniform(0, hypotenuse)
         else:
-            raise Exception("Unknown distribution")
+            raise ValueError("Unknown distribution")
 
         y = sqrt(hypotenuse**2 - x**2)
         direction = self._rng.random()
@@ -76,16 +76,20 @@ class Donut:
 
         return (x, y)
 
-    def _displace(self, geometry):
+    def _mask_geometry(self, geometry):
         if self.container is not None:
             intersection = self.container.intersects(geometry)
             # Get index of container polygons where intersection == True
             intersection = set(intersection[intersection].index)
+
             start = intersection if len(intersection) > 0 else -1
-            assert len(start) < 2, multiple_container_intersection_msg
+            if len(start) > 1:
+                raise ValueError(
+                    f"Point at {geometry} intersects {len(start)} polygons in the container. Container polygons must not overlap."
+                )
             end = None
             while start != end:
-                xoff, yoff = self._random_xy()
+                xoff, yoff = self._generate_random_xy()
                 new_geometry = translate(geometry, xoff=xoff, yoff=yoff)
                 intersection = self.container.intersects(new_geometry)
                 # Get index of container polygons where intersection == True
@@ -98,7 +102,9 @@ class Donut:
         return new_geometry
 
     def run(self):
-        self.gdf[self.gdf.geometry.name] = self.gdf[self.gdf.geometry.name].apply(self._displace)
+        self.gdf[self.gdf.geometry.name] = self.gdf[self.gdf.geometry.name].apply(
+            self._mask_geometry
+        )
 
         parameters = {
             "min": self.min,

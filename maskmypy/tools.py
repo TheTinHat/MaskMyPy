@@ -15,9 +15,10 @@ def crop(gdf, bbox, padding=None):
     return gdf.cx[bbox[0] : bbox[2], bbox[1] : bbox[3]]
 
 
-def assert_geom_type(gdf, *type_as_string):
-    geom_types = [True if geom_type in type_as_string else False for geom_type in gdf.geom_type]
-    assert all(geom_types)
+def validate_geom_type(gdf, *type_as_string):
+    geom_types = {True if geom_type in type_as_string else False for geom_type in gdf.geom_type}
+    if False in geom_types:
+        raise ValueError(f"GeoDataFrame contains geometry types other than {type_as_string}.")
     return True
 
 
