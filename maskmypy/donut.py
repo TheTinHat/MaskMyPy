@@ -20,7 +20,7 @@ class Donut:
     container: gpd.GeoDataFrame = None
     distribution: str = "uniform"
     seed: int = None
-    padding: float = None
+    padding: float = 0.2
 
     def __post_init__(self):
         # Initialize random number generator
@@ -42,7 +42,7 @@ class Donut:
             self.container = tools.crop(self.container, self.gdf.total_bounds, self.padding)
             self.container = self.container.loc[:, [self.container.geometry.name]]
 
-    def _generate_random_xy(self):
+    def _generate_random_offset(self):
         if self.distribution == "uniform":
             hypotenuse = self._rng.uniform(self.min, self.max)
             x = self._rng.uniform(0, hypotenuse)
@@ -63,6 +63,7 @@ class Donut:
             raise ValueError("Unknown distribution")
 
         y = sqrt(hypotenuse**2 - x**2)
+
         direction = self._rng.random()
         if direction < 0.25:
             x = x * -1
@@ -73,38 +74,40 @@ class Donut:
             y = y * -1
         elif direction < 1:
             pass
-
         return (x, y)
 
     def _mask_geometry(self, geometry):
-        if self.container is not None:
-            intersection = self.container.intersects(geometry)
-            # Get index of container polygons where intersection == True
-            intersection = set(intersection[intersection].index)
+        xoff, yoff = self._generate_random_offset()
+        new_geometry = translate(geometry, xoff=xoff, yoff=yoff)
+        return new_geometry
 
-            start = intersection if len(intersection) > 0 else -1
-            if len(start) > 1:
-                raise ValueError(
-                    f"Point at {geometry} intersects {len(start)} polygons in the container. Container polygons must not overlap."
-                )
-            end = None
-            while start != end:
-                xoff, yoff = self._generate_random_xy()
-                new_geometry = translate(geometry, xoff=xoff, yoff=yoff)
-                intersection = self.container.intersects(new_geometry)
-                # Get index of container polygons where intersection == True
-                intersection = set(intersection[intersection].index)
-                end = intersection if len(intersection) > 0 else -1
-        else:
-            xoff, yoff = self._random_xy()
-            new_geometry = translate(geometry, xoff=xoff, yoff=yoff)
-
+    def _mask_contained_geometry(self, geometry):
+        intersection = self.container.intersects(geometry)
+        intersected_polygons = set(
+            intersection[intersection].index
+        )  # Filter for rows where intersection == True, convert to set for later comparison
+        start = intersected_polygons if len(intersected_polygons) > 0 else -1
+        if len(start) > 1:
+            raise ValueError(
+                f"Point at {geometry} intersects {len(start)} polygons in the container. Container polygons must not overlap."
+            )
+        end = None
+        while start != end:
+            new_geometry = self._mask_geometry(geometry)
+            intersection = self.container.intersects(new_geometry)
+            intersected_polygons = set(intersection[intersection].index)
+            end = intersected_polygons if len(intersected_polygons) > 0 else -1
         return new_geometry
 
     def run(self):
-        self.gdf[self.gdf.geometry.name] = self.gdf[self.gdf.geometry.name].apply(
-            self._mask_geometry
-        )
+        if isinstance(self.container, gpd.GeoDataFrame):
+            self.gdf[self.gdf.geometry.name] = self.gdf[self.gdf.geometry.name].apply(
+                self._mask_contained_geometry
+            )
+        else:
+            self.gdf[self.gdf.geometry.name] = self.gdf[self.gdf.geometry.name].apply(
+                self._mask_geometry
+            )
 
         parameters = {
             "min": self.min,
