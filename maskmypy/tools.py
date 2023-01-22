@@ -3,13 +3,18 @@ from shapely.geometry import LineString
 
 
 def crop(gdf, bbox, padding):
+    bbox = pad(bbox, padding)
+    return gdf.cx[bbox[0] : bbox[2], bbox[1] : bbox[3]]
+
+
+def pad(bbox, padding):
     pad_x = (bbox[2] - bbox[0]) * padding
     pad_y = (bbox[3] - bbox[1]) * padding
     bbox[0] = bbox[0] - pad_x
     bbox[1] = bbox[1] - pad_y
     bbox[2] = bbox[2] + pad_x
     bbox[3] = bbox[3] + pad_y
-    return gdf.cx[bbox[0] : bbox[2], bbox[1] : bbox[3]]
+    return bbox
 
 
 def validate_geom_type(gdf, *type_as_string):
