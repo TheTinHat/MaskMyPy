@@ -28,7 +28,7 @@ def tmpdir():
 
 
 def test_random_seed(points):
-    #points = points[0:5]
+    points = points[0:10]
     candidate_1 = Street(points, 18, 20, seed=12345).run()
     candidate_2 = Street(points, 18, 20, seed=12345).run()
     candidate_3 = Street(points, 18, 20, seed=98765).run()
