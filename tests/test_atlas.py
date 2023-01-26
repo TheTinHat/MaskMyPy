@@ -1,12 +1,17 @@
-from maskmypy import Atlas, Candidate
-import geopandas as gpd
-import pytest
-from numpy import random
-from shapely.affinity import translate
+import json
 import os
 import shutil
+from copy import deepcopy
 from pathlib import Path
-import json
+
+import geopandas as gpd
+import psutil
+import pytest
+from numpy import random
+from pandas.testing import assert_frame_equal
+from shapely.affinity import translate
+
+from maskmypy import Atlas, Candidate
 
 
 @pytest.fixture
@@ -76,7 +81,7 @@ def test_atlas_set(points, masked_points):
 
 def test_atlas_set_candidate_bad_crs(points, masked_points):
     atlas = Atlas(points)
-    masked_points = masked_points.to_crs(epsg=26910)
+    masked_points = masked_points.to_crs(epsg=2955)
     with pytest.raises(AssertionError):
         atlas.set(Candidate(masked_points))
 
@@ -175,6 +180,7 @@ def test_atlas_open_atlas(points, masked_points, tmpdir):
 
 def test_donut(points):
     atlas = Atlas(points)
+
     with pytest.raises(TypeError):
         donut = atlas.donut()
 
@@ -182,3 +188,64 @@ def test_donut(points):
     assert isinstance(donut.gdf, gpd.GeoDataFrame)
     assert isinstance(donut.parameters["author"], str)
     assert isinstance(donut.parameters["created_at"], int)
+
+
+def test_geopandas_does_not_modify_sensitive(points):
+    atlas = Atlas(points)
+    original_sensitive = deepcopy(atlas.sensitive)
+    atlas.donut(50, 500)
+
+    assert_frame_equal(atlas.sensitive, original_sensitive)
+    with pytest.raises(AssertionError):
+        assert_frame_equal(atlas.sensitive, atlas.get().gdf)
+
+
+def test_donut_list(points):
+    atlas = Atlas(points)
+
+    mins = [50, 100, 150, 200, 250]
+    maxes = [500, 550, 600, 650, 700]
+    donuts = atlas.donut(mins, maxes)
+    assert len(donuts) == len(mins)
+
+
+def test_donut_list_uneven(points):
+    atlas = Atlas(points)
+    mins = [50, 100, 150, 200]
+    maxes = [500, 550]
+    donuts = atlas.donut(mins, maxes)
+    assert len(donuts) == len(mins)
+
+    mins = [50, 100]
+    maxes = [500, 550, 600, 650, 700]
+    donuts = atlas.donut(mins, maxes)
+    assert len(donuts) == len(maxes)
+
+
+@pytest.mark.slow
+def test_memory_management(points, tmpdir):
+    import gc
+
+    # points = gpd.read_file("tests/kamloops/kam_addresses_pop.shp")[0:10000]
+
+    atlas = Atlas(points, directory="./tmp", keep_last=99999)
+    mem_start = psutil.Process(os.getpid()).memory_info().rss / 1024**2
+    atlas.donut([1], list(range(2, 252)))
+    mem_candidates = (
+        psutil.Process(os.getpid()).memory_info().rss / 1024**2
+    ) - mem_start
+    del atlas
+    gc.collect()
+
+    mem_start = psutil.Process(os.getpid()).memory_info().rss / 1024**2
+    atlas = Atlas(
+        points, directory="./tmp", keep_last=99999, autoflush=True, autosave=True
+    )
+    atlas.donut([1], list(range(2, 252)))
+    gc.collect()
+    mem_candidates_autoflush = (
+        psutil.Process(os.getpid()).memory_info().rss / 1024**2
+    ) - mem_start
+
+    assert mem_candidates_autoflush < mem_candidates
+

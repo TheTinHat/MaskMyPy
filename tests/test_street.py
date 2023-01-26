@@ -3,9 +3,9 @@ import shutil
 
 import geopandas as gpd
 import pytest
+from pandas.testing import assert_frame_equal
 
 from maskmypy import Atlas, Candidate, Street
-from pandas.testing import assert_frame_equal
 
 
 @pytest.fixture
