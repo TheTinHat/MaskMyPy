@@ -32,7 +32,7 @@ setup(
             "mkdocs-git-revision-date-localized-plugin",
             "mkdocstrings-python",
         ],
-        "extra": ["contextily>=1.2.0"],
+        "extra": ["contextily>=1.2.0", "psutil"],
     },
     python_requires=">=3.8",
     entry_points={
