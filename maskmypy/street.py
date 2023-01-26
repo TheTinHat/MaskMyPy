@@ -1,6 +1,5 @@
 from copy import deepcopy
 from dataclasses import dataclass
-
 from random import SystemRandom
 
 import geopandas as gpd
@@ -19,8 +18,8 @@ from .messages import *
 @dataclass
 class Street:
     gdf: gpd.GeoDataFrame
-    min: int
-    max: int
+    low: int
+    high: int
     max_length: float = 1000
     seed: int = None
     padding: float = 0.2
@@ -37,7 +36,7 @@ class Street:
         self.crs = self.gdf.crs
         self.gdf = deepcopy(self.gdf).to_crs(epsg=4326)
 
-        if self.min >= self.max:
+        if self.low >= self.high:
             raise ValueError("Minimum is larger than or equal to maximum.")
 
         self._get_osm()
@@ -82,7 +81,7 @@ class Street:
 
     def _mask_node(self, node):
         node_count = 0
-        target_node_count = self._rng.integers(self.min, self.max, endpoint=False)
+        target_node_count = self._rng.integers(self.low, self.high, endpoint=False)
         distance = 1000
 
         # Search for surrounding nodes until number of nodes found equals or exceeds target_node_count
@@ -123,8 +122,8 @@ class Street:
         self.gdf = self.gdf.to_crs(self.crs)
 
         parameters = {
-            "min": self.min,
-            "max": self.max,
+            "low": self.low,
+            "high": self.high,
             "max_length": self.max_length,
             "seed": self.seed,
             "padding": self.padding,

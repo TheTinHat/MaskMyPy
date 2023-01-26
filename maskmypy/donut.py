@@ -1,22 +1,22 @@
+from dataclasses import dataclass, field
 from math import sqrt
 from random import SystemRandom
-from numpy import random
+
 import geopandas as gpd
+from numpy import random
 from shapely.affinity import translate
 from shapely.geometry import LineString, Point, Polygon
-from dataclasses import dataclass, field
 
+from . import tools, validation
 from .candidate import Candidate
-from . import validation
-from . import tools
 from .messages import *
 
 
 @dataclass
 class Donut:
     gdf: gpd.GeoDataFrame
-    min: float
-    max: float
+    low: float
+    high: float
     container: gpd.GeoDataFrame = None
     distribution: str = "uniform"
     seed: int = None
@@ -31,7 +31,7 @@ class Donut:
         tools.validate_geom_type(self.gdf, "Point")
         self.gdf = self.gdf.copy(deep=True)
 
-        if self.min >= self.max:
+        if self.low >= self.high:
             raise ValueError("Minimum displacement distance is larger than or equal to maximum.")
 
         if self.container is not None:
@@ -44,18 +44,18 @@ class Donut:
 
     def _generate_random_offset(self):
         if self.distribution == "uniform":
-            hypotenuse = self._rng.uniform(self.min, self.max)
+            hypotenuse = self._rng.uniform(self.low, self.high)
             x = self._rng.uniform(0, hypotenuse)
         elif self.distribution == "gaussian":
-            mean = ((max - min) / 2) + min
-            sigma = ((max - min) / 2) / 2.5
+            mean = ((self.high - self.low) / 2) + self.low
+            sigma = ((self.high - self.low) / 2) / 2.5
             hypotenuse = abs(self._rng.normal(mean, sigma))
             x = self._rng.uniform(0, hypotenuse)
         elif self.distribution == "areal":
             hypotenuse = 0
             while hypotenuse == 0:
-                r1 = self._rng.uniform(self.min, self.max)
-                r2 = self._rng.uniform(self.min, self.max)
+                r1 = self._rng.uniform(self.low, self.high)
+                r2 = self._rng.uniform(self.low, self.high)
                 if r1 > r2:
                     hypotenuse = r1
             x = self._rng.uniform(0, hypotenuse)
@@ -110,8 +110,8 @@ class Donut:
             )
 
         parameters = {
-            "min": self.min,
-            "max": self.max,
+            "low": self.low,
+            "high": self.high,
             "container": True if isinstance(self.container, gpd.GeoDataFrame) else False,
             "distribution": self.distribution,
             "seed": self.seed,
