@@ -22,6 +22,7 @@ setup(
         "osmnx>=1.2.0",
         "geopandas>=0.10",
         "scikit-learn>=1.1.1",
+        "pointpats==2.2.0",
     ],
     extras_require={
         "develop": [
