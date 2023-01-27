@@ -225,9 +225,6 @@ def test_donut_list_uneven(points):
 @pytest.mark.slow
 def test_memory_management(points, tmpdir):
     import gc
-
-    # points = gpd.read_file("tests/kamloops/kam_addresses_pop.shp")[0:10000]
-
     atlas = Atlas(points, directory="./tmp", keep_last=99999)
     mem_start = psutil.Process(os.getpid()).memory_info().rss / 1024**2
     atlas.donut([1], list(range(2, 252)))
