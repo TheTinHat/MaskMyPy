@@ -122,6 +122,7 @@ class Street:
         self.gdf = self.gdf.to_crs(self.crs)
 
         parameters = {
+            "mask": "street"
             "low": self.low,
             "high": self.high,
             "max_length": self.max_length,

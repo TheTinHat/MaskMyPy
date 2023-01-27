@@ -110,6 +110,7 @@ class Donut:
             )
 
         parameters = {
+            "mask": "donut"
             "low": self.low,
             "high": self.high,
             "container": True if isinstance(self.container, gpd.GeoDataFrame) else False,
