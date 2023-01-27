@@ -1,47 +1,67 @@
 import geopandas as gpd
+from .tools import validate_geom_type
+from pointpats import PointPattern, k_test
+import numpy as np
 
-
-
-
-
-
-def displacement(gdf, candidate_gdf, colname="_displacement"):
+def displacement(gdf, candidate_gdf, colname="_distance"):
     candidate_gdf[colname] = candidate_gdf.geometry.distance(gdf.geometry)
     return candidate_gdf
 
 
-
 def estimate_k(sensitive_gdf, candidate_gdf, population_gdf, pop_col="pop"):
+    candidate_columns = candidate_gdf.columns
+
+    if validate_geom_type(population_gdf, "Point"):
+        candidate_k = _estimate_k_from_addresses(
+            sensitive_gdf, candidate_gdf, population_gdf, pop_col
+        )
+
+    elif validate_geom_type(population_gdf, "Polygon", "MultiPolygon"):
+        candidate_k = _estimate_k_from_polygons(
+            sensitive_gdf, candidate_gdf, population_gdf
+        )
+
+    candidate_columns += ["k_anonymity"]
+    candidate_k = candidate_k[candidate_k.columns.intersection(candidate_columns)]
+    return candidate_k
+
+
+def _estimate_k_from_polygons(
+    sensitive_gdf, candidate_gdf, population_gdf, pop_col="pop"
+):
     pop_col_adjusted = "_".join([pop_col, "adjusted"])
-    gdf["k_est"] = (
+    candidate_gdf["k_anonymity"] = (
         displacement(sensitive_gdf, candidate_gdf)
         .assign(geometry=lambda x: x.geometry.buffer(x["_distance"]), axis=1)
-        .pipe(disaggregate, gdf_b=population, gdf_b_col=pop_col)
+        .pipe(_disaggregate, gdf_b=population_gdf, gdf_b_col=pop_col)
         .groupby("_index_2")[pop_col_adjusted]
         .sum()
         .round()
     )
-    return gdf
+    return candidate_gdf
 
 
-def calculate_k(
-    secret: gpd.GeoDataFrame, mask: gpd.GeoDataFrame, address: gpd.GeoDataFrame
-) -> gpd.GeoDataFrame:
-    mask_tmp = displacement(secret, mask).assign(
+def _estimate_k_from_addresses(sensitive_gdf, candidate_gdf, address):
+    candidate_gdf_tmp = displacement(sensitive_gdf, candidate_gdf).assign(
         geometry=lambda x: x.buffer(x["_distance"])
     )
-    mask["k_calc"] = (
-        sjoin(address, mask_tmp, how="left", rsuffix="mask")
-        .groupby("index_mask")
+    candidate_gdf["k_anonymity"] = (
+        gpd.sjoin(address, candidate_gdf_tmp, how="left", rsuffix="candidate")
+        .groupby("index_candidate")
         .size()
     )
-    mask.fillna({"k_calc": 0}, inplace=True)
-    return sanitize(mask)
+    candidate_gdf.fillna({"k_anonymity": 0}, inplace=True)
+    return candidate_gdf
 
-def disaggregate(gdf_a, gdf_b, gdf_b_col):
+
+def _disaggregate(gdf_a, gdf_b, gdf_b_col):
     new_col = "_".join([gdf_b_col, "adjusted"])
     gdf_b["_b_area"] = gdf_b.geometry.area
-    gdf = sjoin(gdf_a, gdf_b, how="left", rsuffix="b").rename_axis("_index_2").reset_index()
+    gdf = (
+        gpd.sjoin(gdf_a, gdf_b, how="left", rsuffix="b")
+        .rename_axis("_index_2")
+        .reset_index()
+    )
     gdf.geometry = gdf.apply(
         lambda x: x.geometry.intersection(gdf_b.at[x["index_b"], "geometry"]),
         axis=1,
