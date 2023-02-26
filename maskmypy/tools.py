@@ -24,44 +24,27 @@ def validate_geom_type(gdf, *type_as_string):
     return True
 
 
-def map_displacement(secret, mask, filename=None, address=None):
-    """Creates a map visualizing the displacement of each point between its
-    original and masked location.
-
-    Parameters
-    ----------
-    secret : GeoDataFrame
-        Secret points prior to masking.
-    mask : GeoDataFrame
-        Points after masking
-    filename : str, optional
-        If specified, saves the output map to a file.
-    address : GeoDataFrame, optional
-            A layer containing address points.
-
-    Returns
-    -------
-    matplotlib.pyplot.plt
-        A plot depicting secret and masked points connected by lines.
-    """
+def map_displacement(sensitive_gdf, candidate_gdf, filename=None, address=None):
     import contextily as ctx
     import matplotlib.pyplot as plt
 
-    lines = secret.copy()
-    lines = lines.join(mask, how="left", rsuffix="_mask")
-    lines.geometry = lines.apply(lambda x: LineString([x["geometry"], x["geometry_mask"]]), axis=1)
+    lines = sensitive_gdf.copy()
+    lines = lines.join(candidate_gdf, how="left", rsuffix="_masked")
+    lines.geometry = lines.apply(
+        lambda x: LineString([x["geometry"], x["geometry_masked"]]), axis=1
+    )
     ax = lines.plot(color="black", zorder=2, linewidth=1, figsize=[10, 10])
-    ax = secret.plot(ax=ax, color="red", zorder=3, markersize=12)
-    ax = mask.plot(ax=ax, color="blue", zorder=4, markersize=12)
+    ax = sensitive_gdf.plot(ax=ax, color="red", zorder=3, markersize=12)
+    ax = candidate_gdf.plot(ax=ax, color="blue", zorder=4, markersize=12)
     if isinstance(address, GeoDataFrame):
         ax = address.plot(ax=ax, color="grey", zorder=1, markersize=6)
 
-    ctx.add_basemap(ax, crs=secret.crs, source=ctx.providers.OpenStreetMap.Mapnik)
+    ctx.add_basemap(ax, crs=sensitive_gdf.crs, source=ctx.providers.OpenStreetMap.Mapnik)
     plt.title("Displacement Distances", fontsize=16)
     plt.figtext(
         0.5,
         0.025,
-        "Secret points (red), Masked points (blue). \n KEEP CONFIDENTIAL",
+        "Sensitive points (red), Masked points (blue). \n KEEP CONFIDENTIAL",
         wrap=True,
         horizontalalignment="center",
         fontsize=12,
