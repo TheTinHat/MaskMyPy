@@ -10,9 +10,9 @@ from osmnx.distance import add_edge_lengths, nearest_nodes
 from osmnx.graph import graph_from_bbox
 from osmnx.utils_graph import remove_isolated_nodes
 
-from . import tools
-from .candidate import Candidate
-from .messages import *
+from .. import tools
+from ..candidate import Candidate
+from ..messages import *
 
 
 @dataclass
@@ -26,9 +26,7 @@ class Street:
 
     def __post_init__(self):
         # Initialize random number generator
-        self.seed = (
-            int(SystemRandom().random() * (10**10)) if not self.seed else self.seed
-        )
+        self.seed = int(SystemRandom().random() * (10**10)) if not self.seed else self.seed
         self._rng = random.default_rng(seed=self.seed)
 
         # Validate and initialize input parameters

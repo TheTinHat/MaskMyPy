@@ -11,22 +11,16 @@ from pandas.util import hash_pandas_object
 
 from . import tools
 from .candidate import Candidate
-from .donut import Donut
+from .masks.donut import Donut
 from .messages import *
-from .street import Street
+from .masks.street import Street
 
 
 @dataclass
 class Atlas:
-    sensitive: gpd.GeoDataFrame = field(
-        metadata={"exclude_from_dict": True}, repr=False
-    )
-    candidates: deque = field(
-        metadata={"exclude_from_dict": True}, default=None, repr=False
-    )
-    directory: Path = field(
-        metadata={"dict_type": str()}, default_factory=lambda: Path.cwd()
-    )
+    sensitive: gpd.GeoDataFrame = field(metadata={"exclude_from_dict": True}, repr=False)
+    candidates: deque = field(metadata={"exclude_from_dict": True}, default=None, repr=False)
+    directory: Path = field(metadata={"dict_type": str()}, default_factory=lambda: Path.cwd())
     autosave: bool = False
     autoflush: bool = False
     name: str = None
@@ -92,17 +86,13 @@ class Atlas:
     def save_candidate(self, index=None, flush=None):
         candidate = self.candidates[index]
         if isinstance(candidate.gdf, gpd.GeoDataFrame):
-            candidate.gdf.to_file(
-                self.gpkg_path, layer=candidate.layer_name, driver="GPKG"
-            )
+            candidate.gdf.to_file(self.gpkg_path, layer=candidate.layer_name, driver="GPKG")
             if flush or self.autoflush:
                 candidate.gdf = None
         return True
 
     def save_atlas(self):
-        candidate_parameters = {
-            cand.layer_name: cand.parameters for cand in self.candidates
-        }
+        candidate_parameters = {cand.layer_name: cand.parameters for cand in self.candidates}
         archive = {"metadata": self.metadata, "candidates": candidate_parameters}
 
         with open(self.archive_path, "w") as file:
@@ -161,35 +151,37 @@ class Atlas:
             for low_val, high_val in distances:
                 candidate = Donut(self.sensitive, low_val, high_val, **kwargs).run()
                 self.set(candidate)
-            return list(self.candidates)[(0-len(distances)):]
-        
+            return list(self.candidates)[(0 - len(distances)) :]
+
         elif isinstance(low, (int, float)) and isinstance(high, (int, float)):
             candidate = Donut(self.sensitive, low, high, **kwargs).run()
             self.set(candidate)
             return candidate
 
         else:
-            raise ValueError("Low and high arguments must both be numbers (int, float) or lists of numbers.")
-        
+            raise ValueError(
+                "Low and high arguments must both be numbers (int, float) or lists of numbers."
+            )
+
     def street(self, low, high, **kwargs):
         if isinstance(low, list) and isinstance(high, list):
             distances = self._zip_longest_autofill(low, high)
-            for low_val, high_val in distances:    
+            for low_val, high_val in distances:
                 candidate = Street(self.sensitive, low_val, high_val, **kwargs).run()
                 self.set(candidate)
-            return list(self.candidates)[(0-len(distances)):]
-    
+            return list(self.candidates)[(0 - len(distances)) :]
+
         elif isinstance(high, (int, float)) and isinstance(low, (int, float)):
             candidate = Street(self.sensitive, low, high, **kwargs).run()
             self.set(candidate)
             return candidate
-        
+
         else:
-            raise ValueError("Low and high arguments must both be numbers (int, float) or lists of numbers.")
-    
+            raise ValueError(
+                "Low and high arguments must both be numbers (int, float) or lists of numbers."
+            )
+
     @staticmethod
     def _zip_longest_autofill(a, b):
         fill = max(b) if len(b) < len(a) else max(a)
         return list(zip_longest(a, b, fillvalue=fill))
-
-    

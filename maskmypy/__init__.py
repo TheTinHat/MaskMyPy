@@ -1,5 +1,6 @@
 name = "maskmypy"
 from .atlas import Atlas
 from .candidate import Candidate
-from .donut import Donut
-from .street import Street
+from .masks.donut import Donut
+from .masks.street import Street
+from . import analyst
