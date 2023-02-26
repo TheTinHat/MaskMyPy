@@ -7,8 +7,8 @@ import numpy as np
 import pandas as pd
 
 
-def displacement(gdf, candidate_gdf, colname="_distance"):
-    candidate_gdf[colname] = candidate_gdf.geometry.distance(gdf.geometry)
+def displacement(sensitive_gdf, candidate_gdf, colname="_distance"):
+    candidate_gdf[colname] = candidate_gdf.geometry.distance(sensitive_gdf.geometry)
     return candidate_gdf
 
 
@@ -16,12 +16,12 @@ def estimate_k(sensitive_gdf, candidate_gdf, population_gdf, pop_col="pop"):
     candidate_columns = candidate_gdf.columns
 
     if validate_geom_type(population_gdf, "Point"):
-        candidate_k = _estimate_k_from_addresses(
-            sensitive_gdf, candidate_gdf, population_gdf, pop_col
-        )
+        candidate_k = _estimate_k_from_addresses(sensitive_gdf, candidate_gdf, population_gdf)
 
     elif validate_geom_type(population_gdf, "Polygon", "MultiPolygon"):
-        candidate_k = _estimate_k_from_polygons(sensitive_gdf, candidate_gdf, population_gdf)
+        candidate_k = _estimate_k_from_polygons(
+            sensitive_gdf, candidate_gdf, population_gdf, pop_col
+        )
 
     candidate_columns += ["k_anonymity"]
     candidate_k = candidate_k[candidate_k.columns.intersection(candidate_columns)]
