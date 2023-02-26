@@ -30,6 +30,26 @@ def tmpdir():
     shutil.rmtree("./tmp")
 
 
+def test_k_satisfaction(points):
+    pass
+
+
+def test_displacement(points, masked_points):
+    pass
+
+
+def test_estimate_k_address():
+    pass
+
+
+def test_estimate_k_polygon():
+    pass
+
+
+def test_disaggregate():
+    pass
+
+
 def test_mean_center_drift(points):
     masked_points = points.copy(deep=True)
     masked_points["geometry"] = masked_points.geometry.translate(50, 0, 0)
@@ -37,5 +57,17 @@ def test_mean_center_drift(points):
     assert drift == 50
 
 
-def test_k_satisfaction(points):
+def test_k_satisfaction():
+    pass
+
+
+def test_ripleys_k():
+    pass
+
+
+def test_nearest_neighbor_stats():
+    pass
+
+
+def test_compare_candidates():
     pass
