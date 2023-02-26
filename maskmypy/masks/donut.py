@@ -7,7 +7,7 @@ from numpy import random
 from shapely.affinity import translate
 from shapely.geometry import LineString, Point, Polygon
 
-from .. import tools, validation
+from .. import tools
 from ..candidate import Candidate
 from ..messages import *
 
