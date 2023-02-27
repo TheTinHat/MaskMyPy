@@ -1,7 +1,7 @@
 import geopandas as gpd
 from .tools import validate_geom_type
-from pointpats import PointPattern, k_test
-import numpy as np
+from shapely.ops import nearest_points
+from collections import namedtuple
 
 # from matplotlib import
 import pandas as pd
@@ -72,44 +72,36 @@ def _disaggregate(gdf_a, gdf_b, gdf_b_col):
     return gdf
 
 
-def mean_center_drift(gdf_a, gdf_b):
+def central_drift(gdf_a, gdf_b):
     centroid_a = gdf_a.dissolve().centroid
     centroid_b = gdf_b.dissolve().centroid
     return float(centroid_a.distance(centroid_b))
 
 
-def k_satisfaction(gdf, k, k_col="k_anonymity"):
-    return gdf.loc[gdf[k_col] > k, k_col].count() / gdf[k_col].count()
+def k_satisfaction(gdf, min_k, k_col="k_anonymity"):
+    return gdf.loc[gdf[k_col] >= min_k, k_col].count() / gdf[k_col].count()
 
 
-def ripleys_k(gdf, dist_min, dist_max, step_count=None, step_width=None, comparison_kdf=None):
-    if step_width:
-        step_count = int((dist_max - dist_min) / step_width) + 1
-
-    k_results = k_test(
-        np.array(list(zip(gdf.geometry.x, gdf.geometry.y))),
-        keep_simulations=True,
-        support=(dist_min, dist_max, step_count),
+def nearest_neighbor(gdf, summary=True):
+    gdf_tmp = gdf.copy(deep=True)
+    gdf_tmp["nn_geom"] = gdf_tmp.apply(
+        lambda x: nearest_points(
+            x.geometry, gdf_tmp.loc[gdf_tmp.geometry != x.geometry].dissolve().iloc[0].geometry
+        )[1],
+        axis=1,
     )
 
-    kdf = pd.DataFrame(
-        {
-            "distance": k_results.support,
-            "statistic": k_results.statistic,
-            "pvalue": k_results.pvalue,
-        }
-    )
+    gdf_tmp["nn_distance"] = gdf_tmp.geometry.distance(gdf_tmp["nn_geom"].set_crs(gdf.crs))
 
-    if isinstance(comparison_kdf, pd.DataFrame):
-        kdf["difference"] = kdf["statistic"] - comparison_kdf["statistic"]
-
-    return kdf
-
-
-def nearest_neighbor_stats(gdf):
-    point_list = list(zip(gdf.geometry.x, gdf.geometry.y))
-    pp = PointPattern(point_list)
-    return {"min": pp.min_nnd, "max": pp.max_nnd, "mean": pp.mean_nnd}
+    if not summary:
+        return gdf_tmp
+    else:
+        NeighborSummary = namedtuple("NearestNeighborStats", ["mean", "min", "max"])
+        return NeighborSummary(
+            gdf_tmp["nn_distance"].mean(),
+            gdf_tmp["nn_distance"].min(),
+            gdf_tmp["nn_distance"].max(),
+        )
 
 
 def compare_candidates(sensitive_gdf, *candidates):
