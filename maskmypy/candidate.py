@@ -1,5 +1,5 @@
 import json
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from functools import cached_property
 from getpass import getuser
 from hashlib import sha256
@@ -13,25 +13,13 @@ from .messages import *
 
 @dataclass
 class Candidate:
-    gdf: gpd.GeoDataFrame = field(repr=False)
+    gdf: gpd.GeoDataFrame = field(metadata={"exclude_from_dict": True}, repr=False)
     parameters: dict = field(default_factory=lambda: dict())
+    author: str = field(default_factory=lambda: getuser())
+    created_at: int = field(default_factory=lambda: int(time_ns()))
 
     def __post_init__(self):
-        if "author" not in self.parameters:
-            try:
-                self.parameters["author"] = getuser()
-            except:
-                self.paramters["author"] = "Unkown Author"
-
-        if "created_at" not in self.parameters:
-            self.parameters["created_at"] = int(time_ns())
-
-        if "checksum" not in self.parameters:
-            self.parameters["checksum"] = self.checksum
-        elif "checksum" in self.parameters:
-            assert (
-                self.parameters["checksum"] == self.checksum
-            ), candidate_checksum_mismatch_msg
+        pass
 
     def __str__(self):
         return json.dumps(self.parameters)
@@ -42,4 +30,20 @@ class Candidate:
 
     @property
     def layer_name(self):
-        return "_".join([str(self.parameters["created_at"]), self.checksum[0:8]])
+        return "_".join([str(self.created_at), self.checksum[0:8]])
+
+    def to_dict(self):
+        return asdict(self, dict_factory=self.dict_factory)
+
+    def dict_factory(self, data):
+        dictionary = {}
+        for key, value in data:
+            metadata = self.__dataclass_fields__[key].metadata
+            if "exclude_from_dict" in metadata:
+                continue
+
+            if "dict_type" in metadata:
+                value = type(metadata["dict_type"])(value)
+
+            dictionary[key] = value
+        return dictionary
