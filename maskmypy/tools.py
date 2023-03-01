@@ -1,10 +1,16 @@
 from geopandas import GeoDataFrame, sjoin
 from shapely.geometry import LineString
+from pandas.util import hash_pandas_object
+from hashlib import sha256
 
 
 def crop(gdf, bbox, padding):
     bbox = pad(bbox, padding)
     return gdf.cx[bbox[0] : bbox[2], bbox[1] : bbox[3]]
+
+
+def checksum(gdf):
+    return sha256(hash_pandas_object(gdf.geometry).values).hexdigest()[0:12]
 
 
 def pad(bbox, padding):

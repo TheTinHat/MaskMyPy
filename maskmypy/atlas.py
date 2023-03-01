@@ -2,80 +2,113 @@ import json
 from collections import deque
 from dataclasses import asdict, dataclass, field
 from functools import cached_property
-from hashlib import sha256
 from itertools import zip_longest
 from pathlib import Path
 
 import geopandas as gpd
-from pandas.util import hash_pandas_object
 
 from . import tools
 from .candidate import Candidate
 from .masks.donut import Donut
-from .messages import *
 from .masks.street import Street
+from .messages import *
+from .storage import Storage
 
 
 @dataclass
 class Atlas:
-    sensitive: gpd.GeoDataFrame = field(metadata={"exclude_from_dict": True}, repr=False)
-    candidates: deque = field(metadata={"exclude_from_dict": True}, default=None, repr=False)
-    directory: Path = field(metadata={"dict_type": str()}, default_factory=lambda: Path.cwd())
+    name: str
+    sensitive: gpd.GeoDataFrame
+    candidates: deque = field(default=None)
+    directory: Path = field(default_factory=lambda: Path.cwd())
     autosave: bool = False
     autoflush: bool = False
-    name: str = None
-    keep_last: int = 30
+    keep_last: int = 50
 
     def __post_init__(self):
-        self.directory = Path(self.directory)
-
-        if not self.name:
-            self.name = "".join(["atlas_", self.checksum[0:8]])
-
-        if not self.directory.is_dir():
-            self.directory.mkdir(exist_ok=True, parents=True)
-
         if not self.candidates:
             self.candidates = deque(maxlen=self.keep_last)
 
-    @cached_property
-    def checksum(self):
-        return sha256(hash_pandas_object(self.sensitive.geometry).values).hexdigest()
+        self.storage = Storage(directory=Path(self.directory), name=self.name)
+
+        if isinstance(self.directory, str):
+            self.directory = Path(self.directory)
+
+    def save(self):
+        self.storage.save_atlas(self)
+
+    def load_candidate(self, cid):
+        meta = self.storage.get_candidate_meta(cid)
+        mdf = self.storage.get_candidate_mdf(cid)
+
+        return Candidate(
+            sid=meta.sid,
+            mdf=mdf,
+            storage=self,
+            parameters=meta.parameters,
+            author=meta.author,
+            timestamp=meta.timestamp,
+        )
 
     @cached_property
+    def sid(self):
+        return tools.checksum(self.sensitive)
+
+    @classmethod
+    def load(cls, name, directory=Path.cwd()):
+        storage = Storage(name=name, directory=directory)
+
+        atlas_meta = storage.get_atlas_meta(name=name)
+        sensitive = storage.get_sensitive_gdf(name=name)
+
+        candidates_db = storage.list_candidates(atlas_meta.sid)
+
+        candidates = deque(maxlen=atlas_meta.keep_last)
+        for candidate in candidates_db:
+            candidate_mdf = storage.get_candidate_mdf(candidate.cid)
+            candidates.append(
+                Candidate(
+                    atlas_meta.sid,
+                    mdf=candidate_mdf,
+                    storage=storage,
+                    parameters=candidate.parameters,
+                    author=candidate.author,
+                    timestamp=candidate.timestamp,
+                )
+            )
+
+        return cls(
+            name=name,
+            sensitive=sensitive,
+            candidates=candidates,
+            directory=directory,
+            autosave=atlas_meta.autosave,
+            autoflush=atlas_meta.autoflush,
+            keep_last=atlas_meta.keep_last,
+        )
+
+    @property
     def crs(self):
         return self.sensitive.crs
-
-    @property
-    def gpkg_path(self):
-        return self.directory / f"{str(self.name)}.atlas.gpkg"
-
-    @property
-    def archive_path(self):
-        return self.directory / f"{str(self.name)}.atlas.json"
 
     @property
     def metadata(self):
         return asdict(self, dict_factory=self.dict_factory)
 
     def set(self, candidate):
-        assert candidate.gdf.crs == self.crs, candidate_crs_mismatch_msg
-        assert candidate.checksum != self.checksum, candidate_identical_to_sensitive_msg
+        # assert candidate.mdf.crs == self.crs, candidate_crs_mismatch_msg
+        # assert candidate.checksum != self.checksum, candidate_identical_to_sensitive_msg
         self.candidates.append(candidate)
-        if self.autosave:
-            self.save_candidate(-1)
 
     def get(self, index=-1):
         candidate = self.candidates[index]
 
-        if candidate.gdf is None:
+        if candidate.mdf is None:
             try:
-                candidate.gdf = gpd.read_file(
-                    self.gpkg_path, layer=candidate.layer_name, driver="GPKG"
-                )
+                candidate.mdf = gpd.read_file(self.gpkg, layer=candidate.cid, driver="GPKG")
             except Exception as err:
                 print(f"Unable to load candidate dataframe: {err}")
-        elif not isinstance(candidate.gdf, gpd.GeoDataFrame):
+        elif not isinstance(candidate.mdf, gpd.GeoDataFrame):
             raise Exception("Candidate dataframe is an unknown data type.")
 
         return candidate
@@ -83,22 +116,22 @@ class Atlas:
     def delete(self, index):
         pass
 
-    def save_candidate(self, index=None, flush=None):
-        candidate = self.candidates[index]
-        if isinstance(candidate.gdf, gpd.GeoDataFrame):
-            candidate.gdf.to_file(self.gpkg_path, layer=candidate.layer_name, driver="GPKG")
-            if flush or self.autoflush:
-                candidate.gdf = None
-        return True
+    # def save_candidate(self, index=None, flush=None):
+    #     candidate = self.candidates[index]
+    #     if isinstance(candidate.mdf, gpd.GeoDataFrame):
+    #         candidate.mdf.to_file(self.gpkg, layer=candidate.cid, driver="GPKG")
+    #         if flush or self.autoflush:
+    #             candidate.mdf = None
+    #     return True
 
     def save_atlas(self):
-        candidate_parameters = {cand.layer_name: cand.parameters for cand in self.candidates}
+        candidate_parameters = {cand.cid: cand.parameters for cand in self.candidates}
         archive = {"metadata": self.metadata, "candidates": candidate_parameters}
 
         with open(self.archive_path, "w") as file:
             file.write(json.dumps(archive))
 
-        self.sensitive.to_file(self.gpkg_path, layer="sensitive", driver="GPKG")
+        self.sensitive.to_file(self.gpkg, layer="sensitive", driver="GPKG")
         for index in range(len(self.candidates)):
             self.save_candidate(index)
 
@@ -121,14 +154,14 @@ class Atlas:
             archive = json.load(file)
 
         # Read geopackage
-        gpkg_path = directory / Path(f"{name}.atlas.gpkg")
-        sensitive = gpd.read_file(gpkg_path, layer="sensitive", driver="GPKG")
+        gpkg = directory / Path(f"{name}.atlas.gpkg")
+        sensitive = gpd.read_file(gpkg, layer="sensitive", driver="GPKG")
 
         # Load candidates
         candidates = []
-        for layer_name, parameters in sorted(archive["candidates"].items()):
-            layer = gpd.read_file(gpkg_path, layer=layer_name, driver="GPKG")
-            candidates.append(Candidate(gdf=layer, parameters=parameters))
+        for cid, parameters in sorted(archive["candidates"].items()):
+            layer = gpd.read_file(gpkg, layer=cid, driver="GPKG")
+            candidates.append(Candidate(mdf=layer, parameters=parameters))
 
         return cls(sensitive, candidates=candidates, **archive["metadata"])
 
