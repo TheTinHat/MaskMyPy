@@ -23,18 +23,16 @@ class Candidate:
     timestamp: int = field(default_factory=lambda: int(time_ns()))
 
     def __post_init__(self):
-        pass
+        self.cid
 
     @cached_property
     def cid(self):
         return tools.checksum(self.mdf)
 
-    @property
     def get(self):
-        self.mdf = self.storage.get_candidate(self.cid)
-
-    def put(self):
-        pass
+        if not isinstance(self.mdf, gpd.GeoDataFrame):
+            self.mdf = self.storage.get_candidate_mdf(self.cid)
+        return self
 
     def flush(self):
         self.storage.save_candidate(self)

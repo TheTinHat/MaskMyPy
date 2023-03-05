@@ -29,17 +29,17 @@ class Donut:
 
         # Validate and initialize input parameters
         tools.validate_geom_type(self.gdf, "Point")
-        self.gdf = self.gdf.copy(deep=True)
+        self.mdf = self.gdf.copy(deep=True)
 
         if self.low >= self.high:
             raise ValueError("Minimum displacement distance is larger than or equal to maximum.")
 
         if self.container is not None:
             tools.validate_geom_type(self.container, "Polygon", "MultiPolygon")
-            if self.container.crs != self.gdf.crs:
+            if self.container.crs != self.mdf.crs:
                 raise ValueError("Container CRS does not match that of sensitive GeoDataFrame.")
             self.container = self.container.copy(deep=True)
-            self.container = tools.crop(self.container, self.gdf.total_bounds, self.padding)
+            self.container = tools.crop(self.container, self.mdf.total_bounds, self.padding)
             self.container = self.container.loc[:, [self.container.geometry.name]]
 
     def _generate_random_offset(self):
@@ -101,11 +101,11 @@ class Donut:
 
     def run(self):
         if isinstance(self.container, gpd.GeoDataFrame):
-            self.gdf[self.gdf.geometry.name] = self.gdf[self.gdf.geometry.name].apply(
+            self.mdf[self.mdf.geometry.name] = self.mdf[self.mdf.geometry.name].apply(
                 self._mask_contained_geometry
             )
         else:
-            self.gdf[self.gdf.geometry.name] = self.gdf[self.gdf.geometry.name].apply(
+            self.mdf[self.mdf.geometry.name] = self.mdf[self.mdf.geometry.name].apply(
                 self._mask_geometry
             )
 
@@ -119,5 +119,4 @@ class Donut:
             "padding": self.padding,
         }
 
-        self.candidate = Candidate(self.gdf, parameters)
-        return self.candidate
+        return self.mdf, parameters

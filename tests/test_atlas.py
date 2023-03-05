@@ -16,14 +16,7 @@ from maskmypy import Atlas, Candidate
 
 @pytest.fixture
 def points():
-    return gpd.read_file("tests/points.geojson")
-
-
-@pytest.fixture
-def masked_points(points):
-    points = points.copy(deep=True)
-    points.geometry = points.geometry.translate(0.001)
-    return points
+    return gpd.read_file("tests/points.geojson").to_crs(epsg=26910)
 
 
 @pytest.fixture()
@@ -33,119 +26,96 @@ def tmpdir():
     shutil.rmtree("./tmp")
 
 
-def test_atlas_save(points, masked_points, tmpdir):
-    atlas = Atlas("test_atlas", points, directory="./tmp/")
-    atlas.set(Candidate(sid=atlas.sid, mdf=masked_points, storage=atlas.storage))
-    atlas.set(Candidate(sid=atlas.sid, mdf=masked_points, storage=atlas.storage))
-    atlas.set(Candidate(sid=atlas.sid, mdf=masked_points, storage=atlas.storage))
-    atlas.save()
-    atlas.save()
-    atlas.set(Candidate(sid=atlas.sid, mdf=masked_points, storage=atlas.storage))
-    atlas.set(Candidate(sid=atlas.sid, mdf=masked_points, storage=atlas.storage))
-    atlas.save()
+@pytest.fixture
+def atlas(points, tmpdir):
+    return Atlas(name="test_atlas", directory="./tmp/", sensitive=points)
+
+
+def test_atlas_autosave_and_load(atlas):
+    atlas.donut([10, 20, 30], [110, 120, 130], seed=123)
     del atlas
+
     atlas = Atlas.load(name="test_atlas", directory="./tmp/")
-    assert len(atlas.candidates) == 1
+    assert len(atlas.candidates) == 3
 
 
-# def test_atlas_checksum_mismatch(points):
-#     atlas = Atlas(points)
-#     checksum = atlas.checksum
-#     points.at[0, "geometry"] = translate(points.at[0, "geometry"], 0.001)
-#     assert checksum != Atlas(points).checksum
+def test_atlas_with_existing_candidates(atlas):
+    atlas.donut([10, 20, 30], [110, 120, 130], seed=123)
+    atlas.donut([10, 20, 30, 40, 50], [110, 120, 130, 140, 150], seed=123)
+    assert len(atlas.candidates) == 5
+    atlas.donut([10, 20, 30], [110, 120, 130], seed=456)
+    assert len(atlas.candidates) == 8
 
 
-# def test_atlas_checksum_match(points, tmpdir):
-#     checksum = Atlas(points).checksum
-#     points.to_file("./tmp/points.shp")
-#     points.to_file("./tmp/points.gpkg", driver="GPKG")
-
-#     shp_points = gpd.read_file("./tmp/points.shp")
-#     gpkg_points = gpd.read_file("./tmp/points.gpkg")
-
-#     assert checksum == Atlas(shp_points).checksum
-#     assert checksum == Atlas(gpkg_points).checksum
+def test_atlas_get(atlas):
+    atlas.donut([10, 20, 30], [110, 120, 130], seed=123)
+    result_1 = atlas.get(cid=atlas.cids[0])
+    result_2 = atlas.get(0)
+    assert result_1 == result_2
 
 
-# def test_atlas_gpkg_path(points):
-#     gpkg_path = Atlas(points, name="test_atlas").gpkg_path
-#     expected_path = Path.cwd() / "test_atlas.atlas.gpkg"
-#     assert gpkg_path == expected_path
+def test_atlas_flush_candidates(atlas):
+    atlas.donut([10, 20, 30], [110, 120, 130], seed=123)
+    atlas.flush_candidates()
+    assert atlas.candidates[0].mdf == None
+    assert isinstance(atlas.candidates[0].get().mdf, gpd.GeoDataFrame)
 
 
-# def test_atlas_archive_path(points):
-#     archive_path = Atlas(points, name="test_atlas").archive_path
-#     expected_path = Path.cwd() / "test_atlas.atlas.json"
-#     assert archive_path == expected_path
+# def test_atlas_delete(points, tmpdir):
+#     atlas = Atlas("test-atlas", points, directory="./tmp/")
+#     atlas.donut([10, 20, 30], [110, 120, 130], seed=123)
+#     assert len(atlas.candidates) == 2
+#     atlas.delete_candidate(atlas.cids[1])
 
-
-# def test_atlas_metadata(points):
-#     atlas = Atlas(points)
-#     metadata = atlas.metadata
-#     expected_keys = ["autosave", "directory", "keep_last", "name"]
-#     for key in expected_keys:
-#         assert key in metadata
-
-
-# def test_atlas_set(points, masked_points):
-#     atlas = Atlas(points, keep_last=1)
-#     breakpoint()
-#     atlas.set(Candidate(masked_points))
-
-#     atlas.set(Candidate(masked_points))
-#     assert len(atlas.candidates) == 1
+#     assert len(atlas.storage.list_candidates(sid=atlas.sid)) == 2
 
 
 # def test_atlas_set_candidate_bad_crs(points, masked_points):
-#     atlas = Atlas(points)
+#     atlas = Atlas("test-atlas", points)
 #     masked_points = masked_points.to_crs(epsg=2955)
 #     with pytest.raises(AssertionError):
-#         atlas.set(Candidate(masked_points))
+#         atlas.create_candidate(masked_points, {})
 
 
 # def test_atlas_set_candidate_unmasked(points):
-#     atlas = Atlas(points)
+#     atlas = Atlas("test-atlas", points)
 #     with pytest.raises(AssertionError):
-#         atlas.set(Candidate(points))
+#         atlas.create_candidate(masked_points, {})
 
 
 # def test_atlas_autosave(points, masked_points, tmpdir):
 #     atlas = Atlas(points, directory="./tmp/", autosave=True)
-#     atlas.set(Candidate(masked_points))
+#     atlas.create_candidate(masked_points, {})
 #     saved = gpd.read_file(atlas.gpkg_path, layer=atlas.get().layer_name)
 #     assert saved.equals(masked_points)
 
 
 # def test_atlas_get(points, masked_points):
-#     atlas = Atlas(points)
-#     atlas.set(Candidate(masked_points))
+#     atlas = Atlas("test-atlas", points)
+#     atlas.create_candidate(masked_points, {})
 #     assert atlas.get().gdf.equals(masked_points)
 #     assert atlas.get().gdf.equals(points) is False
 #     assert "checksum" in atlas.get().parameters
 #     assert "test_key" not in atlas.get().parameters
 
 
-# def test_atlas_flush_candidate(points, masked_points, tmpdir):
-#     atlas = Atlas(points, directory="./tmp")
-#     atlas.set(Candidate(masked_points))
-#     atlas.save_candidate(0, flush=True)
-#     assert atlas.candidates[0].gdf == None
-#     saved = gpd.read_file(atlas.gpkg_path, layer=atlas.get().layer_name)
-#     assert saved.equals(atlas.get().gdf)
+# # def test_atlas_flush_candidate(points, masked_points, tmpdir):
+# #     atlas = Atlas(points, directory="./tmp")
+# #     atlas.create_candidate(masked_points, {})
+# #     saved = gpd.read_file(atlas.gpkg_path, layer=atlas.get().layer_name)
+# #     assert saved.equals(atlas.get().gdf)
 
 
-# def test_atlas_autoflush_candidate(points, masked_points, tmpdir):
-#     atlas = Atlas(points, autoflush=True, directory="./tmp")
-#     atlas.set(Candidate(masked_points))
-#     atlas.save_candidate(0)
-#     assert atlas.candidates[0].gdf == None
-#     saved = gpd.read_file(atlas.gpkg_path, layer=atlas.get().layer_name)
-#     assert saved.equals(atlas.get().gdf)
+# # def test_atlas_autoflush_candidate(points, masked_points, tmpdir):
+# #     atlas = Atlas(points, autoflush=True, directory="./tmp")
+# #     atlas.create_candidate(masked_points, {})
+# #     saved = gpd.read_file(atlas.gpkg_path, layer=atlas.get().layer_name)
+# #     assert saved.equals(atlas.get().gdf)
 
 
 # def test_atlas_save_atlas(points, masked_points, tmpdir):
 #     atlas = Atlas(points, name="atlas_save_test", directory="./tmp")
-#     atlas.set(Candidate(masked_points))
+#     atlas.create_candidate(masked_points, {})
 #     atlas.save_atlas()
 
 #     saved = gpd.read_file(atlas.gpkg_path, layer=atlas.get().layer_name)
@@ -164,7 +134,7 @@ def test_atlas_save(points, masked_points, tmpdir):
 # def test_atlas_open_atlas(points, masked_points, tmpdir):
 #     # Create first atlas
 #     atlas = Atlas(points, name="atlas_open_test", directory="./tmp")
-#     atlas.set(Candidate(masked_points))
+#     atlas.create_candidate(masked_points, {})
 #     atlas.save_atlas()
 
 #     # Test first atlas and autodetect the name
@@ -175,8 +145,8 @@ def test_atlas_save(points, masked_points, tmpdir):
 
 #     # Create a second atlas
 #     atlas = Atlas(points, name="atlas_open_test_two", directory="./tmp")
-#     atlas.set(Candidate(masked_points))
-#     atlas.set(Candidate(masked_points))
+#     atlas.create_candidate(masked_points, {})
+#     atlas.create_candidate(masked_points, {})
 #     atlas.save_atlas()
 
 #     # Test that atlas open fails without name specified
@@ -196,7 +166,7 @@ def test_atlas_save(points, masked_points, tmpdir):
 
 
 # def test_donut(points):
-#     atlas = Atlas(points)
+#     atlas = Atlas("test-atlas", points)
 
 #     with pytest.raises(TypeError):
 #         donut = atlas.donut()
@@ -208,7 +178,7 @@ def test_atlas_save(points, masked_points, tmpdir):
 
 
 # def test_geopandas_does_not_modify_sensitive(points):
-#     atlas = Atlas(points)
+#     atlas = Atlas("test-atlas", points)
 #     original_sensitive = deepcopy(atlas.sensitive)
 #     atlas.donut(50, 500)
 
@@ -218,7 +188,7 @@ def test_atlas_save(points, masked_points, tmpdir):
 
 
 # def test_donut_list(points):
-#     atlas = Atlas(points)
+#     atlas = Atlas("test-atlas", points)
 
 #     mins = [50, 100, 150, 200, 250]
 #     maxes = [500, 550, 600, 650, 700]
@@ -227,7 +197,7 @@ def test_atlas_save(points, masked_points, tmpdir):
 
 
 # def test_donut_list_uneven(points):
-#     atlas = Atlas(points)
+#     atlas = Atlas("test-atlas", points)
 #     mins = [50, 100, 150, 200]
 #     maxes = [500, 550]
 #     donuts = atlas.donut(mins, maxes)

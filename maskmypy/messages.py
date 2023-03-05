@@ -15,3 +15,5 @@ multiple_container_intersection_msg = "Point intersects multiple polygons in con
 archive_exists_msg = (
     "Atlas already exists. Either delete the existing atlas, or set `overwrite=True`."
 )
+
+candidate_atlas_sid_mismatch_msg = "Candidate's sid field does not match this atlas' sid field."

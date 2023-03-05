@@ -32,7 +32,7 @@ class Street:
         # Validate and initialize input parameters
         tools.validate_geom_type(self.gdf, "Point")
         self.crs = self.gdf.crs
-        self.gdf = deepcopy(self.gdf).to_crs(epsg=4326)
+        self.mdf = deepcopy(self.gdf).to_crs(epsg=4326)
 
         if self.low >= self.high:
             raise ValueError("Minimum is larger than or equal to maximum.")
@@ -40,7 +40,7 @@ class Street:
         self._get_osm()
 
     def _get_osm(self):
-        bbox = tools.pad(self.gdf.total_bounds, self.padding)
+        bbox = tools.pad(self.mdf.total_bounds, self.padding)
         self.graph = add_edge_lengths(
             remove_isolated_nodes(
                 graph_from_bbox(
@@ -114,10 +114,10 @@ class Street:
         return self.graph_gdf[0].at[target_node, self.graph_gdf[0].geometry.name]
 
     def run(self):
-        self.gdf[self.gdf.geometry.name] = self.gdf[self.gdf.geometry.name].apply(
+        self.mdf[self.mdf.geometry.name] = self.mdf[self.mdf.geometry.name].apply(
             self._mask_geometry
         )
-        self.gdf = self.gdf.to_crs(self.crs)
+        self.mdf = self.mdf.to_crs(self.crs)
 
         parameters = {
             "mask": "street",
@@ -128,5 +128,4 @@ class Street:
             "padding": self.padding,
         }
 
-        self.candidate = Candidate(self.gdf, parameters)
-        return self.candidate
+        return self.mdf, parameters
