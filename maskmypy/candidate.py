@@ -1,12 +1,9 @@
-import json
-from dataclasses import asdict, dataclass, field
+from dataclasses import dataclass, field
 from functools import cached_property
 from getpass import getuser
-from hashlib import sha256
 from time import time_ns
 from datetime import datetime
 import geopandas as gpd
-from pandas.util import hash_pandas_object
 
 from .messages import *
 from .storage import Storage
@@ -25,6 +22,9 @@ class Candidate:
     def __post_init__(self):
         self.cid
 
+    def __repr__(self):
+        return ",".join([self.cid, str(self.parameters)])
+
     @cached_property
     def cid(self):
         return tools.checksum(self.mdf)
@@ -34,8 +34,11 @@ class Candidate:
             self.mdf = self.storage.get_candidate_mdf(self.cid)
         return self
 
-    def flush(self):
+    def save(self):
         self.storage.save_candidate(self)
+
+    def flush(self):
+        self.save()
         self.mdf = None
 
     @property

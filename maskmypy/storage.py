@@ -97,6 +97,12 @@ class Storage:
     def get_atlas_meta(self, name):
         return self.session.execute(select(AtlasMeta).filter_by(name=name)).scalars().first()
 
+    def get_candidate_mdf(self, cid):
+        return gpd.GeoDataFrame.from_file(self.gpkg, layer=cid, driver="GPKG")
+
+    def get_candidate_meta(self, cid):
+        return self.session.execute(select(CandidateMeta).filter_by(cid=cid)).scalars().first()
+
     def list_candidates(self, sid):
         return (
             self.session.execute(
@@ -105,12 +111,6 @@ class Storage:
             .scalars()
             .all()
         )
-
-    def get_candidate_mdf(self, cid):
-        return gpd.GeoDataFrame.from_file(self.gpkg, layer=cid, driver="GPKG")
-
-    def get_candidate_meta(self, cid):
-        return self.session.execute(select(CandidateMeta).filter_by(cid=cid)).scalars().first()
 
     def delete_candidate(self, cid):
         self.session.delete(self.get_candidate_meta(cid=cid))

@@ -11,7 +11,6 @@ from osmnx.graph import graph_from_bbox
 from osmnx.utils_graph import remove_isolated_nodes
 
 from .. import tools
-from ..candidate import Candidate
 from ..messages import *
 
 

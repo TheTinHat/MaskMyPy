@@ -1,14 +1,12 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from math import sqrt
 from random import SystemRandom
 
 import geopandas as gpd
 from numpy import random
 from shapely.affinity import translate
-from shapely.geometry import LineString, Point, Polygon
 
 from .. import tools
-from ..candidate import Candidate
 from ..messages import *
 
 

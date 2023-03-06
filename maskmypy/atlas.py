@@ -1,5 +1,4 @@
-import json
-from dataclasses import asdict, dataclass, field
+from dataclasses import dataclass, field
 from functools import cached_property
 from itertools import zip_longest
 from pathlib import Path
@@ -114,16 +113,16 @@ class Atlas:
         return candidate
 
     def donut(self, low, high, **kwargs):
-        if isinstance(low, list) and isinstance(high, list):
+        if isinstance(low, (int, float)) and isinstance(high, (int, float)):
+            mdf, parameters = Donut(self.sensitive, low, high, **kwargs).run()
+            return self.create_candidate(mdf, parameters)
+
+        elif isinstance(low, list) and isinstance(high, list):
             distances = self._zip_longest_autofill(low, high)
             for low_val, high_val in distances:
                 mdf, parameters = Donut(self.sensitive, low_val, high_val, **kwargs).run()
                 self.create_candidate(mdf, parameters)
             return list(self.candidates)[(0 - len(distances)) :]
-
-        elif isinstance(low, (int, float)) and isinstance(high, (int, float)):
-            mdf, parameters = Donut(self.sensitive, low, high, **kwargs).run()
-            return self.create_candidate(mdf, parameters)
 
         else:
             raise ValueError(
