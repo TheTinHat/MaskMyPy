@@ -1,11 +1,7 @@
 from dataclasses import dataclass
-from math import sqrt
-from random import SystemRandom
-
 import geopandas as gpd
-from numpy import random
 from osmnx import graph_to_gdfs
-from osmnx.distance import add_edge_lengths, nearest_nodes
+from osmnx.distance import nearest_nodes
 from osmnx.graph import graph_from_bbox
 from osmnx.utils_graph import remove_isolated_nodes
 from osmnx.projection import project_graph
@@ -45,18 +41,17 @@ class Voronoi:
 
     def _get_osm(self):
         bbox = self.mdf.to_crs(epsg=4326).total_bounds
-        self.graph = add_edge_lengths(
-            remove_isolated_nodes(
-                graph_from_bbox(
-                    north=bbox[3],
-                    south=bbox[1],
-                    west=bbox[0],
-                    east=bbox[2],
-                    network_type="drive",
-                    truncate_by_edge=True,
-                )
+        self.graph = remove_isolated_nodes(
+            graph_from_bbox(
+                north=bbox[3],
+                south=bbox[1],
+                west=bbox[0],
+                east=bbox[2],
+                network_type="drive",
+                truncate_by_edge=True,
             )
         )
+
         self.graph = project_graph(self.graph, to_crs=self.gdf.crs)
         self.node_gdf = graph_to_gdfs(self.graph)[0]
 
