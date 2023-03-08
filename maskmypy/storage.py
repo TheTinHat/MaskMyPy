@@ -51,6 +51,7 @@ class CandidateStats(Base):
     __table__ = Table(
         "candidate_stats",
         metadata_obj,
+        Column("id", Integer, primary_key=True),
         Column("cid", ForeignKey("candidate_meta.cid")),
     )
 
