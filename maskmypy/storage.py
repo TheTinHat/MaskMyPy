@@ -67,13 +67,16 @@ class Storage:
 
     def save_atlas(self, atlas):
         atlas.sensitive.to_file(self.gpkg, layer=atlas.name, driver="GPKG")
-        insert_stmt = insert(AtlasMeta).values(
-            name=atlas.name,
-            sid=atlas.sid,
-            autosave=atlas.autosave,
-            autoflush=atlas.autoflush,
+        self.session.execute(
+            insert(AtlasMeta)
+            .values(
+                name=atlas.name,
+                sid=atlas.sid,
+                autosave=atlas.autosave,
+                autoflush=atlas.autoflush,
+            )
+            .on_conflict_do_nothing()
         )
-        self.session.execute(insert_stmt.on_conflict_do_nothing())
         self.session.commit()
 
         for candidate in atlas.candidates:
@@ -81,14 +84,17 @@ class Storage:
 
     def save_candidate(self, candidate):
         candidate.mdf.to_file(self.gpkg, layer=candidate.cid, driver="GPKG")
-        insert_stmt = insert(CandidateMeta).values(
-            cid=candidate.cid,
-            sid=candidate.sid,
-            parameters=candidate.parameters,
-            author=candidate.author,
-            timestamp=candidate.timestamp,
+        self.session.execute(
+            insert(CandidateMeta)
+            .values(
+                cid=candidate.cid,
+                sid=candidate.sid,
+                parameters=candidate.parameters,
+                author=candidate.author,
+                timestamp=candidate.timestamp,
+            )
+            .on_conflict_do_nothing()
         )
-        self.session.execute(insert_stmt.on_conflict_do_nothing())
         self.session.commit()
 
     def get_sensitive_gdf(self, name):

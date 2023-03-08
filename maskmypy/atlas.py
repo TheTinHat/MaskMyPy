@@ -4,7 +4,7 @@ from functools import cached_property
 from itertools import zip_longest
 from pathlib import Path
 
-import geopandas as gpd
+from geopandas import GeoDataFrame
 
 from . import tools
 from .candidate import Candidate
@@ -17,17 +17,16 @@ from .storage import Storage
 @dataclass
 class Atlas:
     name: str
-    sensitive: gpd.GeoDataFrame
+    sensitive: GeoDataFrame
     directory: Path = field(default_factory=lambda: Path.cwd())
-    candidates: list = field(default=None)
+    candidates: list[Candidate] = field(default_factory=list[Candidate])
+    storage: Storage = None
     autosave: bool = True
     autoflush: bool = True
 
     def __post_init__(self):
-        if not self.candidates:
-            self.candidates = []
-
-        self.storage = Storage(directory=Path(self.directory), name=self.name)
+        if not self.storage:
+            self.storage = Storage(directory=Path(self.directory), name=self.name)
 
         if isinstance(self.directory, str):
             self.directory = Path(self.directory)
@@ -92,7 +91,7 @@ class Atlas:
         else:
             print(f"Candidate {candidate.cid} already exists. Skipping...")
 
-    def get(self, index=-1, cid=None):
+    def get(self, index=-1, cid=None) -> Candidate:
         if cid is not None:
             candidate = [c for c in self.candidates if c.cid == cid]
             if len(candidate) == 1:

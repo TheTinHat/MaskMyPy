@@ -131,60 +131,26 @@ def test_atlas_flush_candidates(atlas):
 #     assert atlas.get().layer_name in archive["candidates"]
 
 
-# def test_atlas_open_atlas(points, masked_points, tmpdir):
-#     # Create first atlas
-#     atlas = Atlas(points, name="atlas_open_test", directory="./tmp")
-#     atlas.create_candidate(masked_points, {})
-#     atlas.save_atlas()
+def test_donut(points):
+    atlas = Atlas("test-atlas", points)
 
-#     # Test first atlas and autodetect the name
-#     atlas = Atlas.open_atlas(directory="./tmp")
-#     assert atlas.get().parameters["checksum"][0:8] == "26b7538a"
-#     assert atlas.sensitive.equals(points)
-#     assert atlas.get().gdf.equals(masked_points)
+    with pytest.raises(TypeError):
+        donut = atlas.donut()
 
-#     # Create a second atlas
-#     atlas = Atlas(points, name="atlas_open_test_two", directory="./tmp")
-#     atlas.create_candidate(masked_points, {})
-#     atlas.create_candidate(masked_points, {})
-#     atlas.save_atlas()
-
-#     # Test that atlas open fails without name specified
-#     with pytest.raises(Exception):
-#         atlas = Atlas.open_atlas(directory="./tmp")
-
-#     # Test first atlas again with name specified
-#     atlas = Atlas.open_atlas(directory="./tmp", name="atlas_open_test")
-#     assert len(atlas.candidates) == 1
-
-#     # Test second atlas
-#     atlas = Atlas.open_atlas(directory="./tmp", name="atlas_open_test_two")
-#     assert len(atlas.candidates) == 2
-#     assert atlas.get().parameters["checksum"] == atlas.candidates[0].checksum
-#     assert atlas.sensitive.equals(points)
-#     assert atlas.get().gdf.equals(masked_points)
+    donut = atlas.donut(50, 500)
+    assert isinstance(donut.gdf, gpd.GeoDataFrame)
+    assert isinstance(donut.parameters["author"], str)
+    assert isinstance(donut.parameters["created_at"], int)
 
 
-# def test_donut(points):
-#     atlas = Atlas("test-atlas", points)
+def test_geopandas_does_not_modify_sensitive(points):
+    atlas = Atlas("test-atlas", points)
+    original_sensitive = deepcopy(atlas.sensitive)
+    atlas.donut(50, 500)
 
-#     with pytest.raises(TypeError):
-#         donut = atlas.donut()
-
-#     donut = atlas.donut(50, 500)
-#     assert isinstance(donut.gdf, gpd.GeoDataFrame)
-#     assert isinstance(donut.parameters["author"], str)
-#     assert isinstance(donut.parameters["created_at"], int)
-
-
-# def test_geopandas_does_not_modify_sensitive(points):
-#     atlas = Atlas("test-atlas", points)
-#     original_sensitive = deepcopy(atlas.sensitive)
-#     atlas.donut(50, 500)
-
-#     assert_frame_equal(atlas.sensitive, original_sensitive)
-#     with pytest.raises(AssertionError):
-#         assert_frame_equal(atlas.sensitive, atlas.get().gdf)
+    assert_frame_equal(atlas.sensitive, original_sensitive)
+    with pytest.raises(AssertionError):
+        assert_frame_equal(atlas.sensitive, atlas.get().gdf)
 
 
 # def test_donut_list(points):
