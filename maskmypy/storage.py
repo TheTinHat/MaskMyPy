@@ -47,6 +47,14 @@ class CandidateMeta(Base):
     )
 
 
+class CandidateStats(Base):
+    __table__ = Table(
+        "candidate_stats",
+        metadata_obj,
+        Column("cid", ForeignKey("candidate_meta.cid")),
+    )
+
+
 @dataclass
 class Storage:
     directory: Path
