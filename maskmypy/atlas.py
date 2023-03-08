@@ -4,13 +4,15 @@ from itertools import zip_longest
 from pathlib import Path
 
 from geopandas import GeoDataFrame
+from sqlalchemy import select
+from sqlalchemy.dialects.sqlite import insert
 
 from . import tools
 from .candidate import Candidate
 from .masks.donut import Donut
 from .masks.street import Street
 from .messages import *
-from .storage import Storage
+from .storage import AtlasMeta, CandidateMeta, Storage
 
 
 @dataclass
@@ -46,28 +48,41 @@ class Atlas:
         return self.sensitive.crs
 
     def save(self):
-        self.storage.save_atlas(self)
+        self.storage.save_gdf(self.sensitive, self.name)
+        self.storage.session.execute(
+            insert(AtlasMeta)
+            .values(
+                name=self.name,
+                sid=self.sid,
+                autosave=self.autosave,
+                autoflush=self.autoflush,
+            )
+            .on_conflict_do_nothing()
+        )
+        self.storage.session.commit()
+        for candidate in self.candidates:
+            candidate.save()
 
     @classmethod
     def load(cls, name, directory=Path.cwd()):
         storage = Storage(name=name, directory=directory)
+        atlas_meta = (
+            storage.session.execute(select(AtlasMeta).filter_by(name=name)).scalars().first()
+        )
+        sensitive = storage.read_gdf(name)
 
-        atlas_meta = storage.get_atlas_meta(name=name)
-        sensitive = storage.get_sensitive_gdf(name=name)
-
-        candidates = []
-        for candidate in storage.list_candidates(atlas_meta.sid):
-            candidate_mdf = storage.get_candidate_mdf(candidate.cid)
-            candidates.append(
-                Candidate(
-                    sid=atlas_meta.sid,
-                    mdf=candidate_mdf,
-                    storage=storage,
-                    parameters=candidate.parameters,
-                    author=candidate.author,
-                    timestamp=candidate.timestamp,
-                )
+        candidate_list = (
+            storage.session.execute(
+                select(CandidateMeta)
+                .filter_by(sid=atlas_meta.sid)
+                .order_by(CandidateMeta.timestamp)
             )
+            .scalars()
+            .all()
+        )
+        candidates = []
+        for candidate in candidate_list:
+            candidates.append(Candidate.load(candidate.cid, storage))
 
         return cls(
             name=name,
@@ -86,7 +101,7 @@ class Atlas:
         if candidate.cid not in self.cids:
             self.candidates.append(candidate)
             if self.autosave:
-                self.storage.save_candidate(candidate)
+                candidate.save()
         else:
             print(f"Candidate {candidate.cid} already exists. Skipping...")
 

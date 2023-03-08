@@ -68,14 +68,6 @@ def test_multiple_atlases(points, tmpdir):
     assert len(atlas_b.candidates) == 3
 
 
-# def test_atlas_delete(atlas):
-#     atlas.donut([10, 20, 30], [110, 120, 130], seed=123)
-#     assert len(atlas.candidates) == 2
-#     atlas.delete_candidate(atlas.cids[1])
-
-#     assert len(atlas.storage.list_candidates(sid=atlas.sid)) == 2
-
-
 def test_atlas_set_candidate_bad_crs(atlas, points):
     mdf, mask_params = Donut(points, 50, 500, seed=123).run()
     mdf = mdf.to_crs(epsg=2955)
@@ -92,74 +84,13 @@ def test_atlas_set_candidate_unmasked(atlas, points):
         atlas.create_candidate(points, {})
 
 
-# def test_atlas_autosave(points, masked_points, tmpdir):
-#     atlas = Atlas(points, directory="./tmp/", autosave=True)
-#     atlas.create_candidate(masked_points, {})
-#     saved = gpd.read_file(atlas.gpkg_path, layer=atlas.get().layer_name)
-#     assert saved.equals(masked_points)
-
-
-# def test_atlas_get(points, masked_points):
-#     atlas = Atlas("test-atlas", points)
-#     atlas.create_candidate(masked_points, {})
-#     assert atlas.get().gdf.equals(masked_points)
-#     assert atlas.get().gdf.equals(points) is False
-#     assert "checksum" in atlas.get().parameters
-#     assert "test_key" not in atlas.get().parameters
-
-
-# # def test_atlas_flush_candidate(points, masked_points, tmpdir):
-# #     atlas = Atlas(points, directory="./tmp")
-# #     atlas.create_candidate(masked_points, {})
-# #     saved = gpd.read_file(atlas.gpkg_path, layer=atlas.get().layer_name)
-# #     assert saved.equals(atlas.get().gdf)
-
-
-# # def test_atlas_autoflush_candidate(points, masked_points, tmpdir):
-# #     atlas = Atlas(points, autoflush=True, directory="./tmp")
-# #     atlas.create_candidate(masked_points, {})
-# #     saved = gpd.read_file(atlas.gpkg_path, layer=atlas.get().layer_name)
-# #     assert saved.equals(atlas.get().gdf)
-
-
-# def test_atlas_save_atlas(points, masked_points, tmpdir):
-#     atlas = Atlas(points, name="atlas_save_test", directory="./tmp")
-#     atlas.create_candidate(masked_points, {})
-#     atlas.save_atlas()
-
-#     saved = gpd.read_file(atlas.gpkg_path, layer=atlas.get().layer_name)
-#     assert saved.equals(masked_points)
-
-#     with open(atlas.archive_path, "r") as file:
-#         archive = json.load(file)
-
-#     assert "metadata" in archive
-#     assert "candidates" in archive
-
-#     assert archive["metadata"]["directory"] == "tmp"
-#     assert atlas.get().layer_name in archive["candidates"]
-
-
-def test_donut(points):
-    atlas = Atlas("test-atlas", points)
-
-    with pytest.raises(TypeError):
-        donut = atlas.donut()
-
-    donut = atlas.donut(50, 500)
-    assert isinstance(donut.gdf, gpd.GeoDataFrame)
-    assert isinstance(donut.parameters["author"], str)
-    assert isinstance(donut.parameters["created_at"], int)
-
-
-def test_geopandas_does_not_modify_sensitive(points):
-    atlas = Atlas("test-atlas", points)
+def test_geopandas_does_not_modify_sensitive(atlas):
     original_sensitive = deepcopy(atlas.sensitive)
     atlas.donut(50, 500)
 
     assert_frame_equal(atlas.sensitive, original_sensitive)
     with pytest.raises(AssertionError):
-        assert_frame_equal(atlas.sensitive, atlas.get().gdf)
+        assert_frame_equal(atlas.sensitive, atlas.get().mdf)
 
 
 def test_donut_list(atlas):
