@@ -20,6 +20,8 @@ class Atlas:
     name: str
     sensitive: GeoDataFrame
     directory: Path = field(default_factory=lambda: Path.cwd())
+    container: GeoDataFrame = None
+    population: GeoDataFrame = None
     candidates: list[Candidate] = field(default_factory=list[Candidate])
     storage: Storage = None
     autosave: bool = True
@@ -31,6 +33,20 @@ class Atlas:
 
         if isinstance(self.directory, str):
             self.directory = Path(self.directory)
+
+        if isinstance(self.container, GeoDataFrame):
+            assert self.container.crs == self.crs
+            tools.validate_geom_type(self.container, "Polygon", "MultiPolygon")
+            self._container_id = "_".join([self.sid, "container"])
+        else:
+            self._container_id = "NULL"
+
+        if isinstance(self.population, GeoDataFrame):
+            assert self.population.crs == self.crs
+            tools.validate_geom_type(self.population, "Polygon", "MultiPolygon", "Point")
+            self._population_id = "_".join([self.sid, "population"])
+        else:
+            self._population_id = "NULL"
 
         if self.autosave:
             self.save()
@@ -48,7 +64,22 @@ class Atlas:
         return self.sensitive.crs
 
     def save(self):
+        # Save sensitive
         self.storage.save_gdf(self.sensitive, self.name)
+
+        # Save candidates
+        for candidate in self.candidates:
+            candidate.save()
+
+        # Save container
+        if isinstance(self.container, GeoDataFrame):
+            self.storage.save_gdf(self.container, self._container_id)
+
+        # Save population
+        if isinstance(self.population, GeoDataFrame):
+            self.storage.save_gdf(self.population, self._population_id)
+
+        # Save metadata to database
         self.storage.session.execute(
             insert(AtlasMeta)
             .values(
@@ -56,21 +87,26 @@ class Atlas:
                 sid=self.sid,
                 autosave=self.autosave,
                 autoflush=self.autoflush,
+                container_id=self._container_id,
+                population_id=self._population_id,
             )
             .on_conflict_do_nothing()
         )
         self.storage.session.commit()
-        for candidate in self.candidates:
-            candidate.save()
 
     @classmethod
     def load(cls, name, directory=Path.cwd()):
         storage = Storage(name=name, directory=directory)
+
+        # Load atlas metadata
         atlas_meta = (
             storage.session.execute(select(AtlasMeta).filter_by(name=name)).scalars().first()
         )
+
+        # Load sensitive
         sensitive = storage.read_gdf(name)
 
+        # Load candidates
         candidate_list = (
             storage.session.execute(
                 select(CandidateMeta)
@@ -84,11 +120,25 @@ class Atlas:
         for candidate in candidate_list:
             candidates.append(Candidate.load(candidate.cid, storage))
 
+        # Load container
+        if atlas_meta.container_id != "NULL":
+            container = storage.read_gdf(atlas_meta.container_id)
+        else:
+            container = None
+
+        # Load population
+        if atlas_meta.population_id != "NULL":
+            population = storage.read_gdf(atlas_meta.container_id)
+        else:
+            population = None
+
         return cls(
             name=name,
             sensitive=sensitive,
             candidates=candidates,
             directory=directory,
+            container=container,
+            population=population,
             autosave=atlas_meta.autosave,
             autoflush=atlas_meta.autoflush,
         )
@@ -128,13 +178,17 @@ class Atlas:
 
     def donut(self, low, high, **kwargs):
         if isinstance(low, (int, float)) and isinstance(high, (int, float)):
-            mdf, parameters = Donut(self.sensitive, low, high, **kwargs).run()
+            mdf, parameters = Donut(
+                self.sensitive, low, high, container=self.container, **kwargs
+            ).run()
             return self.create_candidate(mdf, parameters)
 
         elif isinstance(low, list) and isinstance(high, list):
             distances = self._zip_longest_autofill(low, high)
             for low_val, high_val in distances:
-                mdf, parameters = Donut(self.sensitive, low_val, high_val, **kwargs).run()
+                mdf, parameters = Donut(
+                    self.sensitive, low_val, high_val, container=self.container, **kwargs
+                ).run()
                 self.create_candidate(mdf, parameters)
             return list(self.candidates)[(0 - len(distances)) :]
 

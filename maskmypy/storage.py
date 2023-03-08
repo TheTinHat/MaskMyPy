@@ -30,6 +30,8 @@ class AtlasMeta(Base):
         Column("sid", String),
         Column("autosave", Boolean),
         Column("autoflush", Boolean),
+        Column("container_id", String),
+        Column("population_id", String),
     )
 
 

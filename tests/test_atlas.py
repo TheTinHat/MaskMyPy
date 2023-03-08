@@ -5,23 +5,7 @@ import pytest
 from copy import deepcopy
 from pandas.testing import assert_frame_equal
 from maskmypy import Atlas, Donut
-
-
-@pytest.fixture
-def points():
-    return gpd.read_file("tests/points.geojson").to_crs(epsg=26910)
-
-
-@pytest.fixture()
-def tmpdir():
-    os.makedirs("./tmp/", exist_ok=True)
-    yield
-    shutil.rmtree("./tmp")
-
-
-@pytest.fixture
-def atlas(points, tmpdir):
-    return Atlas(name="test_atlas", directory="./tmp/", sensitive=points)
+from .fixtures import points, tmpdir, atlas, container, atlas_contained
 
 
 def test_atlas_autosave_and_load(atlas):
@@ -45,6 +29,15 @@ def test_atlas_get(atlas):
     result_1 = atlas.get(cid=atlas.cids[0])
     result_2 = atlas.get(0)
     assert result_1 == result_2
+
+
+def test_atlas_save_container(atlas_contained):
+    atlas_contained.save()
+    name = atlas_contained.name
+    directory = atlas_contained.directory
+    del atlas_contained
+    atlas_new = Atlas.load(name, directory)
+    assert isinstance(atlas_new.container, gpd.GeoDataFrame)
 
 
 def test_atlas_flush_candidates(atlas):
@@ -110,6 +103,10 @@ def test_donut_list_uneven(atlas):
     maxes = [500, 550, 600, 650, 700]
     donuts = atlas.donut(mins, maxes)
     assert len(donuts) == len(maxes)
+
+
+def test_donut_contained(atlas_contained):
+    atlas_contained.donut(50, 500)
 
 
 @pytest.mark.slow

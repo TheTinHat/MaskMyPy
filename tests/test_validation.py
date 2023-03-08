@@ -4,7 +4,7 @@ import shutil
 import geopandas as gpd
 import pytest
 from shapely.geometry import Point, MultiPoint
-from maskmypy import Atlas, Candidate, validation
+from maskmypy import Atlas, Candidate
 
 
 @pytest.fixture

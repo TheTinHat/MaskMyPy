@@ -5,29 +5,12 @@ import geopandas as gpd
 import pytest
 
 from maskmypy import Atlas, Candidate, Donut, analyst
-
-
-@pytest.fixture
-def points():
-    return gpd.read_file("tests/points.geojson").to_crs(epsg=26910)
-
-
-@pytest.fixture
-def masked_points(points):
-    points.geometry = points.geometry.translate(0.001)
-    return points
+from .fixtures import points, tmpdir, atlas
 
 
 @pytest.fixture
 def container(points):
     return gpd.read_file("tests/boundary.geojson")
-
-
-@pytest.fixture()
-def tmpdir():
-    os.makedirs("./tmp/", exist_ok=True)
-    yield
-    shutil.rmtree("./tmp")
 
 
 def test_k_satisfaction(points):

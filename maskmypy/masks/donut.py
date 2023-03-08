@@ -36,9 +36,6 @@ class Donut:
             tools.validate_geom_type(self.container, "Polygon", "MultiPolygon")
             if self.container.crs != self.mdf.crs:
                 raise ValueError("Container CRS does not match that of sensitive GeoDataFrame.")
-            self.container = self.container.copy(deep=True)
-            self.container = tools.crop(self.container, self.mdf.total_bounds, self.padding)
-            self.container = self.container.loc[:, [self.container.geometry.name]]
 
     def _generate_random_offset(self):
         if self.distribution == "uniform":

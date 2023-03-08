@@ -6,37 +6,16 @@ import pytest
 
 from maskmypy import Atlas, Candidate, Donut
 
-
-@pytest.fixture
-def points():
-    return gpd.read_file("tests/points.geojson")
-
-
-@pytest.fixture
-def masked_points(points):
-    points.geometry = points.geometry.translate(0.001)
-    return points
-
-
-@pytest.fixture
-def container(points):
-    return gpd.read_file("tests/boundary.geojson")
-
-
-@pytest.fixture()
-def tmpdir():
-    os.makedirs("./tmp/", exist_ok=True)
-    yield
-    shutil.rmtree("./tmp")
+from .fixtures import atlas, points, tmpdir, container
 
 
 def test_random_seed(points):
-    candidate = Donut(points, 10, 100).run()
-    assert isinstance(candidate.parameters["seed"], int)
+    mdf, parameters = Donut(points, 10, 100).run()
+    assert isinstance(parameters["seed"], int)
 
-    candidate = Donut(points, 10, 100, seed=123456).run()
-    assert candidate.parameters["seed"] == 123456
+    mdf, parameters = Donut(points, 10, 100, seed=123456).run()
+    assert parameters["seed"] == 123456
 
 
 def test_container(points, container):
-    candidate = Donut(points, 0.01, 0.05, container=container).run()
+    mdf, parameters = Donut(points, 10, 100, container=container).run()
