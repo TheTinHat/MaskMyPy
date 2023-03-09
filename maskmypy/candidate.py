@@ -22,14 +22,14 @@ class Candidate:
     author: str = field(default_factory=lambda: getuser())
     timestamp: int = field(default_factory=lambda: int(time_ns()))
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         self.cid
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return ",".join([self.cid, str(self.parameters)])
 
     @cached_property
-    def cid(self):
+    def cid(self) -> str:
         return tools.checksum(self.mdf)
 
     def get(self):
@@ -37,7 +37,7 @@ class Candidate:
             self.mdf = self.storage.read_gdf(self.cid)
         return self
 
-    def save(self):
+    def save(self) -> None:
         self.storage.save_gdf(self.mdf, self.cid)
         self.storage.session.execute(
             insert(CandidateMeta)
@@ -53,7 +53,7 @@ class Candidate:
         self.storage.session.commit()
 
     @classmethod
-    def load(cls, cid, storage: Storage):
+    def load(cls, cid: str, storage: Storage):
         candidate_meta = (
             storage.session.execute(select(CandidateMeta).filter_by(cid=cid)).scalars().first()
         )
@@ -66,10 +66,10 @@ class Candidate:
             timestamp=candidate_meta.timestamp,
         )
 
-    def flush(self):
+    def flush(self) -> None:
         self.save()
         self.mdf = None
 
     @property
-    def time(self):
+    def time(self) -> datetime:
         return datetime.fromtimestamp(self.timestamp // 1000000000).strftime("%Y-%m-%d %H:%M:%S")

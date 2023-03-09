@@ -35,7 +35,7 @@ setup(
         ],
         "extra": ["contextily>=1.2.0", "psutil"],
     },
-    python_requires=">=3.9",
+    python_requires=">=3.10",
     entry_points={
         "console_scripts": ["maskmypy=maskmypy.cli:cli"],
     },
