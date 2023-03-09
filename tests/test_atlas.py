@@ -9,7 +9,7 @@ from .fixtures import points, tmpdir, atlas, container, atlas_contained
 
 
 def test_atlas_autosave_and_load(atlas):
-    atlas.donut([10, 20, 30], [110, 120, 130], seed=123)
+    atlas.donut_i([10, 20, 30], [110, 120, 130], seed=123)
     del atlas
 
     atlas = Atlas.load(name="test_atlas", directory="./tmp/")
@@ -17,15 +17,15 @@ def test_atlas_autosave_and_load(atlas):
 
 
 def test_atlas_with_existing_candidates(atlas):
-    atlas.donut([10, 20, 30], [110, 120, 130], seed=123)
-    atlas.donut([10, 20, 30, 40, 50], [110, 120, 130, 140, 150], seed=123)
+    atlas.donut_i([10, 20, 30], [110, 120, 130], seed=123)
+    atlas.donut_i([10, 20, 30, 40, 50], [110, 120, 130, 140, 150], seed=123)
     assert len(atlas.candidates) == 5
-    atlas.donut([10, 20, 30], [110, 120, 130], seed=456)
+    atlas.donut_i([10, 20, 30], [110, 120, 130], seed=456)
     assert len(atlas.candidates) == 8
 
 
 def test_atlas_get(atlas):
-    atlas.donut([10, 20, 30], [110, 120, 130], seed=123)
+    atlas.donut_i([10, 20, 30], [110, 120, 130], seed=123)
     result_1 = atlas.get(cid=atlas.cids[0])
     result_2 = atlas.get(0)
     assert result_1 == result_2
@@ -41,7 +41,7 @@ def test_atlas_save_container(atlas_contained):
 
 
 def test_atlas_flush_candidates(atlas):
-    atlas.donut([10, 20, 30], [110, 120, 130], seed=123)
+    atlas.donut_i([10, 20, 30], [110, 120, 130], seed=123)
     atlas.flush_candidates()
     assert atlas.candidates[0].mdf == None
     assert isinstance(atlas.candidates[0].get().mdf, gpd.GeoDataFrame)
@@ -51,8 +51,8 @@ def test_multiple_atlases(points, tmpdir):
     atlas_a = Atlas(name="test_atlas_a", directory="./tmp/", sensitive=points)
     atlas_b = Atlas(name="test_atlas_b", directory="./tmp/", sensitive=points)
 
-    atlas_a.donut([10, 20, 30], [110, 120, 130], seed=123)
-    atlas_b.donut([10, 20, 30], [110, 120, 130], seed=123)
+    atlas_a.donut_i([10, 20, 30], [110, 120, 130], seed=123)
+    atlas_b.donut_i([10, 20, 30], [110, 120, 130], seed=123)
 
     atlas_a = Atlas.load(name="test_atlas_a", directory="./tmp/")
     atlas_b = Atlas.load(name="test_atlas_a", directory="./tmp/")
@@ -89,19 +89,19 @@ def test_geopandas_does_not_modify_sensitive(atlas):
 def test_donut_list(atlas):
     mins = [50, 100, 150, 200, 250]
     maxes = [500, 550, 600, 650, 700]
-    donuts = atlas.donut(mins, maxes)
+    donuts = atlas.donut_i(mins, maxes)
     assert len(donuts) == len(mins)
 
 
 def test_donut_list_uneven(atlas):
     mins = [50, 100, 150, 200]
     maxes = [500, 550]
-    donuts = atlas.donut(mins, maxes)
+    donuts = atlas.donut_i(mins, maxes)
     assert len(donuts) == len(mins)
 
     mins = [50, 100]
     maxes = [500, 550, 600, 650, 700]
-    donuts = atlas.donut(mins, maxes)
+    donuts = atlas.donut_i(mins, maxes)
     assert len(donuts) == len(maxes)
 
 

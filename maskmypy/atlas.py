@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 from functools import cached_property
 from itertools import zip_longest
 from pathlib import Path
+from pyproj.crs.crs import CRS
 
 from geopandas import GeoDataFrame
 from sqlalchemy import select
@@ -11,7 +12,7 @@ from . import tools
 from .candidate import Candidate
 from .masks.donut import Donut
 from .masks.street import Street
-from .messages import *
+from . import messages as msg
 from .storage import AtlasMeta, CandidateMeta, Storage
 
 
@@ -27,21 +28,21 @@ class Atlas:
     autosave: bool = True
     autoflush: bool = True
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if not self.storage:
             self.storage = Storage(directory=Path(self.directory), name=self.name)
 
         if isinstance(self.directory, str):
             self.directory = Path(self.directory)
 
-        if isinstance(self.container, GeoDataFrame):
+        if self.container is not None:
             assert self.container.crs == self.crs
             tools.validate_geom_type(self.container, "Polygon", "MultiPolygon")
             self._container_id = "_".join([self.sid, "container"])
         else:
             self._container_id = "NULL"
 
-        if isinstance(self.population, GeoDataFrame):
+        if self.population is not None:
             assert self.population.crs == self.crs
             tools.validate_geom_type(self.population, "Polygon", "MultiPolygon", "Point")
             self._population_id = "_".join([self.sid, "population"])
@@ -52,18 +53,18 @@ class Atlas:
             self.save()
 
     @cached_property
-    def sid(self):
+    def sid(self) -> str:
         return tools.checksum(self.sensitive)
 
     @property
-    def cids(self):
+    def cids(self) -> list[str]:
         return [candidate.cid for candidate in self.candidates]
 
     @property
-    def crs(self):
+    def crs(self) -> CRS:
         return self.sensitive.crs
 
-    def save(self):
+    def save(self) -> None:
         # Save sensitive
         self.storage.save_gdf(self.sensitive, self.name)
 
@@ -72,11 +73,11 @@ class Atlas:
             candidate.save()
 
         # Save container
-        if isinstance(self.container, GeoDataFrame):
+        if self.container is not None:
             self.storage.save_gdf(self.container, self._container_id)
 
         # Save population
-        if isinstance(self.population, GeoDataFrame):
+        if self.population is not None:
             self.storage.save_gdf(self.population, self._population_id)
 
         # Save metadata to database
@@ -95,7 +96,7 @@ class Atlas:
         self.storage.session.commit()
 
     @classmethod
-    def load(cls, name, directory=Path.cwd()):
+    def load(cls, name: str, directory: Path = Path.cwd()):
         storage = Storage(name=name, directory=directory)
 
         # Load atlas metadata
@@ -143,10 +144,10 @@ class Atlas:
             autoflush=atlas_meta.autoflush,
         )
 
-    def set(self, candidate):
-        assert candidate.mdf.crs == self.crs, candidate_crs_mismatch_msg
-        assert candidate.cid != self.sid, candidate_identical_to_sensitive_msg
-        assert candidate.sid == self.sid, candidate_atlas_sid_mismatch_msg
+    def set(self, candidate: Candidate) -> None:
+        assert candidate.mdf.crs == self.crs, msg.candidate_crs_mismatch_msg
+        assert candidate.cid != self.sid, msg.candidate_identical_to_sensitive_msg
+        assert candidate.sid == self.sid, msg.candidate_atlas_sid_mismatch_msg
 
         if candidate.cid not in self.cids:
             self.candidates.append(candidate)
@@ -155,7 +156,7 @@ class Atlas:
         else:
             print(f"Candidate {candidate.cid} already exists. Skipping...")
 
-    def get(self, index=-1, cid=None) -> Candidate:
+    def get(self, index: int = -1, cid: str = None) -> Candidate:
         if cid is not None:
             candidate = [c for c in self.candidates if c.cid == cid]
             if len(candidate) == 1:
@@ -167,54 +168,41 @@ class Atlas:
         else:
             return self.candidates[index].get()
 
-    def flush_candidates(self):
+    def flush_candidates(self) -> None:
         for candidate in self.candidates:
             candidate.flush()
 
-    def create_candidate(self, mdf, parameters):
+    def create_candidate(
+        self, mdf: GeoDataFrame, parameters: dict, autoset: bool = True
+    ) -> Candidate:
         candidate = Candidate(sid=self.sid, storage=self.storage, mdf=mdf, parameters=parameters)
-        self.set(candidate)
+        if self.autoset:
+            self.set(candidate)
         return candidate
 
-    def donut(self, low, high, **kwargs):
-        if isinstance(low, (int, float)) and isinstance(high, (int, float)):
-            mdf, parameters = Donut(
-                self.sensitive, low, high, container=self.container, **kwargs
-            ).run()
-            return self.create_candidate(mdf, parameters)
+    def donut(self, low: float, high: float, **kwargs) -> Candidate:
+        mdf, parameters = Donut(
+            self.sensitive, low, high, container=self.container, **kwargs
+        ).run()
+        return self.create_candidate(mdf, parameters)
 
-        elif isinstance(low, list) and isinstance(high, list):
-            distances = self._zip_longest_autofill(low, high)
-            for low_val, high_val in distances:
-                mdf, parameters = Donut(
-                    self.sensitive, low_val, high_val, container=self.container, **kwargs
-                ).run()
-                self.create_candidate(mdf, parameters)
-            return list(self.candidates)[(0 - len(distances)) :]
+    def donut_i(self, low: list, high: list, **kwargs) -> list[Candidate]:
+        values = self._zip_longest_autofill(low, high)
+        for low_val, high_val in values:
+            self.donut(low=low_val, high=high_val, **kwargs)
+        return list(self.candidates)[(0 - len(values)) :]
 
-        else:
-            raise ValueError(
-                "Low and high arguments must both be numbers (int, float) or lists of numbers."
-            )
+    def street(self, low: float, high: float, **kwargs) -> Candidate:
+        mdf, parameters = Street(self.sensitive, low, high, **kwargs).run()
+        return self.create_candidate(mdf, parameters)
 
-    def street(self, low, high, **kwargs):
-        if isinstance(low, list) and isinstance(high, list):
-            distances = self._zip_longest_autofill(low, high)
-            for low_val, high_val in distances:
-                mdf, parameters = Street(self.sensitive, low_val, high_val, **kwargs).run()
-                self.create_candidate(mdf, parameters)
-            return list(self.candidates)[(0 - len(distances)) :]
-
-        elif isinstance(low, (int, float)) and isinstance(high, (int, float)):
-            mdf, parameters = Street(self.sensitive, low, high, **kwargs).run()
-            return self.create_candidate(mdf, parameters)
-
-        else:
-            raise ValueError(
-                "Low and high arguments must both be numbers (int, float) or lists of numbers."
-            )
+    def street_i(self, low: list, high: list, **kwargs) -> list[Candidate]:
+        values = self._zip_longest_autofill(low, high)
+        for low_val, high_val in values:
+            self.street(low=low_val, high=high_val, **kwargs)
+        return list(self.candidates)[(0 - len(values)) :]
 
     @staticmethod
-    def _zip_longest_autofill(a, b):
+    def _zip_longest_autofill(a: any, b: any) -> list:
         fill = max(b) if len(b) < len(a) else max(a)
         return list(zip_longest(a, b, fillvalue=fill))
