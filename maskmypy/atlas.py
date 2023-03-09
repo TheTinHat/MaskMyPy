@@ -176,7 +176,7 @@ class Atlas:
         self, mdf: GeoDataFrame, parameters: dict, autoset: bool = True
     ) -> Candidate:
         candidate = Candidate(sid=self.sid, storage=self.storage, mdf=mdf, parameters=parameters)
-        if self.autoset:
+        if autoset:
             self.set(candidate)
         return candidate
 
