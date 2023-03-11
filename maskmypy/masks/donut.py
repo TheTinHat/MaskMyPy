@@ -6,7 +6,7 @@ import geopandas as gpd
 from numpy import random
 from shapely.affinity import translate
 from .. import tools
-from .. import messages
+from .. import messages as msg
 
 
 @dataclass

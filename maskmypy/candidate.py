@@ -9,7 +9,7 @@ from sqlalchemy import select
 from sqlalchemy.dialects.sqlite import insert
 
 from . import tools
-from .messages import *
+from . import messages as msg
 from .storage import CandidateMeta, Storage
 
 

@@ -10,7 +10,7 @@ from shapely import voronoi_polygons
 from shapely.ops import nearest_points
 
 from .. import tools
-from .. import messages
+from .. import messages as msg
 
 
 @dataclass
