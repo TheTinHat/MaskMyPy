@@ -8,6 +8,12 @@ from maskmypy import Atlas, Donut
 from .fixtures import points, tmpdir, atlas, container, atlas_contained
 
 
+def test_atlas_run(atlas):
+    candidate = atlas.mask(Donut, low=50, high=500, distribution="areal")
+    lows = [50, 60, 70]
+    high = [100, 200, 300]
+
+
 def test_atlas_autosave_and_load(atlas):
     atlas.donut_i([10, 20, 30], [110, 120, 130], seed=123)
     del atlas
@@ -62,14 +68,16 @@ def test_multiple_atlases(points, tmpdir):
 
 
 def test_atlas_set_candidate_bad_crs(atlas, points):
-    mdf, mask_params = Donut(points, 50, 500, seed=123).run()
+    d = Donut(points, 50, 500, seed=123)
+    mdf = d.run()
+    params = d.params
     mdf = mdf.to_crs(epsg=2955)
 
     with pytest.raises(AssertionError):
-        atlas.create_candidate(mdf, mask_params)
+        atlas.create_candidate(mdf, params)
 
     mdf = mdf.to_crs(atlas.crs)
-    atlas.create_candidate(mdf, mask_params)
+    atlas.create_candidate(mdf, params)
 
 
 def test_atlas_set_candidate_unmasked(atlas, points):

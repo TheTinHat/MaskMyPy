@@ -11,7 +11,7 @@ from osmnx.graph import graph_from_bbox
 from osmnx.utils_graph import remove_isolated_nodes
 
 from .. import tools
-from ..messages import *
+from .. import messages
 
 
 @dataclass
@@ -117,8 +117,11 @@ class Street:
             self._mask_geometry
         )
         self.mdf = self.mdf.to_crs(self.crs)
+        return self.mdf
 
-        parameters = {
+    @property
+    def params(self):
+        return {
             "mask": "street",
             "low": self.low,
             "high": self.high,
@@ -126,5 +129,3 @@ class Street:
             "seed": self.seed,
             "padding": self.padding,
         }
-
-        return self.mdf, parameters

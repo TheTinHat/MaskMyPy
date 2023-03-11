@@ -1,10 +1,10 @@
-import geopandas as gpd
-from .tools import validate_geom_type
-from shapely.ops import nearest_points
 from collections import namedtuple
 
-# from matplotlib import
+import geopandas as gpd
 import pandas as pd
+from shapely.ops import nearest_points
+
+from .tools import validate_geom_type
 
 
 def displacement(sensitive_gdf, candidate_gdf, colname="_distance"):

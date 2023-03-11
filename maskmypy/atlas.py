@@ -2,17 +2,16 @@ from dataclasses import dataclass, field
 from functools import cached_property
 from itertools import zip_longest
 from pathlib import Path
-from pyproj.crs.crs import CRS
 
 from geopandas import GeoDataFrame
+from pyproj.crs.crs import CRS
 from sqlalchemy import select
 from sqlalchemy.dialects.sqlite import insert
 
+from . import messages as msg
 from . import tools
 from .candidate import Candidate
-from .masks.donut import Donut
-from .masks.street import Street
-from . import messages as msg
+from .masks import Donut, Street, Voronoi
 from .storage import AtlasMeta, CandidateMeta, Storage
 
 
@@ -180,27 +179,32 @@ class Atlas:
             self.set(candidate)
         return candidate
 
-    def donut(self, low: float, high: float, **kwargs) -> Candidate:
-        mdf, parameters = Donut(
-            self.sensitive, low, high, container=self.container, **kwargs
-        ).run()
-        return self.create_candidate(mdf, parameters)
+    def mask(self, mask, **kwargs) -> Candidate:
+        m = mask(gdf=self.sensitive, **kwargs)
+        mdf = m.run()
+        params = m.params
+        return self.create_candidate(mdf, params)
 
-    def donut_i(self, low: list, high: list, **kwargs) -> list[Candidate]:
-        values = self._zip_longest_autofill(low, high)
+    def mask_i(self, mask, low_list: list, high_list: list, **kwargs) -> list[Candidate]:
+        values = self._zip_longest_autofill(low_list, high_list)
         for low_val, high_val in values:
-            self.donut(low=low_val, high=high_val, **kwargs)
+            self.mask(mask, low=low_val, high=high_val, **kwargs)
         return list(self.candidates)[(0 - len(values)) :]
+
+    def donut(self, low: float, high: float, **kwargs) -> Candidate:
+        return self.mask(Donut, low=low, high=high, container=self.container, **kwargs)
+
+    def donut_i(self, low_list: list, high_list: list, **kwargs) -> list[Candidate]:
+        return self.mask_i(Donut, low_list, high_list, **kwargs)
 
     def street(self, low: float, high: float, **kwargs) -> Candidate:
-        mdf, parameters = Street(self.sensitive, low, high, **kwargs).run()
-        return self.create_candidate(mdf, parameters)
+        return self.mask(Street, low=low, high=high, **kwargs)
 
-    def street_i(self, low: list, high: list, **kwargs) -> list[Candidate]:
-        values = self._zip_longest_autofill(low, high)
-        for low_val, high_val in values:
-            self.street(low=low_val, high=high_val, **kwargs)
-        return list(self.candidates)[(0 - len(values)) :]
+    def street_i(self, low_list: list, high_list: list, **kwargs) -> list[Candidate]:
+        return self.mask_i(Street, low_list, high_list, **kwargs)
+
+    def voronoi(self, **kwargs) -> Candidate:
+        return self.mask(Voronoi, **kwargs)
 
     @staticmethod
     def _zip_longest_autofill(a: any, b: any) -> list:

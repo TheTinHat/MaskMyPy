@@ -16,17 +16,14 @@ from .storage import CandidateMeta, Storage
 @dataclass
 class Candidate:
     sid: str
-    mdf: gpd.GeoDataFrame
-    storage: Storage
+    mdf: gpd.GeoDataFrame = field(repr=False)
+    storage: Storage = field(repr=False)
     parameters: dict = field(default_factory=lambda: dict())
     author: str = field(default_factory=lambda: getuser())
     timestamp: int = field(default_factory=lambda: int(time_ns()))
 
     def __post_init__(self) -> None:
         self.cid
-
-    def __repr__(self) -> str:
-        return ",".join([self.cid, str(self.parameters)])
 
     @cached_property
     def cid(self) -> str:

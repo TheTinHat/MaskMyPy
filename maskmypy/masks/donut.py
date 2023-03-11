@@ -5,9 +5,8 @@ from random import SystemRandom
 import geopandas as gpd
 from numpy import random
 from shapely.affinity import translate
-
 from .. import tools
-from ..messages import *
+from .. import messages
 
 
 @dataclass
@@ -104,7 +103,11 @@ class Donut:
                 self._mask_geometry
             )
 
-        parameters = {
+        return self.mdf
+
+    @property
+    def params(self):
+        return {
             "mask": "donut",
             "low": self.low,
             "high": self.high,
@@ -113,5 +116,3 @@ class Donut:
             "seed": self.seed,
             "padding": self.padding,
         }
-
-        return self.mdf, parameters

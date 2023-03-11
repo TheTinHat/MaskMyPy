@@ -1,16 +1,16 @@
 from dataclasses import dataclass
+
 import geopandas as gpd
 from osmnx import graph_to_gdfs
 from osmnx.distance import nearest_nodes
 from osmnx.graph import graph_from_bbox
-from osmnx.utils_graph import remove_isolated_nodes
 from osmnx.projection import project_graph
+from osmnx.utils_graph import remove_isolated_nodes
 from shapely import voronoi_polygons
-from shapely.affinity import translate
 from shapely.ops import nearest_points
 
 from .. import tools
-from ..messages import *
+from .. import messages
 
 
 @dataclass
@@ -63,7 +63,8 @@ class Voronoi:
         self.mdf[self.mdf.geometry.name] = self.mdf[self.mdf.geometry.name].apply(
             self._mask_geometry
         )
+        return self.mdf
 
-        parameters = {"mask": "voronoi", "street": self.street}
-
-        return self.mdf, parameters
+    @property
+    def params(self):
+        return {"mask": "voronoi", "street": self.street}
