@@ -17,7 +17,7 @@ def test_k_satisfaction(points):
     pass
 
 
-def test_displacement(points, masked_points):
+def test_displacement(points):
     pass
 
 
@@ -36,7 +36,7 @@ def test_disaggregate():
 def test_mean_center_drift(points):
     masked_points = points.copy(deep=True)
     masked_points["geometry"] = masked_points.geometry.translate(50, 0, 0)
-    drift = analyst.mean_center_drift(points, masked_points)
+    drift = analyst.central_drift(points, masked_points)
     assert drift == 50
 
 

@@ -4,12 +4,19 @@ import geopandas as gpd
 import pytest
 from copy import deepcopy
 from pandas.testing import assert_frame_equal
-from maskmypy import Atlas, Donut
+from maskmypy import Atlas, Donut, Street, Voronoi
 from .fixtures import points, tmpdir, atlas, container, atlas_contained
 
 
 def test_atlas_run(atlas):
-    candidate = atlas.mask(Donut, low=50, high=500, distribution="areal")
+    candidate_donut = atlas.mask(Donut, low=50, high=500, distribution="areal")
+    candidate_street = atlas.mask(Street, low=2, high=3)
+    candidate_voronoi = atlas.mask(Voronoi)
+
+
+def test_atlas_run_i(atlas):
+    candidate_donut = atlas.donut_i([1, 2, 3], [10, 11, 12], distribution="areal")
+    candidate_street = atlas.street_i([2, 3], [5, 6])
 
 
 def test_atlas_autosave_and_load(atlas):

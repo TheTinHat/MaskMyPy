@@ -10,12 +10,12 @@ from .fixtures import atlas, points, tmpdir, container
 
 
 def test_random_seed(points):
-    mdf, parameters = Donut(points, 10, 100).run()
-    assert isinstance(parameters["seed"], int)
+    mdf = Donut(points, 10, 100).run()
 
-    mdf, parameters = Donut(points, 10, 100, seed=123456).run()
+    parameters = Donut(points, 10, 100, seed=123456).params
     assert parameters["seed"] == 123456
+    assert isinstance(parameters["seed"], int)
 
 
 def test_container(points, container):
-    mdf, parameters = Donut(points, 10, 100, container=container).run()
+    mdf = Donut(points, 10, 100, container=container).run()
