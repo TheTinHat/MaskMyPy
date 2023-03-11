@@ -20,7 +20,7 @@ setup(
     ],
     install_requires=[
         "osmnx>=1.3.0",
-        "geopandas>=0.10",
+        "geopandas>=0.12",
         "scikit-learn>=1.1.1",
         "SQLAlchemy>=2.0.0",
     ],
