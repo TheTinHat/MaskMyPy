@@ -8,8 +8,8 @@ import geopandas as gpd
 from sqlalchemy import select
 from sqlalchemy.dialects.sqlite import insert
 
-from . import tools
 from . import messages as msg
+from . import tools
 from .storage import CandidateMeta, Storage
 
 
@@ -29,7 +29,7 @@ class Candidate:
     def cid(self) -> str:
         return tools.checksum(self.mdf)
 
-    def get(self):
+    def get(self) -> "Candidate":
         if not isinstance(self.mdf, gpd.GeoDataFrame):
             self.mdf = self.storage.read_gdf(self.cid)
         return self
@@ -50,7 +50,7 @@ class Candidate:
         self.storage.session.commit()
 
     @classmethod
-    def load(cls, cid: str, storage: Storage):
+    def load(cls, cid: str, storage: Storage) -> "Candidate":
         candidate_meta = (
             storage.session.execute(select(CandidateMeta).filter_by(cid=cid)).scalars().first()
         )

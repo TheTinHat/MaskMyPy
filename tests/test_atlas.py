@@ -10,8 +10,6 @@ from .fixtures import points, tmpdir, atlas, container, atlas_contained
 
 def test_atlas_run(atlas):
     candidate = atlas.mask(Donut, low=50, high=500, distribution="areal")
-    lows = [50, 60, 70]
-    high = [100, 200, 300]
 
 
 def test_atlas_autosave_and_load(atlas):

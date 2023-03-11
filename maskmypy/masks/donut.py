@@ -2,24 +2,26 @@ from dataclasses import dataclass
 from math import sqrt
 from random import SystemRandom
 
-import geopandas as gpd
+from geopandas import GeoDataFrame
 from numpy import random
+from shapely import Point
 from shapely.affinity import translate
-from .. import tools
+
 from .. import messages as msg
+from .. import tools
 
 
 @dataclass
 class Donut:
-    gdf: gpd.GeoDataFrame
+    gdf: GeoDataFrame
     low: float
     high: float
-    container: gpd.GeoDataFrame = None
+    container: GeoDataFrame = None
     distribution: str = "uniform"
     seed: int = None
     padding: float = 0.2
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         # Initialize random number generator
         self.seed = int(SystemRandom().random() * (10**10)) if not self.seed else self.seed
         self._rng = random.default_rng(seed=self.seed)
@@ -33,10 +35,9 @@ class Donut:
 
         if self.container is not None:
             tools.validate_geom_type(self.container, "Polygon", "MultiPolygon")
-            if self.container.crs != self.mdf.crs:
-                raise ValueError("Container CRS does not match that of sensitive GeoDataFrame.")
+            tools.validate_crs(self.gdf.crs, self.container.crs)
 
-    def _generate_random_offset(self):
+    def _generate_random_offset(self) -> tuple[float, float]:
         if self.distribution == "uniform":
             hypotenuse = self._rng.uniform(self.low, self.high)
             x = self._rng.uniform(0, hypotenuse)
@@ -70,48 +71,48 @@ class Donut:
             pass
         return (x, y)
 
-    def _mask_geometry(self, geometry):
+    def _mask_point(self, point: Point) -> Point:
         xoff, yoff = self._generate_random_offset()
-        new_geometry = translate(geometry, xoff=xoff, yoff=yoff)
-        return new_geometry
+        new_point = translate(point, xoff=xoff, yoff=yoff)
+        return new_point
 
-    def _mask_contained_geometry(self, geometry):
-        intersection = self.container.intersects(geometry)
+    def _mask_contained_point(self, point: Point) -> Point:
+        intersection = self.container.intersects(point)
         intersected_polygons = set(
             intersection[intersection].index
         )  # Filter for rows where intersection == True, convert to set for later comparison
         start = intersected_polygons if len(intersected_polygons) > 0 else -1
         if len(start) > 1:
             raise ValueError(
-                f"Point at {geometry} intersects {len(start)} polygons in the container. Container polygons must not overlap."
+                f"Point at {point} intersects {len(start)} polygons in the container. Container polygons must not overlap."
             )
         end = None
         while start != end:
-            new_geometry = self._mask_geometry(geometry)
-            intersection = self.container.intersects(new_geometry)
+            new_point = self._mask_point(point)
+            intersection = self.container.intersects(new_point)
             intersected_polygons = set(intersection[intersection].index)
             end = intersected_polygons if len(intersected_polygons) > 0 else -1
-        return new_geometry
+        return new_point
 
-    def run(self):
-        if isinstance(self.container, gpd.GeoDataFrame):
+    def run(self) -> GeoDataFrame:
+        if isinstance(self.container, GeoDataFrame):
             self.mdf[self.mdf.geometry.name] = self.mdf[self.mdf.geometry.name].apply(
-                self._mask_contained_geometry
+                self._mask_contained_point
             )
         else:
             self.mdf[self.mdf.geometry.name] = self.mdf[self.mdf.geometry.name].apply(
-                self._mask_geometry
+                self._mask_point
             )
 
         return self.mdf
 
     @property
-    def params(self):
+    def params(self) -> dict:
         return {
             "mask": "donut",
             "low": self.low,
             "high": self.high,
-            "container": True if isinstance(self.container, gpd.GeoDataFrame) else False,
+            "container": True if isinstance(self.container, GeoDataFrame) else False,
             "distribution": self.distribution,
             "seed": self.seed,
             "padding": self.padding,

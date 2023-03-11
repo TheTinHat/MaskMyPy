@@ -35,7 +35,7 @@ class Atlas:
             self.directory = Path(self.directory)
 
         if self.container is not None:
-            assert self.container.crs == self.crs
+            tools.validate_crs(self.crs, self.container.crs)
             tools.validate_geom_type(self.container, "Polygon", "MultiPolygon")
             self._container_id = "_".join([self.sid, "container"])
         else:
@@ -95,7 +95,7 @@ class Atlas:
         self.storage.session.commit()
 
     @classmethod
-    def load(cls, name: str, directory: Path = Path.cwd()):
+    def load(cls, name: str, directory: Path = Path.cwd()) -> "Atlas":
         storage = Storage(name=name, directory=directory)
 
         # Load atlas metadata
@@ -171,12 +171,9 @@ class Atlas:
         for candidate in self.candidates:
             candidate.flush()
 
-    def create_candidate(
-        self, mdf: GeoDataFrame, parameters: dict, autoset: bool = True
-    ) -> Candidate:
+    def create_candidate(self, mdf: GeoDataFrame, parameters: dict) -> Candidate:
         candidate = Candidate(sid=self.sid, storage=self.storage, mdf=mdf, parameters=parameters)
-        if autoset:
-            self.set(candidate)
+        self.set(candidate)
         return candidate
 
     def mask(self, mask, **kwargs) -> Candidate:

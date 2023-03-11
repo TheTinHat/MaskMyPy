@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from pathlib import Path
 
-import geopandas as gpd
+from geopandas import GeoDataFrame, read_file
 from sqlalchemy import (
     Boolean,
     Column,
@@ -62,22 +62,22 @@ class Storage:
     name: str
     session: Session = None
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         engine = create_engine(f"sqlite:///{self.sqlite}")
         self.session = Session(engine)
         metadata_obj.create_all(engine)
         self.directory = Path(self.directory)
 
     @property
-    def gpkg(self):
+    def gpkg(self) -> Path:
         return self.directory / Path(f"{str(self.name)}.gpkg")
 
     @property
-    def sqlite(self):
+    def sqlite(self) -> Path:
         return self.directory / Path(f"{str(self.name)}.db")
 
-    def save_gdf(self, gdf, layer_name):
+    def save_gdf(self, gdf: GeoDataFrame, layer_name: str) -> None:
         gdf.to_file(self.gpkg, layer=layer_name, driver="GPKG")
 
-    def read_gdf(self, layer_name):
-        return gpd.read_file(self.gpkg, layer=layer_name, driver="GPKG")
+    def read_gdf(self, layer_name: str) -> GeoDataFrame:
+        return read_file(self.gpkg, layer=layer_name, driver="GPKG")
