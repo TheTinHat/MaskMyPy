@@ -10,6 +10,7 @@ from sqlalchemy.dialects.sqlite import insert
 
 from . import messages as msg
 from . import tools
+from . import analyst
 from .candidate import Candidate
 from .masks import Donut, Street, Voronoi
 from .storage import AtlasMeta, CandidateMeta, Storage
@@ -202,6 +203,27 @@ class Atlas:
 
     def voronoi(self, **kwargs) -> Candidate:
         return self.mask(Voronoi, **kwargs)
+
+    def benchmark(self):
+        for candidate in self.candidates:
+            self.ripleys_k(candidate)
+
+    def ripleys_k(
+        self,
+        candidate: Candidate,
+        steps: int = 10,
+        graph: bool = True,
+        subtitle: str = None,
+    ):
+        max_dist = analyst.ripleys_rot(self.sensitive)
+        min_dist = max_dist / steps
+        ripley_result = analyst.ripleys_k(
+            candidate.mdf, max_dist=max_dist, min_dist=min_dist, steps=steps
+        )
+        if graph:
+            subtitle = candidate.cid if subtitle is None else subtitle
+            analyst.graph_ripleyresult(ripley_result, subtitle).savefig(f"{candidate.cid}.png")
+        return ripley_result
 
     @staticmethod
     def _zip_longest_autofill(a: any, b: any) -> list:

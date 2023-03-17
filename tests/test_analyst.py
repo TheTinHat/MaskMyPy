@@ -55,10 +55,12 @@ def test_ripleys_k(atlas):
     kresult_candidate = analyst.ripleys_k(
         atlas.candidates[0].mdf, max_dist=max_dist, min_dist=min_dist, steps=distance_steps
     )
-    analyst.graph_ripleyresult(kresult_sensitive).savefig("ripley_k1.png")
+    analyst.graph_ripleyresult(kresult_sensitive)
     analyst.graph_ripleyresults(
         kresult_candidate, subtitle=atlas.candidates[0].cid, s_result=kresult_sensitive
-    ).savefig("ripley_comparison.png")
+    )
+    atlas.donut(50, 500)
+    atlas.benchmark()
 
 
 def test_nearest_neighbor_stats():
