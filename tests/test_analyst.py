@@ -44,8 +44,21 @@ def test_k_satisfaction():
     pass
 
 
-def test_ripleys_k():
-    pass
+def test_ripleys_k(atlas):
+    atlas.donut(10, 100)
+    distance_steps = 10
+    max_dist = analyst.ripleys_rot(atlas.sensitive)
+    min_dist = max_dist / distance_steps
+    kresult_sensitive = analyst.ripleys_k(
+        atlas.sensitive, max_dist=max_dist, min_dist=min_dist, steps=distance_steps
+    )
+    kresult_candidate = analyst.ripleys_k(
+        atlas.candidates[0].mdf, max_dist=max_dist, min_dist=min_dist, steps=distance_steps
+    )
+    analyst.graph_ripleyresult(kresult_sensitive).savefig("ripley_k1.png")
+    analyst.graph_ripleyresults(
+        kresult_candidate, subtitle=atlas.candidates[0].cid, s_result=kresult_sensitive
+    ).savefig("ripley_comparison.png")
 
 
 def test_nearest_neighbor_stats():

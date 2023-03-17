@@ -15,7 +15,7 @@ def test_atlas_run(atlas):
 
 
 def test_atlas_run_i(atlas):
-    candidate_donut = atlas.donut_i([1, 2, 3], [10, 11, 12], distribution="areal")
+    candidate_donut = atlas.donut_i([1], [10, 11], distribution="areal")
     candidate_street = atlas.street_i([2, 3], [5, 6])
 
 

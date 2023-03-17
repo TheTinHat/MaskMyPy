@@ -1,7 +1,13 @@
 from collections import namedtuple
-from geopandas import GeoDataFrame, sjoin
-from shapely.ops import nearest_points
 
+from geopandas import GeoDataFrame, sjoin
+from numpy import array
+from pointpats import PointPattern, k_test
+from pointpats.distance_statistics import KtestResult
+from shapely.ops import nearest_points
+import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
+from matplotlib.axis import Axis
 from .candidate import Candidate
 from .tools import validate_geom_type
 
@@ -83,36 +89,107 @@ def _disaggregate(gdf_a: GeoDataFrame, gdf_b: GeoDataFrame, gdf_b_col: str) -> G
     return gdf
 
 
+def k_satisfaction(gdf: GeoDataFrame, min_k: int, k_col: str = "k_anonymity") -> float:
+    return gdf.loc[gdf[k_col] >= min_k, k_col].count() / gdf[k_col].count()
+
+
+def _gdf_to_pointpattern(gdf: GeoDataFrame) -> PointPattern:
+    return PointPattern(list(zip(gdf.geometry.x, gdf.geometry.y)))
+
+
+def nearest_neighbor_stats(gdf: GeoDataFrame) -> dict:
+    pp = _gdf_to_pointpattern(gdf)
+    return {"min": pp.min_nnd, "max": pp.max_nnd, "mean": pp.mean_nnd}
+
+
 def central_drift(gdf_a: GeoDataFrame, gdf_b: GeoDataFrame) -> float:
     centroid_a = gdf_a.dissolve().centroid
     centroid_b = gdf_b.dissolve().centroid
     return float(centroid_a.distance(centroid_b))
 
 
-def k_satisfaction(gdf: GeoDataFrame, min_k: int, k_col: str = "k_anonymity") -> float:
-    return gdf.loc[gdf[k_col] >= min_k, k_col].count() / gdf[k_col].count()
+def ripleys_rot(gdf: GeoDataFrame) -> float:
+    return _gdf_to_pointpattern(gdf).rot
 
 
-def nearest_neighbor(gdf: GeoDataFrame, summary: bool = True) -> namedtuple:
-    gdf_tmp = gdf.copy(deep=True)
-    gdf_tmp["nn_geom"] = gdf_tmp.apply(
-        lambda x: nearest_points(
-            x.geometry, gdf_tmp.loc[gdf_tmp.geometry != x.geometry].dissolve().iloc[0].geometry
-        )[1],
-        axis=1,
+def ripleys_k(
+    gdf: GeoDataFrame, max_dist: float = None, min_dist: float = None, steps: int = 10
+) -> KtestResult:
+    if not max_dist:
+        max_dist = ripleys_rot(gdf)
+
+    if not min_dist:
+        min_dist = max_dist / steps
+
+    k_results = k_test(
+        array(list(zip(gdf.geometry.x, gdf.geometry.y))),
+        keep_simulations=True,
+        support=(min_dist, max_dist, steps),
+        n_simulations=999,
     )
+    return k_results
 
-    gdf_tmp["nn_distance"] = gdf_tmp.geometry.distance(gdf_tmp["nn_geom"].set_crs(gdf.crs))
 
-    if not summary:
-        return gdf_tmp
-    else:
-        NeighborSummary = namedtuple("NearestNeighborStats", ["mean", "min", "max"])
-        return NeighborSummary(
-            gdf_tmp["nn_distance"].mean(),
-            gdf_tmp["nn_distance"].min(),
-            gdf_tmp["nn_distance"].max(),
-        )
+def _bounds_from_ripleyresult(result: KtestResult) -> list:
+    step_count = len(result.simulations[0])
+    lower_bounds = []
+    upper_bounds = []
+    for i in range(step_count):
+        values = [sim[i] for sim in result.simulations]
+        lower_bounds.append(min(values))
+        upper_bounds.append(max(values))
+    return list(zip(lower_bounds, upper_bounds))
+
+
+def _legend_deduped_labels(ax: Axis) -> None:
+    handles, labels = ax.get_legend_handles_labels()
+    unique = [(h, l) for i, (h, l) in enumerate(zip(handles, labels)) if l not in labels[:i]]
+    ax.legend(*zip(*unique))
+
+
+def compare_ripleyresults(c_result: KtestResult, s_result: KtestResult) -> list:
+    step_count = len(c_result.statistic)
+    deltas = []
+    for i in range(step_count):
+        delta = c_result.statistic[i] - s_result.statistic[i]
+        deltas.append(delta)
+    return deltas
+
+
+def graph_ripleyresult(result: KtestResult, subtitle: str = None) -> Figure:
+    bounds = _bounds_from_ripleyresult(result)
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ax.plot(result.support, bounds, color="#303030", label="Upper/Lower Bounds", alpha=0.25)
+    ax.plot(result.support, result.statistic, color="#1f77b4", label="Observed K")
+    ax.scatter(result.support, result.statistic, c="#1f77b4")
+    ax.set_xlabel("Distance")
+    ax.set_ylabel("K Function")
+    ax.set_title(subtitle)
+    _legend_deduped_labels(ax)
+    fig.suptitle("K Function Plot")
+    return fig
+
+
+def graph_ripleyresults(
+    c_result: KtestResult,
+    s_result: KtestResult,
+    subtitle: str = None,
+) -> Figure:
+    bounds = _bounds_from_ripleyresult(s_result)
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ax.plot(s_result.support, bounds, color="#303030", label="Upper/Lower Bounds", alpha=0.25)
+    ax.plot(s_result.support, c_result.statistic, color="#1f77b4", label="Candidate")
+    ax.plot(s_result.support, s_result.statistic, color="#ff7f0e", label="Sensitive")
+    ax.scatter(c_result.support, c_result.statistic, zorder=5, c="#1f77b4")
+    ax.scatter(s_result.support, s_result.statistic, zorder=6, c="#ff7f0e")
+    ax.set_title(subtitle)
+    ax.set_xlabel("Distance")
+    ax.set_ylabel("K Function")
+    _legend_deduped_labels(ax)
+    fig.suptitle("K Function Result Comparison")
+    return fig
 
 
 def compare_candidates(sensitive_gdf: GeoDataFrame, *candidates: Candidate):
