@@ -22,6 +22,7 @@ setup(
         "osmnx>=1.3.0",
         "scikit-learn>=1.1.1",
         "SQLAlchemy>=2.0.0",
+        "pointpats==2.3.0",
     ],
     extras_require={
         "develop": [
