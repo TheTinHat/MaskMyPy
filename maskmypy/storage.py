@@ -5,11 +5,13 @@ from geopandas import GeoDataFrame, read_file
 from sqlalchemy import (
     Boolean,
     Column,
+    Float,
     ForeignKey,
     Integer,
     MetaData,
     PickleType,
     String,
+    Text,
     Table,
     create_engine,
 )
@@ -44,15 +46,24 @@ class CandidateMeta(Base):
         Column("parameters", PickleType),
         Column("author", String),
         Column("timestamp", Integer),
+        Column("notes", Text),
     )
 
 
-class CandidateStats(Base):
+class CandidateMetrics(Base):
     __table__ = Table(
-        "candidate_stats",
+        "candidate_metrics",
         metadata_obj,
-        Column("id", Integer, primary_key=True),
-        Column("cid", ForeignKey("candidate_meta.cid")),
+        Column("cid", ForeignKey("candidate_meta.cid"), primary_key=True),
+        Column("k_min", Integer),
+        Column("k_max", Integer),
+        Column("k_med", Float),
+        Column("k_mean", Float),
+        Column("ripley_rmsd", Float),
+        Column("central_drift", Float),
+        Column("nnd_max", Float),
+        Column("nnd_min", Float),
+        Column("nnd_mean", Float),
     )
 
 

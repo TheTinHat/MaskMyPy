@@ -16,17 +16,18 @@ from .storage import CandidateMeta, Storage
 @dataclass
 class Candidate:
     sid: str
+    cid: str = field(init=False)
     mdf: gpd.GeoDataFrame = field(repr=False)
     storage: Storage = field(repr=False)
     parameters: dict = field(default_factory=lambda: dict())
     author: str = field(default_factory=lambda: getuser())
     timestamp: int = field(default_factory=lambda: int(time_ns()))
+    notes: str = ""
 
     def __post_init__(self) -> None:
-        self.cid
+        self.cid = self.calc_cid()
 
-    @cached_property
-    def cid(self) -> str:
+    def calc_cid(self) -> str:
         return tools.checksum(self.mdf)
 
     def get(self) -> "Candidate":
@@ -44,6 +45,7 @@ class Candidate:
                 parameters=self.parameters,
                 author=self.author,
                 timestamp=self.timestamp,
+                notes=self.notes,
             )
             .on_conflict_do_nothing()
         )
@@ -61,6 +63,7 @@ class Candidate:
             parameters=candidate_meta.parameters,
             author=candidate_meta.author,
             timestamp=candidate_meta.timestamp,
+            notes=candidate_meta.notes,
         )
 
     def flush(self) -> None:

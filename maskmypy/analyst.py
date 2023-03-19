@@ -20,7 +20,7 @@ def displacement(
 
 
 def estimate_k(
-    sensitive: GeoDataFrame,
+    sensitive_gdf: GeoDataFrame,
     candidate_gdf: GeoDataFrame,
     population_gdf: GeoDataFrame,
     pop_col: str = "pop",
@@ -28,10 +28,12 @@ def estimate_k(
     candidate_columns = candidate_gdf.columns
 
     if validate_geom_type(population_gdf, "Point"):
-        candidate_k = _estimate_k_from_addresses(sensitive, candidate_gdf, population_gdf)
+        candidate_k = _estimate_k_from_addresses(sensitive_gdf, candidate_gdf, population_gdf)
 
     elif validate_geom_type(population_gdf, "Polygon", "MultiPolygon"):
-        candidate_k = _estimate_k_from_polygons(sensitive, candidate_gdf, population_gdf, pop_col)
+        candidate_k = _estimate_k_from_polygons(
+            sensitive_gdf, candidate_gdf, population_gdf, pop_col
+        )
 
     candidate_columns += ["k_anonymity"]
     candidate_k = candidate_k[candidate_k.columns.intersection(candidate_columns)]
@@ -97,9 +99,10 @@ def _gdf_to_pointpattern(gdf: GeoDataFrame) -> PointPattern:
     return PointPattern(list(zip(gdf.geometry.x, gdf.geometry.y)))
 
 
-def nearest_neighbor_stats(gdf: GeoDataFrame) -> dict:
+def nnd(gdf: GeoDataFrame) -> tuple[float, float, float]:
+    "Returns nearest neighbor distances in a tuple of (min, mean, max)"
     pp = _gdf_to_pointpattern(gdf)
-    return {"min": pp.min_nnd, "max": pp.max_nnd, "mean": pp.mean_nnd}
+    return pp.min_nnd, pp.mean_nnd, pp.max_nnd
 
 
 def central_drift(gdf_a: GeoDataFrame, gdf_b: GeoDataFrame) -> float:

@@ -204,7 +204,7 @@ class Atlas:
     def voronoi(self, **kwargs) -> Candidate:
         return self.mask(Voronoi, **kwargs)
 
-    def benchmark(self):
+    def benchmark_custom_mask(self, CustomMask):
         for candidate in self.candidates:
             self.ripleys_k(candidate)
 
@@ -215,6 +215,7 @@ class Atlas:
         graph: bool = True,
         subtitle: str = None,
     ):
+
         max_dist = analyst.ripleys_rot(self.sensitive)
         min_dist = max_dist / steps
         ripley_result = analyst.ripleys_k(

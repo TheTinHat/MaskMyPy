@@ -46,6 +46,7 @@ def test_k_satisfaction():
 
 def test_ripleys_k(atlas):
     atlas.donut(10, 100)
+    print(atlas.get())
     distance_steps = 10
     max_dist = analyst.ripleys_rot(atlas.sensitive)
     min_dist = max_dist / distance_steps
@@ -60,7 +61,6 @@ def test_ripleys_k(atlas):
         kresult_candidate, subtitle=atlas.candidates[0].cid, s_result=kresult_sensitive
     )
     atlas.donut(50, 500)
-    atlas.benchmark()
 
 
 def test_nearest_neighbor_stats():
