@@ -1,22 +1,20 @@
 import os
-import shutil
 import geopandas as gpd
 import pytest
 from copy import deepcopy
 from pandas.testing import assert_frame_equal
 from maskmypy import Atlas, Donut, Street, Voronoi
-from .fixtures import points, tmpdir, atlas, container, atlas_contained
 
 
 def test_atlas_run(atlas):
-    candidate_donut = atlas.mask(Donut, low=50, high=500, distribution="areal")
-    candidate_street = atlas.mask(Street, low=2, high=3)
-    candidate_voronoi = atlas.mask(Voronoi)
+    atlas.mask(Donut, low=50, high=500, distribution="areal")
+    atlas.mask(Street, low=2, high=3)
+    atlas.mask(Voronoi)
 
 
 def test_atlas_run_i(atlas):
-    candidate_donut = atlas.donut_i([1], [10, 11], distribution="areal")
-    candidate_street = atlas.street_i([2, 3], [5, 6])
+    atlas.donut_i([1], [10, 11], distribution="areal")
+    atlas.street_i([2, 3], [5, 6])
 
 
 def test_atlas_autosave_and_load(atlas):
@@ -51,10 +49,10 @@ def test_atlas_save_container(atlas_contained):
     assert isinstance(atlas_new.container, gpd.GeoDataFrame)
 
 
-def test_atlas_flush_candidates(atlas):
+def test_atlas_flush(atlas):
     atlas.donut_i([10, 20, 30], [110, 120, 130], seed=123)
-    atlas.flush_candidates()
-    assert atlas.candidates[0].mdf == None
+    atlas.flush()
+    assert atlas.candidates[0].mdf is None
     assert isinstance(atlas.candidates[0].get().mdf, gpd.GeoDataFrame)
 
 
@@ -137,7 +135,7 @@ def test_memory_management(points, tmpdir):
     mem_start = psutil.Process(os.getpid()).memory_info().rss / 1024**2
     atlas = Atlas(name="test_b", sensitive=points, directory="./tmp")
     atlas.donut([1], list(range(2, 102)))
-    atlas.flush_candidates()
+    atlas.flush()
     gc.collect()
     mem_candidates_autoflush = (
         psutil.Process(os.getpid()).memory_info().rss / 1024**2

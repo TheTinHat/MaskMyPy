@@ -7,7 +7,6 @@ from numpy import random
 from shapely import Point
 from shapely.affinity import translate
 
-from .. import messages as msg
 from .. import tools
 
 

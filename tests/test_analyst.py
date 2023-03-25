@@ -1,23 +1,19 @@
-import os
-import shutil
-
 import geopandas as gpd
 import pytest
 
-from maskmypy import Atlas, Candidate, Donut, analyst
-from .fixtures import points, tmpdir, atlas
+from maskmypy import analyst
 
 
 @pytest.fixture
-def container(points):
+def container():
     return gpd.read_file("tests/boundary.geojson")
 
 
-def test_k_satisfaction(points):
+def test_k_satisfaction():
     pass
 
 
-def test_displacement(points):
+def test_displacement():
     pass
 
 
@@ -40,10 +36,6 @@ def test_mean_center_drift(points):
     assert drift == 50
 
 
-def test_k_satisfaction():
-    pass
-
-
 def test_ripleys_k(atlas):
     atlas.donut(10, 100)
     print(atlas.get())
@@ -57,9 +49,10 @@ def test_ripleys_k(atlas):
         atlas.candidates[0].mdf, max_dist=max_dist, min_dist=min_dist, steps=distance_steps
     )
     analyst.graph_ripleyresult(kresult_sensitive)
-    analyst.graph_ripleyresults(
+    fig = analyst.graph_ripleyresults(
         kresult_candidate, subtitle=atlas.candidates[0].cid, s_result=kresult_sensitive
     )
+    fig.savefig("figure.png")
     atlas.donut(50, 500)
 
 

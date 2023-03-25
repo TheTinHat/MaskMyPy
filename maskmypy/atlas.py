@@ -8,11 +8,11 @@ from pyproj.crs.crs import CRS
 from sqlalchemy import select
 from sqlalchemy.dialects.sqlite import insert
 
+from . import analyst
 from . import messages as msg
 from . import tools
-from . import analyst
 from .candidate import Candidate
-from .masks import Donut, Street, Voronoi
+from .masks import Donut, Street, Voronoi, LocationSwap
 from .storage import AtlasMeta, CandidateMeta, Storage
 
 
@@ -153,6 +153,8 @@ class Atlas:
             self.candidates.append(candidate)
             if self.autosave:
                 candidate.save()
+            if self.autoflush:
+                candidate.flush()
         else:
             print(f"Candidate {candidate.cid} already exists. Skipping...")
 
@@ -168,7 +170,7 @@ class Atlas:
         else:
             return self.candidates[index].get()
 
-    def flush_candidates(self) -> None:
+    def flush(self) -> None:
         for candidate in self.candidates:
             candidate.flush()
 
@@ -200,6 +202,12 @@ class Atlas:
 
     def street_i(self, low_list: list, high_list: list, **kwargs) -> list[Candidate]:
         return self.mask_i(Street, low_list, high_list, **kwargs)
+
+    def locationswap(self, low: float, high: float, **kwargs) -> Candidate:
+        return self.mask(LocationSwap, low=low, high=high, addresses=self.population, **kwargs)
+
+    def locationswap_i(self, low_list: list, high_list: list, **kwargs) -> list[Candidate]:
+        return self.mask_i(LocationSwap, low_list, high_list, **kwargs)
 
     def voronoi(self, **kwargs) -> Candidate:
         return self.mask(Voronoi, **kwargs)

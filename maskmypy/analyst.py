@@ -1,10 +1,7 @@
-from collections import namedtuple
-
 from geopandas import GeoDataFrame, sjoin
 from numpy import array
 from pointpats import PointPattern, k_test
 from pointpats.distance_statistics import KtestResult
-from shapely.ops import nearest_points
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from matplotlib.axis import Axis

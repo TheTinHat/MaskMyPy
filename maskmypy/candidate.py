@@ -1,6 +1,5 @@
 from dataclasses import dataclass, field
 from datetime import datetime
-from functools import cached_property
 from getpass import getuser
 from time import time_ns
 
@@ -8,7 +7,6 @@ import geopandas as gpd
 from sqlalchemy import select
 from sqlalchemy.dialects.sqlite import insert
 
-from . import messages as msg
 from . import tools
 from .storage import CandidateMeta, Storage
 
@@ -25,9 +23,9 @@ class Candidate:
     notes: str = ""
 
     def __post_init__(self) -> None:
-        self.cid = self.calc_cid()
+        self.cid = self._calc_cid()
 
-    def calc_cid(self) -> str:
+    def _calc_cid(self) -> str:
         return tools.checksum(self.mdf)
 
     def get(self) -> "Candidate":
@@ -36,6 +34,7 @@ class Candidate:
         return self
 
     def save(self) -> None:
+        self.get()
         self.storage.save_gdf(self.mdf, self.cid)
         self.storage.session.execute(
             insert(CandidateMeta)
@@ -67,8 +66,11 @@ class Candidate:
         )
 
     def flush(self) -> None:
-        self.save()
-        self.mdf = None
+        if self.mdf is None:
+            return
+        else:
+            self.save()
+            self.mdf = None
 
     @property
     def time(self) -> datetime:
