@@ -195,7 +195,7 @@ class Atlas:
         return self.mask(Donut, low=low, high=high, container=self.container, **kwargs)
 
     def donut_i(self, low_list: list, high_list: list, **kwargs) -> list[Candidate]:
-        return self.mask_i(Donut, low_list, high_list, **kwargs)
+        return self.mask_i(Donut, low_list, high_list, container=self.container, **kwargs)
 
     def street(self, low: float, high: float, **kwargs) -> Candidate:
         return self.mask(Street, low=low, high=high, **kwargs)
@@ -207,7 +207,7 @@ class Atlas:
         return self.mask(LocationSwap, low=low, high=high, addresses=self.population, **kwargs)
 
     def locationswap_i(self, low_list: list, high_list: list, **kwargs) -> list[Candidate]:
-        return self.mask_i(LocationSwap, low_list, high_list, **kwargs)
+        return self.mask_i(LocationSwap, low_list, high_list, addresses=self.population, **kwargs)
 
     def voronoi(self, **kwargs) -> Candidate:
         return self.mask(Voronoi, **kwargs)
