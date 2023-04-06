@@ -16,7 +16,7 @@ from .. import tools
 @dataclass
 class Voronoi:
     gdf: GeoDataFrame
-    street: bool = True
+    snap: bool = True
 
     def __post_init__(self) -> None:
         # Validate and initialize input parameters
@@ -41,4 +41,4 @@ class Voronoi:
 
     @property
     def params(self) -> dict:
-        return {"mask": "voronoi", "street": self.street}
+        return {"mask": "voronoi", "snap": self.snap}

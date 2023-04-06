@@ -18,7 +18,6 @@ class Donut:
     container: GeoDataFrame = None
     distribution: str = "uniform"
     seed: int = None
-    padding: float = 0.2
 
     def __post_init__(self) -> None:
         # Initialize random number generator
@@ -114,5 +113,4 @@ class Donut:
             "container": True if isinstance(self.container, GeoDataFrame) else False,
             "distribution": self.distribution,
             "seed": self.seed,
-            "padding": self.padding,
         }

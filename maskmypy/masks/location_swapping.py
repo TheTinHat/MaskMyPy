@@ -14,7 +14,6 @@ class LocationSwap:
     high: float
     addresses: GeoDataFrame
     seed: int = None
-    padding: float = 0.2
 
     def __post_init__(self) -> None:
         # Initialize random number generator
@@ -58,5 +57,4 @@ class LocationSwap:
             "low": self.low,
             "high": self.high,
             "seed": self.seed,
-            "padding": self.padding,
         }
