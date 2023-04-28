@@ -233,6 +233,24 @@ class Atlas:
             analyst.graph_ripleyresult(ripley_result, subtitle).savefig(f"{candidate.cid}.png")
         return ripley_result
 
+    def rank(self, metric, min_k=None, desc=False):
+        candidates = [
+            candidate
+            for candidate in self.candidates
+            if hasattr(candidate, metric) and getattr(candidate, metric) is not None
+        ]
+
+        candidates_sorted = sorted(candidates, key=lambda x: getattr(x, metric), reverse=desc)
+
+        if min_k:
+            candidates_sorted = [
+                candidate
+                for candidate in candidates_sorted
+                if candidate.k_min and candidate.k_min > min_k
+            ]
+
+        return candidates_sorted
+
     @staticmethod
     def _zip_longest_autofill(a: any, b: any) -> list:
         fill = max(b) if len(b) < len(a) else max(a)
