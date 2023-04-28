@@ -21,16 +21,6 @@ def pytest_collection_modifyitems(config, items):
             item.add_marker(skip_slow)
 
 
-@pytest.fixture
-def points():
-    return gpd.read_file("tests/points.geojson").to_crs(epsg=26910)
-
-
-@pytest.fixture
-def addresses():
-    return gpd.read_file("tests/addresses.geojson").to_crs(epsg=26910)
-
-
 @pytest.fixture()
 def tmpdir():
     os.makedirs("./tmp/", exist_ok=True)
@@ -38,9 +28,24 @@ def tmpdir():
     shutil.rmtree("./tmp")
 
 
+POINTS = gpd.read_file("tests/points.geojson").to_crs(epsg=26910)
+ADDRESSES = gpd.read_file("tests/addresses.geojson").to_crs(epsg=26910)
+CONTAINER = gpd.read_file("tests/boundary.geojson").to_crs(epsg=26910)
+
+
+@pytest.fixture
+def points():
+    return POINTS.copy(deep=True)
+
+
+@pytest.fixture
+def addresses():
+    return ADDRESSES.copy(deep=True)
+
+
 @pytest.fixture
 def container():
-    return gpd.read_file("tests/boundary.geojson").to_crs(epsg=26910)
+    return CONTAINER.copy(deep=True)
 
 
 @pytest.fixture

@@ -11,8 +11,8 @@ from sqlalchemy import (
     MetaData,
     PickleType,
     String,
-    Text,
     Table,
+    Text,
     create_engine,
 )
 from sqlalchemy.orm import DeclarativeBase, Session
@@ -34,6 +34,10 @@ class AtlasMeta(Base):
         Column("autoflush", Boolean),
         Column("container_id", String),
         Column("population_id", String),
+        Column("ripley_rmsd", Float),
+        Column("nnd_max", Float),
+        Column("nnd_min", Float),
+        Column("nnd_mean", Float),
     )
 
 
@@ -47,20 +51,12 @@ class CandidateMeta(Base):
         Column("author", String),
         Column("timestamp", Integer),
         Column("notes", Text),
-    )
-
-
-class CandidateMetrics(Base):
-    __table__ = Table(
-        "candidate_metrics",
-        metadata_obj,
-        Column("cid", ForeignKey("candidate_meta.cid"), primary_key=True),
         Column("k_min", Integer),
         Column("k_max", Integer),
         Column("k_med", Float),
         Column("k_mean", Float),
         Column("ripley_rmsd", Float),
-        Column("central_drift", Float),
+        Column("drift", Float),
         Column("nnd_max", Float),
         Column("nnd_min", Float),
         Column("nnd_mean", Float),

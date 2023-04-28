@@ -21,6 +21,15 @@ class Candidate:
     author: str = field(default_factory=lambda: getuser())
     timestamp: int = field(default_factory=lambda: int(time_ns()))
     notes: str = ""
+    k_min: int = None
+    k_max: int = None
+    k_med: float = None
+    k_mean: float = None
+    ripley_rmsd: float = None
+    drift: float = None
+    nnd_max: float = None
+    nnd_min: float = None
+    nnd_mean: float = None
 
     def __post_init__(self) -> None:
         self.cid = self._calc_cid()
@@ -45,6 +54,15 @@ class Candidate:
                 author=self.author,
                 timestamp=self.timestamp,
                 notes=self.notes,
+                k_min=self.k_min,
+                k_max=self.k_max,
+                k_med=self.k_med,
+                k_mean=self.k_mean,
+                ripley_rmsd=self.ripley_rmsd,
+                drift=self.drift,
+                nnd_max=self.nnd_max,
+                nnd_min=self.nnd_min,
+                nnd_mean=self.nnd_mean,
             )
             .on_conflict_do_nothing()
         )
@@ -63,6 +81,15 @@ class Candidate:
             author=candidate_meta.author,
             timestamp=candidate_meta.timestamp,
             notes=candidate_meta.notes,
+            k_min=candidate_meta.k_min,
+            k_max=candidate_meta.k_max,
+            k_med=candidate_meta.k_med,
+            k_mean=candidate_meta.k_mean,
+            ripley_rmsd=candidate_meta.ripley_rmsd,
+            drift=candidate_meta.drift,
+            nnd_max=candidate_meta.nnd_max,
+            nnd_min=candidate_meta.nnd_min,
+            nnd_mean=candidate_meta.nnd_mean,
         )
 
     def flush(self) -> None:

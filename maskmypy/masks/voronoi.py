@@ -1,15 +1,9 @@
 from dataclasses import dataclass
 
 from geopandas import GeoDataFrame, GeoSeries
-from osmnx import graph_to_gdfs
-from osmnx.distance import nearest_nodes
-from osmnx.graph import graph_from_bbox
-from osmnx.projection import project_graph
-from osmnx.utils_graph import remove_isolated_nodes
 from shapely import Point, voronoi_polygons
 from shapely.ops import nearest_points
 
-from .. import messages as msg
 from .. import tools
 
 
@@ -34,7 +28,7 @@ class Voronoi:
         self.voronoi = self._generate_voronoi_polygons()
         self.mdf[self.mdf.geometry.name] = self.mdf[self.mdf.geometry.name].apply(self._mask_point)
 
-        if self.street:
+        if self.snap:
             self.mdf = tools.snap_to_streets(self.mdf)
 
         return self.mdf

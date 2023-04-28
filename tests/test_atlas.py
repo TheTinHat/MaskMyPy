@@ -6,6 +6,14 @@ from pandas.testing import assert_frame_equal
 from maskmypy import Atlas, Donut, Street, Voronoi
 
 
+def test_atlas_autosave_and_load(atlas):
+    atlas.donut_i([10, 20, 30], [110, 120, 130], seed=123)
+    del atlas
+
+    atlas = Atlas.load(name="test_atlas", directory="./tmp/")
+    assert len(atlas.candidates) == 3
+
+
 def test_atlas_run(atlas):
     atlas.mask(Donut, low=50, high=500, distribution="areal")
     atlas.mask(Street, low=2, high=3)
@@ -15,14 +23,6 @@ def test_atlas_run(atlas):
 def test_atlas_run_i(atlas):
     atlas.donut_i([1], [10, 11], distribution="areal")
     atlas.street_i([2, 3], [5, 6])
-
-
-def test_atlas_autosave_and_load(atlas):
-    atlas.donut_i([10, 20, 30], [110, 120, 130], seed=123)
-    del atlas
-
-    atlas = Atlas.load(name="test_atlas", directory="./tmp/")
-    assert len(atlas.candidates) == 3
 
 
 def test_atlas_with_existing_candidates(atlas):

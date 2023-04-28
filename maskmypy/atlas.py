@@ -129,7 +129,7 @@ class Atlas:
 
         # Load population
         if atlas_meta.population_id != "NULL":
-            population = storage.read_gdf(atlas_meta.container_id)
+            population = storage.read_gdf(atlas_meta.population_id)
         else:
             population = None
 
@@ -223,7 +223,6 @@ class Atlas:
         graph: bool = True,
         subtitle: str = None,
     ):
-
         max_dist = analyst.ripleys_rot(self.sensitive)
         min_dist = max_dist / steps
         ripley_result = analyst.ripleys_k(

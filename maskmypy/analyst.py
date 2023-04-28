@@ -1,10 +1,11 @@
+import matplotlib.pyplot as plt
 from geopandas import GeoDataFrame, sjoin
+from matplotlib.axis import Axis
+from matplotlib.figure import Figure
 from numpy import array
 from pointpats import PointPattern, k_test
 from pointpats.distance_statistics import KtestResult
-import matplotlib.pyplot as plt
-from matplotlib.figure import Figure
-from matplotlib.axis import Axis
+
 from .candidate import Candidate
 from .tools import validate_geom_type
 
@@ -102,10 +103,10 @@ def nnd(gdf: GeoDataFrame) -> tuple[float, float, float]:
     return pp.min_nnd, pp.mean_nnd, pp.max_nnd
 
 
-def central_drift(gdf_a: GeoDataFrame, gdf_b: GeoDataFrame) -> float:
+def drift(gdf_a: GeoDataFrame, gdf_b: GeoDataFrame) -> float:
     centroid_a = gdf_a.dissolve().centroid
     centroid_b = gdf_b.dissolve().centroid
-    return float(centroid_a.distance(centroid_b))
+    return float(centroid_a.distance(centroid_b).iloc[0])
 
 
 def ripleys_rot(gdf: GeoDataFrame) -> float:
