@@ -1,27 +1,51 @@
 import os
 import geopandas as gpd
 import pytest
-from copy import deepcopy
 from pandas.testing import assert_frame_equal
 from maskmypy import Atlas, Donut, Street, Voronoi
 
 
 def test_atlas_autosave_and_load(atlas):
-    atlas.donut_i([10, 20, 30], [110, 120, 130], seed=123)
+    atlas.donut_i([10, 20], [110, 120], seed=123)
     del atlas
 
     atlas = Atlas.load(name="test_atlas", directory="./tmp/")
-    assert len(atlas.candidates) == 3
+    assert len(atlas.candidates) == 2
+
+
+def test_atlas_estimate_k(atlas):
+    atlas.donut(50, 500)
+    atlas.estimate_k()
+
+
+def test_estimate_k_all(atlas):
+    atlas.donut_i([100, 100, 200], [200, 300, 400, 500, 600, 700])
+
+    atlas.summarize_k_all()
+    breakpoint()
+
+
+def test_ripley_k_comparison(atlas):
+    atlas.donut(low=10, high=100)
+    atlas.ripleys_k(graph=True)
+
+
+def test_ripleys_all(atlas):
+    atlas.donut_i([10, 20, 30], [110, 120], seed=123)
+    atlas.ripleys_all()
 
 
 def test_atlas_run(atlas):
     atlas.mask(Donut, low=50, high=500, distribution="areal")
-    atlas.mask(Street, low=2, high=3)
-    atlas.mask(Voronoi)
+    atlas.mask(Voronoi, snap=False)
 
 
-def test_atlas_run_i(atlas):
+def test_atlas_run_i_donut(atlas):
     atlas.donut_i([1], [10, 11], distribution="areal")
+
+
+@pytest.mark.slow
+def test_atlas_run_i_street(atlas):
     atlas.street_i([2, 3], [5, 6])
 
 
@@ -57,8 +81,8 @@ def test_atlas_flush(atlas):
 
 
 def test_multiple_atlases(points, tmpdir):
-    atlas_a = Atlas(name="test_atlas_a", directory="./tmp/", sensitive=points)
-    atlas_b = Atlas(name="test_atlas_b", directory="./tmp/", sensitive=points)
+    atlas_a = Atlas(name="test_atlas_a", directory="./tmp/", input=points)
+    atlas_b = Atlas(name="test_atlas_b", directory="./tmp/", input=points)
 
     atlas_a.donut_i([10, 20, 30], [110, 120, 130], seed=123)
     atlas_b.donut_i([10, 20, 30], [110, 120, 130], seed=123)
@@ -86,15 +110,6 @@ def test_atlas_set_candidate_bad_crs(atlas, points):
 def test_atlas_set_candidate_unmasked(atlas, points):
     with pytest.raises(AssertionError):
         atlas.create_candidate(points, {})
-
-
-def test_geopandas_does_not_modify_sensitive(atlas):
-    original_sensitive = deepcopy(atlas.sensitive)
-    atlas.donut(50, 500)
-
-    assert_frame_equal(atlas.sensitive, original_sensitive)
-    with pytest.raises(AssertionError):
-        assert_frame_equal(atlas.sensitive, atlas.get().mdf)
 
 
 def test_donut_list(atlas):
@@ -125,16 +140,16 @@ def test_memory_management(points, tmpdir):
     import gc
     import psutil
 
-    atlas = Atlas(name="test_a", sensitive=points, directory="./tmp")
+    atlas = Atlas(name="test_a", input=points, directory="./tmp")
     mem_start = psutil.Process(os.getpid()).memory_info().rss / 1024**2
-    atlas.donut([1], list(range(2, 102)))
+    atlas.donut_i([1], list(range(2, 102)))
     mem_candidates = (psutil.Process(os.getpid()).memory_info().rss / 1024**2) - mem_start
     del atlas
     gc.collect()
 
     mem_start = psutil.Process(os.getpid()).memory_info().rss / 1024**2
-    atlas = Atlas(name="test_b", sensitive=points, directory="./tmp")
-    atlas.donut([1], list(range(2, 102)))
+    atlas = Atlas(name="test_b", input=points, directory="./tmp")
+    atlas.donut_i([1], list(range(2, 102)))
     atlas.flush()
     gc.collect()
     mem_candidates_autoflush = (

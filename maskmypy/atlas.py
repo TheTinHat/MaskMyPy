@@ -1,29 +1,35 @@
 from dataclasses import dataclass, field
-from functools import cached_property
 from itertools import zip_longest
 from pathlib import Path
-
+from pointpats.distance_statistics import KtestResult
 from geopandas import GeoDataFrame
 from pyproj.crs.crs import CRS
 from sqlalchemy import select
 from sqlalchemy.dialects.sqlite import insert
-
-from . import analyst
+from getpass import getuser
+from . import analysis
 from . import messages as msg
 from . import tools
 from .candidate import Candidate
+from .sensitive import Sensitive
+from .reference import Reference
 from .masks import Donut, Street, Voronoi, LocationSwap
 from .storage import AtlasMeta, CandidateMeta, Storage
+import pandas as pd
 
 
 @dataclass
 class Atlas:
     name: str
-    sensitive: GeoDataFrame
-    directory: Path = field(default_factory=lambda: Path.cwd())
+    input: GeoDataFrame = field(repr=False)
     container: GeoDataFrame = None
     population: GeoDataFrame = None
+    pop_col: str = "pop"
+    sensitive: Sensitive = None
     candidates: list[Candidate] = field(default_factory=list[Candidate])
+    reference: dict[Reference] = field(default_factory=dict[Reference])
+    directory: Path = field(default_factory=lambda: Path.cwd())
+    author: str = field(default_factory=lambda: getuser())
     storage: Storage = None
     autosave: bool = True
     autoflush: bool = True
@@ -34,6 +40,10 @@ class Atlas:
 
         if isinstance(self.directory, str):
             self.directory = Path(self.directory)
+
+        if not self.sensitive:
+            self.sensitive = Sensitive(sdf=self.input, storage=self.storage)
+        del self.input
 
         if self.container is not None:
             tools.validate_crs(self.crs, self.container.crs)
@@ -52,9 +62,9 @@ class Atlas:
         if self.autosave:
             self.save()
 
-    @cached_property
+    @property
     def sid(self) -> str:
-        return tools.checksum(self.sensitive)
+        return self.sensitive.sid
 
     @property
     def cids(self) -> list[str]:
@@ -62,11 +72,11 @@ class Atlas:
 
     @property
     def crs(self) -> CRS:
-        return self.sensitive.crs
+        return self.sensitive.sdf.crs
 
     def save(self) -> None:
         # Save sensitive
-        self.storage.save_gdf(self.sensitive, self.name)
+        self.sensitive.save()
 
         # Save candidates
         for candidate in self.candidates:
@@ -85,11 +95,13 @@ class Atlas:
             insert(AtlasMeta)
             .values(
                 name=self.name,
-                sid=self.sid,
+                sid=self.sensitive.sid,
+                author=self.author,
                 autosave=self.autosave,
                 autoflush=self.autoflush,
                 container_id=self._container_id,
                 population_id=self._population_id,
+                pop_col=self.pop_col,
             )
             .on_conflict_do_nothing()
         )
@@ -105,7 +117,7 @@ class Atlas:
         )
 
         # Load sensitive
-        sensitive = storage.read_gdf(name)
+        sensitive = Sensitive.load(atlas_meta.sid, storage=storage)
 
         # Load candidates
         candidate_list = (
@@ -135,11 +147,14 @@ class Atlas:
 
         return cls(
             name=name,
+            input=sensitive.sdf,
             sensitive=sensitive,
             candidates=candidates,
             directory=directory,
             container=container,
             population=population,
+            pop_col=atlas_meta.pop_col,
+            author=atlas_meta.author,
             autosave=atlas_meta.autosave,
             autoflush=atlas_meta.autoflush,
         )
@@ -175,12 +190,17 @@ class Atlas:
             candidate.flush()
 
     def create_candidate(self, mdf: GeoDataFrame, parameters: dict) -> Candidate:
-        candidate = Candidate(sid=self.sid, storage=self.storage, mdf=mdf, parameters=parameters)
+        candidate = Candidate(
+            sid=self.sid,
+            storage=self.storage,
+            mdf=mdf,
+            parameters=parameters,
+        )
         self.set(candidate)
         return candidate
 
     def mask(self, mask, **kwargs) -> Candidate:
-        m = mask(gdf=self.sensitive, **kwargs)
+        m = mask(gdf=self.sensitive.sdf, **kwargs)
         mdf = m.run()
         params = m.params
         return self.create_candidate(mdf, params)
@@ -218,20 +238,71 @@ class Atlas:
 
     def ripleys_k(
         self,
-        candidate: Candidate,
+        candidate: Candidate = None,
         steps: int = 10,
-        graph: bool = True,
+        max_dist: float = None,
+        graph: bool = False,
         subtitle: str = None,
-    ):
-        max_dist = analyst.ripleys_rot(self.sensitive)
-        min_dist = max_dist / steps
-        ripley_result = analyst.ripleys_k(
-            candidate.mdf, max_dist=max_dist, min_dist=min_dist, steps=steps
+    ) -> KtestResult:
+        candidate = self.get() if not candidate else candidate.get()
+        max_dist = analysis.ripleys_rot(self.sensitive.sdf) if not max_dist else max_dist
+
+        sensitive_rk = self.sensitive.ripleys_k(steps=steps, max_dist=max_dist)
+
+        candidate_rk = analysis.ripleys_k(
+            candidate.mdf, max_dist=max_dist, min_dist=(max_dist / steps), steps=steps
         )
+        self.ripley_rmse = analysis.ripley_rmse(candidate_rk, sensitive_rk)
+
         if graph:
             subtitle = candidate.cid if subtitle is None else subtitle
-            analyst.graph_ripleyresult(ripley_result, subtitle).savefig(f"{candidate.cid}.png")
-        return ripley_result
+            analysis.graph_ripleyresults(candidate_rk, sensitive_rk, subtitle).savefig(
+                f"{self.directory}/rk_{candidate.cid}.png"
+            )
+
+        return candidate_rk
+
+    def ripleys_all(self, *args, **kwargs) -> bool:
+        for candidate in self.candidates:
+            kwargs["candidate"] = candidate
+            self.ripleys_k(*args, **kwargs)
+        return
+
+    def estimate_k(self, candidate: Candidate = None) -> GeoDataFrame:
+        candidate = self.get() if candidate is None else candidate.get()
+
+        candidate_k = analysis.estimate_k(
+            sensitive_gdf=self.sensitive.sdf,
+            candidate_gdf=candidate.mdf,
+            population_gdf=self.population,
+            pop_col=self.pop_col,
+        )
+
+        return candidate_k
+
+    def summarize_k(self, candidate: Candidate = None):
+        candidate = self.get() if candidate is None else candidate.get()
+
+        candidate_k = self.estimate_k(candidate)
+
+        k_summary = analysis.summarize_k(candidate_k)
+
+        candidate.k_min = k_summary.k_min
+        candidate.k_max = k_summary.k_max
+        candidate.k_med = k_summary.k_med
+        candidate.k_mean = k_summary.k_mean
+
+        return k_summary
+
+    def summarize_k_all(self):
+        for candidate in self.candidates:
+            self.summarize_k(candidate)
+        return
+
+    def drift(self, candidate: Candidate = None):
+        candidate = self.get() if candidate is None else candidate.get()
+        candidate.drift = analysis.drift(candidate.mdf, self.sensitive.sdf)
+        return candidate.drift
 
     def rank(self, metric, min_k=None, desc=False):
         candidates = [
@@ -249,7 +320,16 @@ class Atlas:
                 if candidate.k_min and candidate.k_min > min_k
             ]
 
-        return candidates_sorted
+        cid_col = [candidate.cid for candidate in candidates_sorted]
+        metric_col = [getattr(candidate, metric) for candidate in candidates_sorted]
+        k_col = [candidate.k_min for candidate in candidates_sorted]
+
+        df = pd.DataFrame(data={"CID": cid_col, metric: metric_col})
+
+        if min_k:
+            df["min_k"] = k_col
+
+        return df
 
     @staticmethod
     def _zip_longest_autofill(a: any, b: any) -> list:

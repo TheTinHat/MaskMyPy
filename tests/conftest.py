@@ -50,9 +50,9 @@ def container():
 
 @pytest.fixture
 def atlas(points, addresses, tmpdir):
-    return Atlas(name="test_atlas", directory="./tmp/", sensitive=points, population=addresses)
+    return Atlas(name="test_atlas", directory="./tmp/", input=points, population=addresses)
 
 
 @pytest.fixture
 def atlas_contained(points, container, tmpdir):
-    return Atlas(name="test_atlas", container=container, directory="./tmp/", sensitive=points)
+    return Atlas(name="test_atlas", container=container, directory="./tmp/", input=points)

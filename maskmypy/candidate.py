@@ -1,44 +1,43 @@
 from dataclasses import dataclass, field
 from datetime import datetime
-from getpass import getuser
 from time import time_ns
-
-import geopandas as gpd
+from geopandas import GeoDataFrame
 from sqlalchemy import select
 from sqlalchemy.dialects.sqlite import insert
 
-from . import tools
+from . import analysis, tools
 from .storage import CandidateMeta, Storage
 
 
 @dataclass
 class Candidate:
     sid: str
-    cid: str = field(init=False)
-    mdf: gpd.GeoDataFrame = field(repr=False)
+    mdf: GeoDataFrame = field(repr=False)
     storage: Storage = field(repr=False)
     parameters: dict = field(default_factory=lambda: dict())
-    author: str = field(default_factory=lambda: getuser())
     timestamp: int = field(default_factory=lambda: int(time_ns()))
+    cid: str = None
     notes: str = ""
     k_min: int = None
     k_max: int = None
     k_med: float = None
     k_mean: float = None
-    ripley_rmsd: float = None
+    ripley_rmse: float = None
     drift: float = None
     nnd_max: float = None
     nnd_min: float = None
     nnd_mean: float = None
 
     def __post_init__(self) -> None:
-        self.cid = self._calc_cid()
+        if not self.cid:
+            self.cid = tools.checksum(self.mdf)
+        elif self.cid:
+            assert self.cid == tools.checksum(self.mdf)
 
-    def _calc_cid(self) -> str:
-        return tools.checksum(self.mdf)
+        self.nnd_min, self.nnd_max, self.nnd_mean = analysis.nnd(self.mdf)
 
     def get(self) -> "Candidate":
-        if not isinstance(self.mdf, gpd.GeoDataFrame):
+        if self.mdf is None:
             self.mdf = self.storage.read_gdf(self.cid)
         return self
 
@@ -51,14 +50,13 @@ class Candidate:
                 cid=self.cid,
                 sid=self.sid,
                 parameters=self.parameters,
-                author=self.author,
                 timestamp=self.timestamp,
                 notes=self.notes,
                 k_min=self.k_min,
                 k_max=self.k_max,
                 k_med=self.k_med,
                 k_mean=self.k_mean,
-                ripley_rmsd=self.ripley_rmsd,
+                ripley_rmse=self.ripley_rmse,
                 drift=self.drift,
                 nnd_max=self.nnd_max,
                 nnd_min=self.nnd_min,
@@ -78,14 +76,13 @@ class Candidate:
             mdf=storage.read_gdf(cid),
             storage=storage,
             parameters=candidate_meta.parameters,
-            author=candidate_meta.author,
             timestamp=candidate_meta.timestamp,
             notes=candidate_meta.notes,
             k_min=candidate_meta.k_min,
             k_max=candidate_meta.k_max,
             k_med=candidate_meta.k_med,
             k_mean=candidate_meta.k_mean,
-            ripley_rmsd=candidate_meta.ripley_rmsd,
+            ripley_rmse=candidate_meta.ripley_rmse,
             drift=candidate_meta.drift,
             nnd_max=candidate_meta.nnd_max,
             nnd_min=candidate_meta.nnd_min,

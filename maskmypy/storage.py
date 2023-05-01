@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from pathlib import Path
-
 from geopandas import GeoDataFrame, read_file
 from sqlalchemy import (
     Boolean,
@@ -32,12 +31,38 @@ class AtlasMeta(Base):
         Column("sid", String),
         Column("autosave", Boolean),
         Column("autoflush", Boolean),
+        Column("author", String),
         Column("container_id", String),
         Column("population_id", String),
-        Column("ripley_rmsd", Float),
+        Column("pop_col", String),
         Column("nnd_max", Float),
         Column("nnd_min", Float),
         Column("nnd_mean", Float),
+    )
+
+
+class SensitiveMeta(Base):
+    __table__ = Table(
+        "sensitive_meta",
+        metadata_obj,
+        Column("sid", String, primary_key=True),
+        Column("timestamp", Integer),
+        Column("ripley_results", PickleType),
+        Column("nnd_max", Float),
+        Column("nnd_min", Float),
+        Column("nnd_mean", Float),
+    )
+
+
+class ReferenceMeta(Base):
+    __table__ = Table(
+        "reference_meta",
+        metadata_obj,
+        Column("rid", String, primary_key=True),
+        Column("timestamp", Integer),
+        Column("population", Boolean),
+        Column("pop_col", String),
+        Column("container", Boolean),
     )
 
 
@@ -48,14 +73,13 @@ class CandidateMeta(Base):
         Column("cid", String, primary_key=True),
         Column("sid", ForeignKey("atlas_meta.sid")),
         Column("parameters", PickleType),
-        Column("author", String),
         Column("timestamp", Integer),
         Column("notes", Text),
         Column("k_min", Integer),
         Column("k_max", Integer),
         Column("k_med", Float),
         Column("k_mean", Float),
-        Column("ripley_rmsd", Float),
+        Column("ripley_rmse", Float),
         Column("drift", Float),
         Column("nnd_max", Float),
         Column("nnd_min", Float),
