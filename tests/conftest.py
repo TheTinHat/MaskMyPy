@@ -24,7 +24,9 @@ def pytest_collection_modifyitems(config, items):
 @pytest.fixture()
 def tmpdir():
     os.makedirs("./tmp/", exist_ok=True)
+    os.chdir("./tmp")
     yield
+    os.chdir("../")
     shutil.rmtree("./tmp")
 
 
@@ -48,11 +50,11 @@ def container():
     return CONTAINER.copy(deep=True)
 
 
-@pytest.fixture
-def atlas(points, addresses, tmpdir):
-    return Atlas(name="test_atlas", directory="./tmp/", input=points, population=addresses)
+# @pytest.fixture
+# def atlas(points, addresses, tmpdir):
+#     return Atlas(name="test_atlas", directory="./tmp/", input=points, population=addresses)
 
 
-@pytest.fixture
-def atlas_contained(points, container, tmpdir):
-    return Atlas(name="test_atlas", container=container, directory="./tmp/", input=points)
+# @pytest.fixture
+# def atlas_contained(points, container, tmpdir):
+#     return Atlas(name="test_atlas", container=container, directory="./tmp/", input=points)

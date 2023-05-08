@@ -20,8 +20,8 @@ def test_atlas_estimate_k(atlas):
 
 def test_estimate_k_all(atlas):
     atlas.donut_i([100, 100, 200], [200, 300, 400, 500, 600, 700])
-
     atlas.summarize_k_all()
+    atlas.ripleys_all()
     breakpoint()
 
 

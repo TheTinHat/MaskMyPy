@@ -1,21 +1,23 @@
 from dataclasses import dataclass, field
+from getpass import getuser
 from itertools import zip_longest
 from pathlib import Path
-from pointpats.distance_statistics import KtestResult
+
+import pandas as pd
 from geopandas import GeoDataFrame
+from pointpats.distance_statistics import KtestResult
 from pyproj.crs.crs import CRS
 from sqlalchemy import select
 from sqlalchemy.dialects.sqlite import insert
-from getpass import getuser
+
 from . import analysis
 from . import messages as msg
 from . import tools
 from .candidate import Candidate
-from .sensitive import Sensitive
+from .masks import Donut, LocationSwap, Street, Voronoi
 from .reference import Reference
-from .masks import Donut, Street, Voronoi, LocationSwap
+from .sensitive import Sensitive
 from .storage import AtlasMeta, CandidateMeta, Storage
-import pandas as pd
 
 
 @dataclass
@@ -33,6 +35,7 @@ class Atlas:
     storage: Storage = None
     autosave: bool = True
     autoflush: bool = True
+    nominee: str = None
 
     def __post_init__(self) -> None:
         if not self.storage:
@@ -102,6 +105,7 @@ class Atlas:
                 container_id=self._container_id,
                 population_id=self._population_id,
                 pop_col=self.pop_col,
+                nominee=self.nominee,
             )
             .on_conflict_do_nothing()
         )
@@ -157,6 +161,7 @@ class Atlas:
             author=atlas_meta.author,
             autosave=atlas_meta.autosave,
             autoflush=atlas_meta.autoflush,
+            nominee=atlas_meta.nominee,
         )
 
     def set(self, candidate: Candidate) -> None:
@@ -198,6 +203,12 @@ class Atlas:
         )
         self.set(candidate)
         return candidate
+
+    def nominate(self, cid: str):
+        self.nominee = cid
+
+    def get_nominee(self):
+        return self.get(cid=self.nominee)
 
     def mask(self, mask, **kwargs) -> Candidate:
         m = mask(gdf=self.sensitive.sdf, **kwargs)
@@ -252,7 +263,7 @@ class Atlas:
         candidate_rk = analysis.ripleys_k(
             candidate.mdf, max_dist=max_dist, min_dist=(max_dist / steps), steps=steps
         )
-        self.ripley_rmse = analysis.ripley_rmse(candidate_rk, sensitive_rk)
+        candidate.ripley_rmse = analysis.ripley_rmse(candidate_rk, sensitive_rk)
 
         if graph:
             subtitle = candidate.cid if subtitle is None else subtitle
@@ -317,16 +328,15 @@ class Atlas:
             candidates_sorted = [
                 candidate
                 for candidate in candidates_sorted
-                if candidate.k_min and candidate.k_min > min_k
+                if candidate.k_min and candidate.k_min >= min_k
             ]
 
-        cid_col = [candidate.cid for candidate in candidates_sorted]
-        metric_col = [getattr(candidate, metric) for candidate in candidates_sorted]
-        k_col = [candidate.k_min for candidate in candidates_sorted]
+        df = pd.DataFrame()
+        df["CID"] = [candidate.cid for candidate in candidates_sorted]
+        df[metric] = [getattr(candidate, metric) for candidate in candidates_sorted]
 
-        df = pd.DataFrame(data={"CID": cid_col, metric: metric_col})
-
-        if min_k:
+        if min_k is not None:
+            k_col = [candidate.k_min for candidate in candidates_sorted]
             df["min_k"] = k_col
 
         return df

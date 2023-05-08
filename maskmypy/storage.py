@@ -35,9 +35,7 @@ class AtlasMeta(Base):
         Column("container_id", String),
         Column("population_id", String),
         Column("pop_col", String),
-        Column("nnd_max", Float),
-        Column("nnd_min", Float),
-        Column("nnd_mean", Float),
+        Column("nominee", ForeignKey("candidate_meta.cid")),
     )
 
 
