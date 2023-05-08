@@ -74,3 +74,10 @@ def test_add_candidate_before_sensitive(points, tmpdir):
     donut = Donut(points, 50, 500)
     with pytest.raises(ValueError):
         atlas.add_candidate(donut.run(), donut.params)
+
+
+def test_generic_mask(points, tmpdir):
+    atlas = Atlas("test")
+    atlas.add_sensitive(points)
+    atlas.mask(Donut, low=50, high=500)
+    assert len(atlas.candidates) == 1

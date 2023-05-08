@@ -16,7 +16,14 @@ from sqlalchemy import (
     Text,
     create_engine,
 )
-from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column, relationship
+from sqlalchemy.orm import (
+    DeclarativeBase,
+    Mapped,
+    Session,
+    mapped_column,
+    relationship,
+    sessionmaker,
+)
 from . import tools
 from sqlalchemy.exc import IntegrityError
 
@@ -36,12 +43,19 @@ class Atlas:
             self.filepath = self.filepath.parent / (self.filepath.name + ".db")
 
         self.engine = create_engine(f"sqlite:///{self.filepath}")
-        self.session = Session(self.engine)
+        self.session = Session(self.engine, expire_on_commit=False)
         Base.metadata.create_all(self.engine)
 
     @property
     def geopath(self):
         return self.filepath.with_suffix(".gpkg")
+
+    @cached_property
+    def sdf(self):
+        return self.read_gdf(self.sensitive.name)
+
+    def mdf(self, candidate):
+        return self.read_gdf(candidate.id)
 
     @property
     def candidates(self):
@@ -61,25 +75,31 @@ class Atlas:
         gdf.to_file(self.geopath, driver="GPKG", layer=name)
 
     def add_sensitive(self, gdf):
-        with self.session.begin():
-            if self.session.get(Sensitive, self.name) is not None:
-                raise ValueError("Sensitive layer already exists.")
-            self.sensitive = Sensitive(name=self.name)
-            self.session.add(self.sensitive)
-            self.save_gdf(gdf, self.name)
+        if self.session.get(Sensitive, self.name) is not None:
+            raise ValueError("Sensitive layer already exists.")
+        self.sensitive = Sensitive(name=self.name)
+        self.session.add(self.sensitive)
+        self.save_gdf(gdf, self.name)
+        self.session.commit()
 
     def add_candidate(self, gdf, params):
-        with self.session.begin():
-            if self.session.get(Sensitive, self.name) is None:
-                raise ValueError("Add sensitive layer before adding candidates.")
+        if self.session.get(Sensitive, self.name) is None:
+            raise ValueError("Add sensitive layer before adding candidates.")
 
-            id = tools.checksum(gdf)
-            if self.session.get(Candidate, id) is not None:
-                raise ValueError("Candidate with identical geometry already exists.")
+        id = tools.checksum(gdf)
+        if self.session.get(Candidate, id) is not None:
+            raise ValueError("Candidate with identical geometry already exists.")
 
-            candidate = Candidate(id=id, sensitive=self.sensitive, params=params)
-            self.session.add(candidate)
-            self.save_gdf(gdf, id)
+        candidate = Candidate(id=id, sensitive=self.sensitive, params=params)
+        self.session.add(candidate)
+        self.save_gdf(gdf, id)
+        self.session.commit()
+
+    def mask(self, mask, **kwargs):
+        m = mask(gdf=self.sdf, **kwargs)
+        mdf = m.run()
+        params = m.params
+        return self.add_candidate(mdf, params)
 
 
 class Sensitive(Base):
@@ -103,16 +123,21 @@ class Candidate(Base):
 class Container(Base):
     __tablename__ = "containers_table"
     name: Mapped[str] = mapped_column(primary_key=True)
-    candidate_id: Mapped[str] = mapped_column(ForeignKey("candidate_table.id"))
-    candidate: Mapped["Candidate"] = relationship(back_populates="container")
     sensitive_name: Mapped[str] = mapped_column(ForeignKey("sensitive_table.name"))
     sensitive: Mapped["Sensitive"] = relationship(back_populates="containers")
+    candidate_id: Mapped[str] = mapped_column(ForeignKey("candidate_table.id"))
+    candidate: Mapped["Candidate"] = relationship(back_populates="container")
 
 
 class Population(Base):
     __tablename__ = "population_table"
     name: Mapped[str] = mapped_column(primary_key=True)
-    candidate_id: Mapped[str] = mapped_column(ForeignKey("candidate_table.id"))
-    candidate: Mapped["Candidate"] = relationship(back_populates="population")
     sensitive_name: Mapped[str] = mapped_column(ForeignKey("sensitive_table.name"))
     sensitive: Mapped["Sensitive"] = relationship(back_populates="populations")
+    candidate_id: Mapped[str] = mapped_column(ForeignKey("candidate_table.id"))
+    candidate: Mapped["Candidate"] = relationship(back_populates="population")
+
+
+# class Stats(Base):
+#     __tablename__ = "stats_table"
+#     id
