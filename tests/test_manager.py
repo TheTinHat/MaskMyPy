@@ -92,3 +92,12 @@ def test_gpkg_layer_deduplication(points, tmpdir):
     atlas.add_sensitive(points)
     atlas_clone = Atlas("test_clone")
     atlas_clone.add_sensitive(points)
+    # Need to add an assertion here to validate
+
+
+def test_load_container(points, container, tmpdir):
+    atlas = Atlas("test")
+    atlas.add_sensitive(points)
+    atlas.add_container(container, "BoundaryPolygons")
+    assert isinstance(atlas.read_gdf(atlas.containers[0].id), GeoDataFrame)
+    assert atlas.sensitive.containers[0].name == "BoundaryPolygons"

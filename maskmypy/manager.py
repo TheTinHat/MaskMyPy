@@ -65,6 +65,14 @@ class Atlas:
     def candidates(self):
         return self.sensitive.candidates
 
+    @property
+    def containers(self):
+        return self.sensitive.containers
+
+    @property
+    def populations(self):
+        return self.sensitive.populations
+
     @classmethod
     def load(cls, name, filepath):
         filepath = Path(filepath).with_suffix(".db")
@@ -100,6 +108,15 @@ class Atlas:
         self.save_gdf(gdf, id)
         self.session.commit()
 
+    def add_container(self, gdf, name):
+        if self.session.get(Container, name) is not None:
+            raise ValueError("Container with this name already exists.")
+        id = tools.checksum(gdf)
+        container = Container(name=name, id=id, sensitive=self.sensitive)
+        self.session.add(container)
+        self.save_gdf(gdf, id)
+        self.session.commit()
+
     def mask(self, mask, **kwargs):
         m = mask(gdf=self.sdf, **kwargs)
         mdf = m.run()
@@ -110,7 +127,7 @@ class Atlas:
 class Sensitive(Base):
     __tablename__ = "sensitive_table"
     name: Mapped[str] = mapped_column(primary_key=True)
-    id: Mapped[Optional[str]]
+    id: Mapped[str]
     candidates: Mapped[Optional[List["Candidate"]]] = relationship(back_populates="sensitive")
     containers: Mapped[Optional[List["Container"]]] = relationship(back_populates="sensitive")
     populations: Mapped[Optional[List["Population"]]] = relationship(back_populates="sensitive")
@@ -153,19 +170,27 @@ class Candidate(Base):
 class Container(Base):
     __tablename__ = "containers_table"
     name: Mapped[str] = mapped_column(primary_key=True)
+    id: Mapped[str]
     sensitive_name: Mapped[str] = mapped_column(ForeignKey("sensitive_table.name"))
     sensitive: Mapped["Sensitive"] = relationship(back_populates="containers")
-    candidate_id: Mapped[str] = mapped_column(ForeignKey("candidate_table.id"))
-    candidate: Mapped["Candidate"] = relationship(back_populates="container")
+    candidate_id: Mapped[Optional[str]] = mapped_column(ForeignKey("candidate_table.id"))
+    candidate: Mapped[Optional["Candidate"]] = relationship(back_populates="container")
+
+    def __repr__(self):
+        return f"({self.name}, {self.id})"
 
 
 class Population(Base):
     __tablename__ = "population_table"
     name: Mapped[str] = mapped_column(primary_key=True)
+    id: Mapped[str]
     sensitive_name: Mapped[str] = mapped_column(ForeignKey("sensitive_table.name"))
     sensitive: Mapped["Sensitive"] = relationship(back_populates="populations")
     candidate_id: Mapped[str] = mapped_column(ForeignKey("candidate_table.id"))
     candidate: Mapped["Candidate"] = relationship(back_populates="population")
+
+    def __repr__(self):
+        return f"({self.name}, {self.id})"
 
 
 # class Stats(Base):
