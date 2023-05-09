@@ -18,7 +18,7 @@ def crop(gdf: GeoDataFrame, bbox: list, padding: float) -> GeoDataFrame:
 
 
 def checksum(gdf: GeoDataFrame) -> str:
-    return sha256(hash_pandas_object(gdf.geometry).values).hexdigest()[0:12]
+    return sha256(hash_pandas_object(gdf).values).hexdigest()[0:12]
 
 
 def pad(bbox: list, padding: float) -> list:
