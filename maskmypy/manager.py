@@ -72,11 +72,11 @@ class Atlas:
         atlas.sensitive = atlas.session.get(Sensitive, atlas.name)
         return atlas
 
-    def read_gdf(self, name):
-        return read_file(self.gpkg_path, driver="GPKG", layer=name)
+    def read_gdf(self, id):
+        return read_file(self.gpkg_path, driver="GPKG", layer=id)
 
-    def save_gdf(self, gdf, name):
-        gdf.to_file(self.gpkg_path, driver="GPKG", layer=name)
+    def save_gdf(self, gdf, id):
+        gdf.to_file(self.gpkg_path, driver="GPKG", layer=id)
 
     def add_sensitive(self, gdf):
         if self.session.get(Sensitive, self.name) is not None:
