@@ -47,15 +47,19 @@ class Atlas:
         Base.metadata.create_all(self.engine)
 
     @property
-    def geopath(self):
+    def gpkg_path(self):
         return self.filepath.with_suffix(".gpkg")
 
     @cached_property
     def sdf(self):
-        return self.read_gdf(self.sensitive.name)
+        return self.read_gdf(self.sensitive.id)
 
-    def mdf(self, candidate):
-        return self.read_gdf(candidate.id)
+    def mdf(self, candidate_or_id):
+        c = candidate_or_id
+        if isinstance(c, str):
+            return self.read_gdf(c)
+        elif isinstance(c, Candidate):
+            return self.read_gdf(c.id)
 
     @property
     def candidates(self):
@@ -69,17 +73,18 @@ class Atlas:
         return atlas
 
     def read_gdf(self, name):
-        return read_file(self.geopath, driver="GPKG", layer=name)
+        return read_file(self.gpkg_path, driver="GPKG", layer=name)
 
     def save_gdf(self, gdf, name):
-        gdf.to_file(self.geopath, driver="GPKG", layer=name)
+        gdf.to_file(self.gpkg_path, driver="GPKG", layer=name)
 
     def add_sensitive(self, gdf):
         if self.session.get(Sensitive, self.name) is not None:
             raise ValueError("Sensitive layer already exists.")
-        self.sensitive = Sensitive(name=self.name)
+        id = tools.checksum(gdf)
+        self.sensitive = Sensitive(name=self.name, id=id)
         self.session.add(self.sensitive)
-        self.save_gdf(gdf, self.name)
+        self.save_gdf(gdf, id)
         self.session.commit()
 
     def add_candidate(self, gdf, params):
@@ -105,9 +110,20 @@ class Atlas:
 class Sensitive(Base):
     __tablename__ = "sensitive_table"
     name: Mapped[str] = mapped_column(primary_key=True)
+    id: Mapped[Optional[str]]
     candidates: Mapped[Optional[List["Candidate"]]] = relationship(back_populates="sensitive")
     containers: Mapped[Optional[List["Container"]]] = relationship(back_populates="sensitive")
     populations: Mapped[Optional[List["Population"]]] = relationship(back_populates="sensitive")
+
+    def __repr__(self):
+        return (
+            "Sensitive\n"
+            f"- Name: {self.name}\n"
+            f"- ID: {self.id}\n"
+            f"- Candidates: {len(self.candidates)}\n"
+            f"- Containers: {len(self.containers)}\n"
+            f"- Populations: {len(self.populations)}\n"
+        )
 
 
 class Candidate(Base):
@@ -118,6 +134,20 @@ class Candidate(Base):
     sensitive: Mapped["Sensitive"] = relationship(back_populates="candidates")
     container: Mapped[Optional["Container"]] = relationship(back_populates="candidate")
     population: Mapped[Optional["Population"]] = relationship(back_populates="candidate")
+
+    def __repr__(self):
+        param_string = "\n- ".join([f"{key} = {value}" for key, value in self.params.items()])
+
+        return (
+            "Candidate\n"
+            f"- ID: {self.id}\n"
+            f"Parameters:\n"
+            f"- {param_string}\n"
+            "Related Layers:\n"
+            f"- Sensitive Name: {self.sensitive_name}\n"
+            f"- Container Name: {self.container.name if self.container else 'None'}\n"
+            f"- Population Name: {self.population.name if self.population else 'None'}\n"
+        )
 
 
 class Container(Base):

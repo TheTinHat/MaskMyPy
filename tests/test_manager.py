@@ -1,6 +1,7 @@
 import pytest
 import os
 from maskmypy import Atlas, Sensitive, Candidate, Donut
+from geopandas import GeoDataFrame
 
 
 def test_filename_appends_db_suffix(tmpdir):
@@ -30,8 +31,11 @@ def test_load(points, tmpdir):
     atlas.add_candidate(donut.run(), donut.params)
     del atlas
     atlas_loaded = Atlas.load("test", "./atlas.db")
+    cand = atlas_loaded.candidates[0]
     assert atlas_loaded.sensitive.name == "test"
-    assert isinstance(atlas_loaded.candidates[0].id, str)
+    assert isinstance(atlas_loaded.sdf, GeoDataFrame)
+    assert isinstance(atlas_loaded.mdf(cand), GeoDataFrame)
+    assert isinstance(cand.id, str)
 
 
 def test_load_without_sensitive(tmpdir):
@@ -81,3 +85,10 @@ def test_generic_mask(points, tmpdir):
     atlas.add_sensitive(points)
     atlas.mask(Donut, low=50, high=500)
     assert len(atlas.candidates) == 1
+
+
+def test_gpkg_layer_deduplication(points, tmpdir):
+    atlas = Atlas("test")
+    atlas.add_sensitive(points)
+    atlas_clone = Atlas("test_clone")
+    atlas_clone.add_sensitive(points)
