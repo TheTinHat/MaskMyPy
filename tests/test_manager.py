@@ -24,6 +24,25 @@ def test_filename_default(tmpdir):
     assert os.path.exists("atlas.db")
 
 
+def test_in_memory_does_not_write_to_disk(points):
+    atlas = Atlas("test", in_memory=True)
+    atlas.add_sensitive(points)
+    assert os.path.exists("atlas.db") is False
+    assert os.path.exists("atlas.gpkg") is False
+
+
+def test_in_memory_immutability(points):
+    crs_1 = points.crs
+    atlas = Atlas("test", in_memory=True)
+    atlas.save_gdf(points, "123")
+    crs_2 = atlas.read_gdf("123").crs
+    points = points.to_crs(4326)
+    crs_3 = points.crs
+    assert crs_1 == crs_2
+    assert crs_1 != crs_3
+    assert crs_2 != crs_3
+
+
 def test_load(points, tmpdir):
     atlas = Atlas("test")
     atlas.add_sensitive(points)
@@ -73,11 +92,18 @@ def test_add_identical_candidates(points, tmpdir):
         atlas.add_candidate(donut2.run(), donut2.params)
 
 
-def test_add_candidate_before_sensitive(points, tmpdir):
+def test_add_layers_before_sensitive(points, addresses, container, tmpdir):
     atlas = Atlas("test")
     donut = Donut(points, 50, 500)
+
     with pytest.raises(ValueError):
         atlas.add_candidate(donut.run(), donut.params)
+
+    with pytest.raises(ValueError):
+        atlas.add_container(container, "BoundaryPolygons")
+
+    with pytest.raises(ValueError):
+        atlas.add_population(addresses, "AddressPoints")
 
 
 def test_generic_mask(points, tmpdir):
@@ -92,12 +118,56 @@ def test_gpkg_layer_deduplication(points, tmpdir):
     atlas.add_sensitive(points)
     atlas_clone = Atlas("test_clone")
     atlas_clone.add_sensitive(points)
-    # Need to add an assertion here to validate
+    # Assertion required
 
 
-def test_load_container(points, container, tmpdir):
+def test_add_container(points, container, tmpdir):
     atlas = Atlas("test")
     atlas.add_sensitive(points)
     atlas.add_container(container, "BoundaryPolygons")
     assert isinstance(atlas.read_gdf(atlas.containers[0].id), GeoDataFrame)
     assert atlas.sensitive.containers[0].name == "BoundaryPolygons"
+
+
+def test_add_duplicate_containers(points, container, tmpdir):
+    atlas = Atlas("test")
+    atlas.add_sensitive(points)
+    atlas.add_container(container, "BoundaryPolygons")
+    atlas.add_container(container, "BoundaryAreas")
+    # Assertion required
+
+
+def test_add_population(points, addresses):
+    atlas = Atlas("test", in_memory=True)
+    atlas.add_sensitive(points)
+    atlas.add_population(addresses, "AddressPoints")
+    assert isinstance(atlas.read_gdf(atlas.populations[0].id), GeoDataFrame)
+    assert atlas.sensitive.populations[0].name == "AddressPoints"
+
+
+def test_add_layers_on_disk(points, addresses, container, tmpdir):
+    atlas = Atlas("test")
+    donut = Donut(points, 50, 500)
+    atlas.add_sensitive(points)
+    atlas.add_candidate(donut.run(), donut.params)
+    atlas.add_container(container, "BoundaryPolygons")
+    atlas.add_population(addresses, "AddressPoints")
+
+    assert isinstance(atlas.sdf, GeoDataFrame)
+    assert isinstance(atlas.read_gdf(atlas.candidates[0].id), GeoDataFrame)
+    assert isinstance(atlas.read_gdf(atlas.containers[0].id), GeoDataFrame)
+    assert isinstance(atlas.read_gdf(atlas.populations[0].id), GeoDataFrame)
+
+
+def test_add_layers_in_memory(points, addresses, container, tmpdir):
+    atlas = Atlas("test", in_memory=True)
+    donut = Donut(points, 50, 500)
+    atlas.add_sensitive(points)
+    atlas.add_candidate(donut.run(), donut.params)
+    atlas.add_container(container, "BoundaryPolygons")
+    atlas.add_population(addresses, "AddressPoints")
+
+    assert isinstance(atlas.sdf, GeoDataFrame)
+    assert isinstance(atlas.read_gdf(atlas.candidates[0].id), GeoDataFrame)
+    assert isinstance(atlas.read_gdf(atlas.containers[0].id), GeoDataFrame)
+    assert isinstance(atlas.read_gdf(atlas.populations[0].id), GeoDataFrame)
