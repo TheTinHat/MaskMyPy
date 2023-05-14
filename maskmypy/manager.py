@@ -111,7 +111,11 @@ class Atlas:
         if self.session.get(Sensitive, self.name) is not None:
             raise ValueError("Sensitive layer already exists.")
         id = tools.checksum(gdf)
-        self.sensitive = Sensitive(name=self.name, id=id)
+        nnd = analysis.nnd(gdf)
+
+        self.sensitive = Sensitive(
+            name=self.name, id=id, nnd_min=nnd.min, nnd_max=nnd.max, nnd_mean=nnd.mean
+        )
         self.session.add(self.sensitive)
         self.save_gdf(gdf, id)
         self.session.commit()
@@ -121,6 +125,8 @@ class Atlas:
             raise ValueError("Add sensitive layer before adding candidates.")
 
         id = tools.checksum(gdf)
+        nnd = analysis.nnd(gdf)
+
         if self.session.get(Candidate, id) is not None:
             raise ValueError("Candidate already exists.")
 
@@ -130,6 +136,9 @@ class Atlas:
             params=params,
             container=container,
             population=population,
+            nnd_min=nnd.min,
+            nnd_max=nnd.max,
+            nnd_mean=nnd.mean,
         )
 
         self.session.add(candidate)
@@ -214,6 +223,7 @@ class Sensitive(Base):
             f"- Candidates: {len(self.candidates)}\n"
             f"- Containers: {len(self.containers)}\n"
             f"- Populations: {len(self.populations)}\n"
+            f"- Nearest Neighbor Distance (Min/Max/Mean): {self.nnd_min, self.nnd_max, self.nnd_mean}\n"
         )
 
 
@@ -254,15 +264,10 @@ class Candidate(Base):
         print(
             "Candidate Statistics\n"
             f"- ID: {self.id}\n"
-            f"- K-min: {self.k_min}\n"
-            f"- K-max: {self.k_max}\n"
-            f"- K-mean: {self.k_mean}\n"
-            f"- K-med: {self.k_med}\n"
+            f"- K-Anonmity (Min, Max, Mean, Median): {self.k_min, self.k_max, self.k_mean, self.k_med}\n"
             f"- Ripley: {self.ripley}\n"
             f"- Drift: {self.drift}\n"
-            f"- NND-min: {self.nnd_min}\n"
-            f"- NND-max: {self.nnd_max}\n"
-            f"- NND-mean: {self.nnd_mean}\n"
+            f"- NND (Min/Max/Mean): {self.nnd_min, self.nnd_max, self.nnd_mean}\n"
         )
 
 

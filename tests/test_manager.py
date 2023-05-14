@@ -232,3 +232,17 @@ def test_estimate_k(points, addresses):
     assert atlas.candidates[0].k_max > atlas.candidates[0].k_min
     assert atlas.candidates[0].k_max > atlas.candidates[0].k_mean
     assert atlas.candidates[0].k_max > atlas.candidates[0].k_med
+
+
+def test_nnd_calculation(points):
+    atlas = Atlas("test", in_memory=True)
+    donut = Donut(points, 50, 500)
+    atlas.add_sensitive(points)
+    assert atlas.sensitive.nnd_max > 0
+    assert atlas.sensitive.nnd_max > atlas.sensitive.nnd_min
+    assert atlas.sensitive.nnd_max > atlas.sensitive.nnd_mean
+    atlas.add_candidate(donut.run(), donut.params)
+
+    assert atlas.candidates[0].nnd_max > 0
+    assert atlas.candidates[0].nnd_max > atlas.candidates[0].nnd_min
+    assert atlas.candidates[0].nnd_max > atlas.candidates[0].nnd_mean
