@@ -12,7 +12,7 @@ class LocationSwap:
     gdf: GeoDataFrame
     low: float
     high: float
-    addresses: GeoDataFrame
+    address: GeoDataFrame
     seed: int = None
 
     def __post_init__(self) -> None:
@@ -27,22 +27,22 @@ class LocationSwap:
         if self.low >= self.high:
             raise ValueError("Minimum displacement distance is larger than or equal to maximum.")
 
-        tools.validate_geom_type(self.addresses, "Point")
-        tools.validate_crs(self.gdf.crs, self.addresses.crs)
+        tools.validate_geom_type(self.address, "Point")
+        tools.validate_crs(self.gdf.crs, self.address.crs)
 
     def _mask_point(self, point: Point) -> Point:
         min_buffer = point.buffer(self.low)
         max_buffer = point.buffer(self.high)
 
-        excluded_locations = self.addresses.intersects(min_buffer)
+        excluded_locations = self.address.intersects(min_buffer)
         excluded_locations = set(excluded_locations[excluded_locations].index)
 
-        included_locations = self.addresses.intersects(max_buffer)
+        included_locations = self.address.intersects(max_buffer)
         included_locations = set(included_locations[included_locations].index)
 
         included_locations = list(included_locations.difference(excluded_locations))
         if len(included_locations) > 0:
-            return self.addresses.iloc[self._rng.choice(included_locations)].geometry
+            return self.address.iloc[self._rng.choice(included_locations)].geometry
         else:
             return Point(0, 0)
 

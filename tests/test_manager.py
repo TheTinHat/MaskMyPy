@@ -64,11 +64,11 @@ def test_load_without_sensitive(tmpdir):
     assert atlas_loaded.sensitive is None
 
 
-def test_add_multiple_sensitive(points, addresses, tmpdir):
+def test_add_multiple_sensitive(points, address, tmpdir):
     atlas = Atlas("test")
     atlas.add_sensitive(points)
     with pytest.raises(ValueError):
-        atlas.add_sensitive(addresses)
+        atlas.add_sensitive(address)
 
 
 def test_add_candidate(points, tmpdir):
@@ -82,28 +82,28 @@ def test_add_candidate(points, tmpdir):
     assert len(atlas.read_gdf(atlas.candidates[0].id)) == len(points)
 
 
-def test_add_candidate_with_container_population(points, container, addresses):
+def test_add_candidate_with_container_address(points, container, address):
     atlas = Atlas("test", in_memory=True)
     atlas.add_sensitive(points)
     container_layer = atlas.add_container(container, "container_layer")
-    population_layer = atlas.add_population(addresses, "population_layer")
+    address_layer = atlas.add_address(address, "address_layer")
 
     donut = Donut(points, 50, 500)
     mdf = donut.run()
     params = donut.params
-    atlas.add_candidate(mdf, params, container=container_layer, population=population_layer)
+    atlas.add_candidate(mdf, params, container=container_layer, address=address_layer)
 
     assert atlas.candidates[0].container.name == "container_layer"
-    assert atlas.candidates[0].population.name == "population_layer"
+    assert atlas.candidates[0].address.name == "address_layer"
 
 
-def test_get_container_population(points, container, addresses):
+def test_get_container_address(points, container, address):
     atlas = Atlas("test", in_memory=True)
     atlas.add_sensitive(points)
     container_layer = atlas.add_container(container, "container_layer")
-    population_layer = atlas.add_population(addresses, "population_layer")
+    address_layer = atlas.add_address(address, "address_layer")
     assert atlas.get_container("container_layer") == container_layer
-    assert atlas.get_population("population_layer") == population_layer
+    assert atlas.get_address("address_layer") == address_layer
 
 
 def test_add_identical_candidates(points, tmpdir):
@@ -116,7 +116,7 @@ def test_add_identical_candidates(points, tmpdir):
         atlas.add_candidate(donut2.run(), donut2.params)
 
 
-def test_add_layers_before_sensitive(points, addresses, container, tmpdir):
+def test_add_layers_before_sensitive(points, address, container, tmpdir):
     atlas = Atlas("test")
     donut = Donut(points, 50, 500)
 
@@ -127,7 +127,7 @@ def test_add_layers_before_sensitive(points, addresses, container, tmpdir):
         atlas.add_container(container, "BoundaryPolygons")
 
     with pytest.raises(ValueError):
-        atlas.add_population(addresses, "AddressPoints")
+        atlas.add_address(address, "AddressPoints")
 
 
 def test_generic_mask(points, tmpdir):
@@ -137,7 +137,7 @@ def test_generic_mask(points, tmpdir):
     assert len(atlas.candidates) == 1
 
 
-def test_generic_mask_with_container_name(points, container, addresses):
+def test_generic_mask_with_container_name(points, container, address):
     atlas = Atlas("test", in_memory=True)
     atlas.add_sensitive(points)
     atlas.add_container(container, "BoundaryPolygons")
@@ -146,13 +146,45 @@ def test_generic_mask_with_container_name(points, container, addresses):
     assert atlas.candidates[0].container.name == "BoundaryPolygons"
 
 
-def test_generic_mask_with_container_object(points, container, addresses):
+def test_generic_mask_with_container_object(points, container, address):
     atlas = Atlas("test", in_memory=True)
     atlas.add_sensitive(points)
     cont_obj = atlas.add_container(container, "BoundaryPolygons")
     atlas.mask(Donut, low=50, high=500, distribution="areal", container=cont_obj)
     assert atlas.candidates[0].params["distribution"] == "areal"
     assert atlas.candidates[0].container.name == "BoundaryPolygons"
+
+
+def test_donut_mask_with_container(points, container):
+    atlas = Atlas("test", in_memory=True)
+    atlas.add_sensitive(points)
+    atlas.add_container(container, "BoundaryPolygons")
+    atlas.donut(50, 500, container="BoundaryPolygons", distribution="areal")
+    assert atlas.candidates[0].params["distribution"] == "areal"
+    assert atlas.candidates[0].container.name == "BoundaryPolygons"
+
+
+def test_voronoi_mask_without_snapping(points):
+    atlas = Atlas("test", in_memory=True)
+    atlas.add_sensitive(points)
+    atlas.voronoi(snap=False)
+    assert atlas.candidates[0].params["snap"] is False
+
+
+def test_location_swap_with_address_name(points, address):
+    atlas = Atlas("test", in_memory=True)
+    atlas.add_sensitive(points)
+    atlas.add_address(address, "AddressPoints")
+    atlas.location_swap(5, 10, address="AddressPoints")
+    assert isinstance(atlas.read_gdf(atlas.candidates[0].id), GeoDataFrame)
+
+
+def test_location_swap_with_address_object(points, address):
+    atlas = Atlas("test", in_memory=True)
+    atlas.add_sensitive(points)
+    addr_obj = atlas.add_address(address, "AddressPoints")
+    atlas.location_swap(5, 10, address=addr_obj)
+    assert isinstance(atlas.read_gdf(atlas.candidates[0].id), GeoDataFrame)
 
 
 def test_gpkg_layer_deduplication(points, tmpdir):
@@ -192,41 +224,41 @@ def test_containers_all(points, container, tmpdir):
     assert len(atlas_c.containers_all) == 2
 
 
-def test_add_population(points, addresses):
+def test_add_address(points, address):
     atlas = Atlas("test", in_memory=True)
     atlas.add_sensitive(points)
-    atlas.add_population(addresses, "AddressPoints")
-    atlas.add_population(addresses, "OtherAddressPoints")
-    assert isinstance(atlas.read_gdf(atlas.populations[0].id), GeoDataFrame)
-    assert atlas.sensitive.populations[0].name == "AddressPoints"
+    atlas.add_address(address, "AddressPoints")
+    atlas.add_address(address, "OtherAddressPoints")
+    assert isinstance(atlas.read_gdf(atlas.addresses[0].id), GeoDataFrame)
+    assert atlas.sensitive.addresses[0].name == "AddressPoints"
 
 
-def test_add_layers_on_disk(points, addresses, container, tmpdir):
+def test_add_layers_on_disk(points, address, container, tmpdir):
     atlas = Atlas("test")
     donut = Donut(points, 50, 500)
     atlas.add_sensitive(points)
     atlas.add_candidate(donut.run(), donut.params)
     atlas.add_container(container, "BoundaryPolygons")
-    atlas.add_population(addresses, "AddressPoints")
+    atlas.add_address(address, "AddressPoints")
 
     assert isinstance(atlas.sdf, GeoDataFrame)
     assert isinstance(atlas.read_gdf(atlas.candidates[0].id), GeoDataFrame)
     assert isinstance(atlas.read_gdf(atlas.containers[0].id), GeoDataFrame)
-    assert isinstance(atlas.read_gdf(atlas.populations[0].id), GeoDataFrame)
+    assert isinstance(atlas.read_gdf(atlas.addresses[0].id), GeoDataFrame)
 
 
-def test_add_layers_in_memory(points, addresses, container, tmpdir):
+def test_add_layers_in_memory(points, address, container, tmpdir):
     atlas = Atlas("test", in_memory=True)
     donut = Donut(points, 50, 500)
     atlas.add_sensitive(points)
     atlas.add_candidate(donut.run(), donut.params)
     atlas.add_container(container, "BoundaryPolygons")
-    atlas.add_population(addresses, "AddressPoints")
+    atlas.add_address(address, "AddressPoints")
 
     assert isinstance(atlas.sdf, GeoDataFrame)
     assert isinstance(atlas.read_gdf(atlas.candidates[0].id), GeoDataFrame)
     assert isinstance(atlas.read_gdf(atlas.containers[0].id), GeoDataFrame)
-    assert isinstance(atlas.read_gdf(atlas.populations[0].id), GeoDataFrame)
+    assert isinstance(atlas.read_gdf(atlas.addresses[0].id), GeoDataFrame)
 
 
 def test_drift_calculation(points):
@@ -238,13 +270,13 @@ def test_drift_calculation(points):
     assert isinstance(atlas.candidates[0].drift, float)
 
 
-def test_estimate_k(points, addresses):
+def test_calculate_k(points, address):
     atlas = Atlas("test", in_memory=True)
     donut = Donut(points, 100, 1000)
     atlas.add_sensitive(points)
-    pop = atlas.add_population(addresses, "address_points")
+    pop = atlas.add_address(address, "address_points")
     candidate = atlas.add_candidate(donut.run(), donut.params)
-    atlas.estimate_k(candidate, pop)
+    atlas.calculate_k(candidate, pop)
     assert atlas.candidates[0].k_max is not None
     assert atlas.candidates[0].k_max > 1
     assert atlas.candidates[0].k_max > atlas.candidates[0].k_min

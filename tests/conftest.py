@@ -31,7 +31,7 @@ def tmpdir():
 
 
 POINTS = gpd.read_file("tests/points.geojson").to_crs(epsg=26910)
-ADDRESSES = gpd.read_file("tests/addresses.geojson").to_crs(epsg=26910)
+ADDRESS = gpd.read_file("tests/addresses.geojson").to_crs(epsg=26910)
 CONTAINER = gpd.read_file("tests/boundary.geojson").to_crs(epsg=26910)
 
 
@@ -41,8 +41,8 @@ def points():
 
 
 @pytest.fixture
-def addresses():
-    return ADDRESSES.copy(deep=True)
+def address():
+    return ADDRESS.copy(deep=True)
 
 
 @pytest.fixture

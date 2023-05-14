@@ -28,6 +28,7 @@ from sqlalchemy.orm import (
 from . import tools, analysis
 from .masks import Donut, LocationSwap, Street, Voronoi
 from sqlalchemy.exc import IntegrityError
+from inspect import getfullargspec
 
 
 class Base(DeclarativeBase):
@@ -81,12 +82,20 @@ class Atlas:
         return self.session.scalars(select(Container)).all()
 
     @property
-    def populations(self):
-        return self.sensitive.populations
+    def censuses(self):
+        return self.sensitive.censuses
 
     @property
-    def populations_all(self):
-        return self.session.scalars(select(Population)).all()
+    def censuses_all(self):
+        return self.session.scalars(select(Census)).all()
+
+    @property
+    def addresses(self):
+        return self.sensitive.addresses
+
+    @property
+    def addresses_all(self):
+        return self.session.scalars(select(Address)).all()
 
     @classmethod
     def load(cls, name, filepath):
@@ -120,7 +129,7 @@ class Atlas:
         self.save_gdf(gdf, id)
         self.session.commit()
 
-    def add_candidate(self, gdf, params, container=None, population=None):
+    def add_candidate(self, gdf, params, container=None, census=None, address=None):
         if self.session.get(Sensitive, self.name) is None:
             raise ValueError("Add sensitive layer before adding candidates.")
 
@@ -135,7 +144,8 @@ class Atlas:
             sensitive=self.sensitive,
             params=params,
             container=container,
-            population=population,
+            census=census,
+            address=address,
             nnd_min=nnd.min,
             nnd_max=nnd.max,
             nnd_mean=nnd.mean,
@@ -163,26 +173,46 @@ class Atlas:
     def get_container(self, name):
         return self.session.get(Container, name)
 
-    def add_population(self, gdf, name):
+    def add_census(self, gdf, name, pop_col):
+        """NEEDS TESTS"""
         if self.session.get(Sensitive, self.name) is None:
-            raise ValueError("Add sensitive layer before adding populations.")
+            raise ValueError("Add sensitive layer before adding census layers.")
 
-        if self.session.get(Population, name) is not None:
-            raise ValueError("Population with this name already exists.")
+        if self.session.get(Census, name) is not None:
+            raise ValueError("Census layer with this name already exists.")
         id = tools.checksum(gdf)
-        population = Population(name=name, id=id, sensitive=self.sensitive)
-        self.session.add(population)
+        census = Census(name=name, id=id, pop_col=pop_col, sensitive=self.sensitive)
+        self.session.add(census)
         self.save_gdf(gdf, id)
         self.session.commit()
-        return population
+        return census
 
-    def get_population(self, name):
-        return self.session.get(Population, name)
+    def get_census(self, name):
+        """NEEDS TESTS"""
+        return self.session.get(Census, name)
+
+    def add_address(self, gdf, name):
+        if self.session.get(Sensitive, self.name) is None:
+            raise ValueError("Add sensitive layer before adding address layers.")
+
+        if self.session.get(Address, name) is not None:
+            raise ValueError("Address layer with this name already exists.")
+        id = tools.checksum(gdf)
+        address = Address(name=name, id=id, sensitive=self.sensitive)
+        self.session.add(address)
+        self.save_gdf(gdf, id)
+        self.session.commit()
+        return address
+
+    def get_address(self, name):
+        return self.session.get(Address, name)
 
     def mask(self, mask, **kwargs):
         mask_args = {"gdf": self.sdf}
         candidate_args = {}
-        if hasattr(mask, "container"):
+        arg_spec = getfullargspec(mask)[0]
+
+        if "container" in arg_spec:
             container = kwargs.pop("container", None)
             if isinstance(container, str):
                 container = self.get_container(container)
@@ -190,13 +220,21 @@ class Atlas:
                 mask_args["container"] = self.read_gdf(container.id)
                 candidate_args["container"] = container
 
-        if hasattr(mask, "population"):
-            population = kwargs.pop("population", None)
-            if isinstance(population, str):
-                population = self.get_population(population)
-            if isinstance(population, Population):
-                mask_args["population"] = self.read_gdf(population.id)
-                candidate_args["population"] = population
+        if "census" in arg_spec:
+            census = kwargs.pop("census", None)
+            if isinstance(census, str):
+                census = self.get_census(census)
+            if isinstance(census, Census):
+                mask_args["census"] = self.read_gdf(census.id)
+                candidate_args["census"] = census
+
+        if "address" in arg_spec:
+            address = kwargs.pop("address", None)
+            if isinstance(address, str):
+                address = self.get_address(address)
+            if isinstance(address, Address):
+                mask_args["address"] = self.read_gdf(address.id)
+                candidate_args["address"] = address
 
         m = mask(**mask_args, **kwargs)
         mdf = m.run()
@@ -206,13 +244,38 @@ class Atlas:
     def donut(self, low: float, high: float, **kwargs):
         return self.mask(Donut, low=low, high=high, **kwargs)
 
+    def street(self, low: int, high: int, **kwargs):
+        return self.mask(Street, low=low, high=high, **kwargs)
+
+    def voronoi(self, **kwargs):
+        return self.mask(Voronoi, **kwargs)
+
+    def location_swap(self, low: float, high: float, address, **kwargs):
+        return self.mask(LocationSwap, low=low, high=high, address=address, **kwargs)
+
     def drift(self, candidate):
         candidate.drift = analysis.drift(self.sdf, self.mdf(candidate))
         self.session.commit()
 
-    def estimate_k(self, candidate, population):
+    def estimate_k(self, candidate, census):
         kdf = analysis.estimate_k(
-            self.sdf, self.mdf(candidate), population_gdf=self.read_gdf(population.id)
+            self.sdf,
+            self.mdf(candidate),
+            census_gdf=self.read_gdf(census.id),
+            pop_col=census.pop_col,
+        )
+        k = analysis.summarize_k(kdf)
+        candidate.k_min = k.k_min
+        candidate.k_max = k.k_max
+        candidate.k_mean = k.k_min
+        candidate.k_med = k.k_med
+        self.session.commit()
+
+    def calculate_k(self, candidate, address):
+        kdf = analysis.calculate_k(
+            self.sdf,
+            self.mdf(candidate),
+            address=self.read_gdf(address.id),
         )
         k = analysis.summarize_k(kdf)
         candidate.k_min = k.k_min
@@ -228,7 +291,8 @@ class Sensitive(Base):
     id: Mapped[str]
     candidates: Mapped[Optional[List["Candidate"]]] = relationship(back_populates="sensitive")
     containers: Mapped[Optional[List["Container"]]] = relationship(back_populates="sensitive")
-    populations: Mapped[Optional[List["Population"]]] = relationship(back_populates="sensitive")
+    censuses: Mapped[Optional[List["Census"]]] = relationship(back_populates="sensitive")
+    addresses: Mapped[Optional[List["Address"]]] = relationship(back_populates="sensitive")
     nnd_min: Mapped[Optional[float]]
     nnd_max: Mapped[Optional[float]]
     nnd_mean: Mapped[Optional[float]]
@@ -240,7 +304,8 @@ class Sensitive(Base):
             f"- ID: {self.id}\n"
             f"- Candidates: {len(self.candidates)}\n"
             f"- Containers: {len(self.containers)}\n"
-            f"- Populations: {len(self.populations)}\n"
+            f"- Census Layers: {len(self.censuses)}\n"
+            f"- Address Layers: {len(self.addresses)}\n"
             f"- Nearest Neighbor Distance (Min/Max/Mean): {self.nnd_min, self.nnd_max, self.nnd_mean}\n"
         )
 
@@ -252,7 +317,8 @@ class Candidate(Base):
     sensitive_name: Mapped[str] = mapped_column(ForeignKey("sensitive_table.name"))
     sensitive: Mapped["Sensitive"] = relationship(back_populates="candidates")
     container: Mapped[Optional["Container"]] = relationship(back_populates="candidate")
-    population: Mapped[Optional["Population"]] = relationship(back_populates="candidate")
+    census: Mapped[Optional["Census"]] = relationship(back_populates="candidate")
+    address: Mapped[Optional["Address"]] = relationship(back_populates="candidate")
     k_min: Mapped[Optional[int]]
     k_max: Mapped[Optional[int]]
     k_med: Mapped[Optional[float]]
@@ -274,7 +340,8 @@ class Candidate(Base):
             "Related Layers:\n"
             f"- Sensitive Name: {self.sensitive_name}\n"
             f"- Container Name: {self.container.name if self.container else 'None'}\n"
-            f"- Population Name: {self.population.name if self.population else 'None'}\n"
+            f"- Census Name: {self.census.name if self.census else 'None'}\n"
+            f"- Addresses Name: {self.address.name if self.address else 'None'}\n"
         )
 
     @property
@@ -302,14 +369,28 @@ class Container(Base):
         return f"({self.name}, {self.id})"
 
 
-class Population(Base):
-    __tablename__ = "population_table"
+class Census(Base):
+    __tablename__ = "census_table"
+    name: Mapped[str] = mapped_column(primary_key=True)
+    pop_col: Mapped[str]
+    id: Mapped[str]
+    sensitive_name: Mapped[str] = mapped_column(ForeignKey("sensitive_table.name"))
+    sensitive: Mapped["Sensitive"] = relationship(back_populates="censuses")
+    candidate_id: Mapped[Optional[str]] = mapped_column(ForeignKey("candidate_table.id"))
+    candidate: Mapped[Optional["Candidate"]] = relationship(back_populates="census")
+
+    def __repr__(self):
+        return f"({self.name}, {self.id})"
+
+
+class Address(Base):
+    __tablename__ = "addresses_table"
     name: Mapped[str] = mapped_column(primary_key=True)
     id: Mapped[str]
     sensitive_name: Mapped[str] = mapped_column(ForeignKey("sensitive_table.name"))
-    sensitive: Mapped["Sensitive"] = relationship(back_populates="populations")
+    sensitive: Mapped["Sensitive"] = relationship(back_populates="addresses")
     candidate_id: Mapped[Optional[str]] = mapped_column(ForeignKey("candidate_table.id"))
-    candidate: Mapped[Optional["Candidate"]] = relationship(back_populates="population")
+    candidate: Mapped[Optional["Candidate"]] = relationship(back_populates="address")
 
     def __repr__(self):
         return f"({self.name}, {self.id})"
