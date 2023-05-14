@@ -180,13 +180,31 @@ class Atlas:
         return self.session.get(Population, name)
 
     def mask(self, mask, **kwargs):
-        m = mask(gdf=self.sdf, **kwargs)
+        mask_args = {"gdf": self.sdf}
+        candidate_args = {}
+        if hasattr(mask, "container"):
+            container = kwargs.pop("container", None)
+            if isinstance(container, str):
+                container = self.get_container(container)
+            if isinstance(container, Container):
+                mask_args["container"] = self.read_gdf(container.id)
+                candidate_args["container"] = container
+
+        if hasattr(mask, "population"):
+            population = kwargs.pop("population", None)
+            if isinstance(population, str):
+                population = self.get_population(population)
+            if isinstance(population, Population):
+                mask_args["population"] = self.read_gdf(population.id)
+                candidate_args["population"] = population
+
+        m = mask(**mask_args, **kwargs)
         mdf = m.run()
         params = m.params
-        return self.add_candidate(mdf, params)
+        return self.add_candidate(mdf, params, **candidate_args)
 
     def donut(self, low: float, high: float, **kwargs):
-        return self.mask(Donut, low=low, high=high, container=self.container, **kwargs)
+        return self.mask(Donut, low=low, high=high, **kwargs)
 
     def drift(self, candidate):
         candidate.drift = analysis.drift(self.sdf, self.mdf(candidate))

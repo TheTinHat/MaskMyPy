@@ -137,6 +137,24 @@ def test_generic_mask(points, tmpdir):
     assert len(atlas.candidates) == 1
 
 
+def test_generic_mask_with_container_name(points, container, addresses):
+    atlas = Atlas("test", in_memory=True)
+    atlas.add_sensitive(points)
+    atlas.add_container(container, "BoundaryPolygons")
+    atlas.mask(Donut, low=50, high=500, distribution="areal", container="BoundaryPolygons")
+    assert atlas.candidates[0].params["distribution"] == "areal"
+    assert atlas.candidates[0].container.name == "BoundaryPolygons"
+
+
+def test_generic_mask_with_container_object(points, container, addresses):
+    atlas = Atlas("test", in_memory=True)
+    atlas.add_sensitive(points)
+    cont_obj = atlas.add_container(container, "BoundaryPolygons")
+    atlas.mask(Donut, low=50, high=500, distribution="areal", container=cont_obj)
+    assert atlas.candidates[0].params["distribution"] == "areal"
+    assert atlas.candidates[0].container.name == "BoundaryPolygons"
+
+
 def test_gpkg_layer_deduplication(points, tmpdir):
     atlas = Atlas("test")
     atlas.add_sensitive(points)
