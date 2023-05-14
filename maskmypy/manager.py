@@ -15,6 +15,7 @@ from sqlalchemy import (
     Table,
     Text,
     create_engine,
+    select,
 )
 from sqlalchemy.orm import (
     DeclarativeBase,
@@ -24,7 +25,7 @@ from sqlalchemy.orm import (
     relationship,
     sessionmaker,
 )
-from . import tools
+from . import tools, analysis
 from .masks import Donut, LocationSwap, Street, Voronoi
 from sqlalchemy.exc import IntegrityError
 
@@ -76,8 +77,16 @@ class Atlas:
         return self.sensitive.containers
 
     @property
+    def containers_all(self):
+        return self.session.scalars(select(Container)).all()
+
+    @property
     def populations(self):
         return self.sensitive.populations
+
+    @property
+    def populations_all(self):
+        return self.session.scalars(select(Population)).all()
 
     @classmethod
     def load(cls, name, filepath):
@@ -107,7 +116,7 @@ class Atlas:
         self.save_gdf(gdf, id)
         self.session.commit()
 
-    def add_candidate(self, gdf, params):
+    def add_candidate(self, gdf, params, container=None, population=None):
         if self.session.get(Sensitive, self.name) is None:
             raise ValueError("Add sensitive layer before adding candidates.")
 
@@ -115,10 +124,18 @@ class Atlas:
         if self.session.get(Candidate, id) is not None:
             raise ValueError("Candidate already exists.")
 
-        candidate = Candidate(id=id, sensitive=self.sensitive, params=params)
+        candidate = Candidate(
+            id=id,
+            sensitive=self.sensitive,
+            params=params,
+            container=container,
+            population=population,
+        )
+
         self.session.add(candidate)
         self.save_gdf(gdf, id)
         self.session.commit()
+        return candidate
 
     def add_container(self, gdf, name):
         if self.session.get(Sensitive, self.name) is None:
@@ -132,6 +149,10 @@ class Atlas:
         self.session.add(container)
         self.save_gdf(gdf, id)
         self.session.commit()
+        return container
+
+    def get_container(self, name):
+        return self.session.get(Container, name)
 
     def add_population(self, gdf, name):
         if self.session.get(Sensitive, self.name) is None:
@@ -144,6 +165,10 @@ class Atlas:
         self.session.add(population)
         self.save_gdf(gdf, id)
         self.session.commit()
+        return population
+
+    def get_population(self, name):
+        return self.session.get(Population, name)
 
     def mask(self, mask, **kwargs):
         m = mask(gdf=self.sdf, **kwargs)
@@ -154,20 +179,32 @@ class Atlas:
     def donut(self, low: float, high: float, **kwargs):
         return self.mask(Donut, low=low, high=high, container=self.container, **kwargs)
 
+    def drift(self, candidate):
+        candidate.drift = analysis.drift(self.sdf, self.mdf(candidate))
+        self.session.commit()
+
+    def estimate_k(self, candidate, population):
+        kdf = analysis.estimate_k(
+            self.sdf, self.mdf(candidate), population_gdf=self.read_gdf(population.id)
+        )
+        k = analysis.summarize_k(kdf)
+        candidate.k_min = k.k_min
+        candidate.k_max = k.k_max
+        candidate.k_mean = k.k_min
+        candidate.k_med = k.k_med
+        self.session.commit()
+
 
 class Sensitive(Base):
     __tablename__ = "sensitive_table"
     name: Mapped[str] = mapped_column(primary_key=True)
     id: Mapped[str]
-    candidates: Mapped[Optional[List["Candidate"]]] = relationship(
-        back_populates="sensitive"
-    )
-    containers: Mapped[Optional[List["Container"]]] = relationship(
-        back_populates="sensitive"
-    )
-    populations: Mapped[Optional[List["Population"]]] = relationship(
-        back_populates="sensitive"
-    )
+    candidates: Mapped[Optional[List["Candidate"]]] = relationship(back_populates="sensitive")
+    containers: Mapped[Optional[List["Container"]]] = relationship(back_populates="sensitive")
+    populations: Mapped[Optional[List["Population"]]] = relationship(back_populates="sensitive")
+    nnd_min: Mapped[Optional[float]]
+    nnd_max: Mapped[Optional[float]]
+    nnd_mean: Mapped[Optional[float]]
 
     def __repr__(self):
         return (
@@ -187,14 +224,19 @@ class Candidate(Base):
     sensitive_name: Mapped[str] = mapped_column(ForeignKey("sensitive_table.name"))
     sensitive: Mapped["Sensitive"] = relationship(back_populates="candidates")
     container: Mapped[Optional["Container"]] = relationship(back_populates="candidate")
-    population: Mapped[Optional["Population"]] = relationship(
-        back_populates="candidate"
-    )
+    population: Mapped[Optional["Population"]] = relationship(back_populates="candidate")
+    k_min: Mapped[Optional[int]]
+    k_max: Mapped[Optional[int]]
+    k_med: Mapped[Optional[float]]
+    k_mean: Mapped[Optional[float]]
+    ripley: Mapped[Optional[float]]
+    drift: Mapped[Optional[float]]
+    nnd_min: Mapped[Optional[float]]
+    nnd_max: Mapped[Optional[float]]
+    nnd_mean: Mapped[Optional[float]]
 
     def __repr__(self):
-        param_string = "\n- ".join(
-            [f"{key} = {value}" for key, value in self.params.items()]
-        )
+        param_string = "\n- ".join([f"{key} = {value}" for key, value in self.params.items()])
 
         return (
             "Candidate\n"
@@ -207,6 +249,22 @@ class Candidate(Base):
             f"- Population Name: {self.population.name if self.population else 'None'}\n"
         )
 
+    @property
+    def stats(self):
+        print(
+            "Candidate Statistics\n"
+            f"- ID: {self.id}\n"
+            f"- K-min: {self.k_min}\n"
+            f"- K-max: {self.k_max}\n"
+            f"- K-mean: {self.k_mean}\n"
+            f"- K-med: {self.k_med}\n"
+            f"- Ripley: {self.ripley}\n"
+            f"- Drift: {self.drift}\n"
+            f"- NND-min: {self.nnd_min}\n"
+            f"- NND-max: {self.nnd_max}\n"
+            f"- NND-mean: {self.nnd_mean}\n"
+        )
+
 
 class Container(Base):
     __tablename__ = "containers_table"
@@ -214,9 +272,7 @@ class Container(Base):
     id: Mapped[str]
     sensitive_name: Mapped[str] = mapped_column(ForeignKey("sensitive_table.name"))
     sensitive: Mapped["Sensitive"] = relationship(back_populates="containers")
-    candidate_id: Mapped[Optional[str]] = mapped_column(
-        ForeignKey("candidate_table.id")
-    )
+    candidate_id: Mapped[Optional[str]] = mapped_column(ForeignKey("candidate_table.id"))
     candidate: Mapped[Optional["Candidate"]] = relationship(back_populates="container")
 
     def __repr__(self):
@@ -229,9 +285,7 @@ class Population(Base):
     id: Mapped[str]
     sensitive_name: Mapped[str] = mapped_column(ForeignKey("sensitive_table.name"))
     sensitive: Mapped["Sensitive"] = relationship(back_populates="populations")
-    candidate_id: Mapped[Optional[str]] = mapped_column(
-        ForeignKey("candidate_table.id")
-    )
+    candidate_id: Mapped[Optional[str]] = mapped_column(ForeignKey("candidate_table.id"))
     candidate: Mapped[Optional["Candidate"]] = relationship(back_populates="population")
 
     def __repr__(self):

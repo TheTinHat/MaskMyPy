@@ -82,6 +82,30 @@ def test_add_candidate(points, tmpdir):
     assert len(atlas.read_gdf(atlas.candidates[0].id)) == len(points)
 
 
+def test_add_candidate_with_container_population(points, container, addresses):
+    atlas = Atlas("test", in_memory=True)
+    atlas.add_sensitive(points)
+    container_layer = atlas.add_container(container, "container_layer")
+    population_layer = atlas.add_population(addresses, "population_layer")
+
+    donut = Donut(points, 50, 500)
+    mdf = donut.run()
+    params = donut.params
+    atlas.add_candidate(mdf, params, container=container_layer, population=population_layer)
+
+    assert atlas.candidates[0].container.name == "container_layer"
+    assert atlas.candidates[0].population.name == "population_layer"
+
+
+def test_get_container_population(points, container, addresses):
+    atlas = Atlas("test", in_memory=True)
+    atlas.add_sensitive(points)
+    container_layer = atlas.add_container(container, "container_layer")
+    population_layer = atlas.add_population(addresses, "population_layer")
+    assert atlas.get_container("container_layer") == container_layer
+    assert atlas.get_population("population_layer") == population_layer
+
+
 def test_add_identical_candidates(points, tmpdir):
     atlas = Atlas("test")
     atlas.add_sensitive(points)
@@ -137,10 +161,24 @@ def test_add_duplicate_containers(points, container, tmpdir):
     # Assertion required
 
 
+def test_containers_all(points, container, tmpdir):
+    atlas_a = Atlas("test_a")
+    atlas_a.add_sensitive(points)
+    atlas_a.add_container(container, "Container_A")
+
+    atlas_b = Atlas("test_b")
+    atlas_b.add_sensitive(points)
+    atlas_b.add_container(container, "Container_B")
+
+    atlas_c = Atlas("test_c")
+    assert len(atlas_c.containers_all) == 2
+
+
 def test_add_population(points, addresses):
     atlas = Atlas("test", in_memory=True)
     atlas.add_sensitive(points)
     atlas.add_population(addresses, "AddressPoints")
+    atlas.add_population(addresses, "OtherAddressPoints")
     assert isinstance(atlas.read_gdf(atlas.populations[0].id), GeoDataFrame)
     assert atlas.sensitive.populations[0].name == "AddressPoints"
 
@@ -171,3 +209,26 @@ def test_add_layers_in_memory(points, addresses, container, tmpdir):
     assert isinstance(atlas.read_gdf(atlas.candidates[0].id), GeoDataFrame)
     assert isinstance(atlas.read_gdf(atlas.containers[0].id), GeoDataFrame)
     assert isinstance(atlas.read_gdf(atlas.populations[0].id), GeoDataFrame)
+
+
+def test_drift_calculation(points):
+    atlas = Atlas("test", in_memory=True)
+    donut = Donut(points, 50, 500)
+    atlas.add_sensitive(points)
+    candidate = atlas.add_candidate(donut.run(), donut.params)
+    atlas.drift(candidate)
+    assert isinstance(atlas.candidates[0].drift, float)
+
+
+def test_estimate_k(points, addresses):
+    atlas = Atlas("test", in_memory=True)
+    donut = Donut(points, 100, 1000)
+    atlas.add_sensitive(points)
+    pop = atlas.add_population(addresses, "address_points")
+    candidate = atlas.add_candidate(donut.run(), donut.params)
+    atlas.estimate_k(candidate, pop)
+    assert atlas.candidates[0].k_max is not None
+    assert atlas.candidates[0].k_max > 1
+    assert atlas.candidates[0].k_max > atlas.candidates[0].k_min
+    assert atlas.candidates[0].k_max > atlas.candidates[0].k_mean
+    assert atlas.candidates[0].k_max > atlas.candidates[0].k_med
