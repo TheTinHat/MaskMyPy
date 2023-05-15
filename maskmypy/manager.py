@@ -1,19 +1,11 @@
 from functools import cached_property
 from pathlib import Path
-from typing import List, Optional, Dict
+from typing import List, Optional
 from dataclasses import dataclass, field
 from geopandas import GeoDataFrame, read_file
 from sqlalchemy import (
-    Boolean,
-    Column,
-    Float,
     ForeignKey,
-    Integer,
-    MetaData,
     PickleType,
-    String,
-    Table,
-    Text,
     create_engine,
     select,
 )
@@ -23,11 +15,9 @@ from sqlalchemy.orm import (
     Session,
     mapped_column,
     relationship,
-    sessionmaker,
 )
 from . import tools, analysis
 from .masks import Donut, LocationSwap, Street, Voronoi
-from sqlalchemy.exc import IntegrityError
 from inspect import getfullargspec
 
 
@@ -244,6 +234,16 @@ class Atlas:
     def donut(self, low: float, high: float, **kwargs):
         return self.mask(Donut, low=low, high=high, **kwargs)
 
+    def donut_i(self, distance_list, **kwargs):
+        results = []
+        for distance_pair in distance_list:
+            low = distance_pair[0]
+            high = distance_pair[1]
+            if low > high:
+                raise ValueError("Low distance value exceeds high distance value.")
+            results.append(self.donut(low=low, high=high, **kwargs))
+        return results
+
     def street(self, low: int, high: int, **kwargs):
         return self.mask(Street, low=low, high=high, **kwargs)
 
@@ -316,9 +316,12 @@ class Candidate(Base):
     params = mapped_column(PickleType)
     sensitive_name: Mapped[str] = mapped_column(ForeignKey("sensitive_table.name"))
     sensitive: Mapped["Sensitive"] = relationship(back_populates="candidates")
-    container: Mapped[Optional["Container"]] = relationship(back_populates="candidate")
-    census: Mapped[Optional["Census"]] = relationship(back_populates="candidate")
-    address: Mapped[Optional["Address"]] = relationship(back_populates="candidate")
+    container_name: Mapped[Optional[str]] = mapped_column(ForeignKey("container_table.name"))
+    container: Mapped[Optional["Container"]] = relationship(back_populates="candidates")
+    census_name: Mapped[Optional[str]] = mapped_column(ForeignKey("census_table.name"))
+    census: Mapped[Optional["Census"]] = relationship(back_populates="candidates")
+    address_name: Mapped[Optional[str]] = mapped_column(ForeignKey("address_table.name"))
+    address: Mapped[Optional["Address"]] = relationship(back_populates="candidates")
     k_min: Mapped[Optional[int]]
     k_max: Mapped[Optional[int]]
     k_med: Mapped[Optional[float]]
@@ -357,13 +360,12 @@ class Candidate(Base):
 
 
 class Container(Base):
-    __tablename__ = "containers_table"
+    __tablename__ = "container_table"
     name: Mapped[str] = mapped_column(primary_key=True)
     id: Mapped[str]
     sensitive_name: Mapped[str] = mapped_column(ForeignKey("sensitive_table.name"))
     sensitive: Mapped["Sensitive"] = relationship(back_populates="containers")
-    candidate_id: Mapped[Optional[str]] = mapped_column(ForeignKey("candidate_table.id"))
-    candidate: Mapped[Optional["Candidate"]] = relationship(back_populates="container")
+    candidates: Mapped[Optional[List["Candidate"]]] = relationship(back_populates="container")
 
     def __repr__(self):
         return f"({self.name}, {self.id})"
@@ -376,21 +378,19 @@ class Census(Base):
     id: Mapped[str]
     sensitive_name: Mapped[str] = mapped_column(ForeignKey("sensitive_table.name"))
     sensitive: Mapped["Sensitive"] = relationship(back_populates="censuses")
-    candidate_id: Mapped[Optional[str]] = mapped_column(ForeignKey("candidate_table.id"))
-    candidate: Mapped[Optional["Candidate"]] = relationship(back_populates="census")
+    candidates: Mapped[Optional[List["Candidate"]]] = relationship(back_populates="census")
 
     def __repr__(self):
         return f"({self.name}, {self.id})"
 
 
 class Address(Base):
-    __tablename__ = "addresses_table"
+    __tablename__ = "address_table"
     name: Mapped[str] = mapped_column(primary_key=True)
     id: Mapped[str]
     sensitive_name: Mapped[str] = mapped_column(ForeignKey("sensitive_table.name"))
     sensitive: Mapped["Sensitive"] = relationship(back_populates="addresses")
-    candidate_id: Mapped[Optional[str]] = mapped_column(ForeignKey("candidate_table.id"))
-    candidate: Mapped[Optional["Candidate"]] = relationship(back_populates="address")
+    candidates: Mapped[Optional[List["Candidate"]]] = relationship(back_populates="address")
 
     def __repr__(self):
         return f"({self.name}, {self.id})"

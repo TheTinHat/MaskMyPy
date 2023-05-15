@@ -164,6 +164,66 @@ def test_donut_mask_with_container(points, container):
     assert atlas.candidates[0].container.name == "BoundaryPolygons"
 
 
+def test_donut_iterate_mask_with_container(points, container):
+    atlas = Atlas("test", in_memory=True)
+    atlas.add_sensitive(points)
+    atlas.add_container(container, "BoundaryPolygons")
+    atlas.donut_i(
+        distance_list=[(50, 500), (100, 500), (150, 500), (200, 1000)],
+        container="BoundaryPolygons",
+        distribution="areal",
+    )
+    with pytest.raises(ValueError):
+        atlas.donut_i(
+            distance_list=[
+                (500, 50),
+                (100, 500),
+            ],
+            container="BoundaryPolygons",
+            distribution="areal",
+        )
+
+    for candidate in atlas.candidates:
+        assert candidate.params["distribution"] == "areal"
+        assert candidate.container.name == "BoundaryPolygons"
+    assert len(atlas.candidates) == 4
+
+
+def test_many_containers_many_candidates_relationship(points, container, tmpdir):
+    atlas_a = Atlas("test_a")
+    atlas_a.add_sensitive(points)
+    atlas_a.add_container(container, "BoundaryPolygons_A")
+
+    atlas_b = Atlas("test_b")
+    atlas_b.add_sensitive(points)
+    atlas_b.add_container(container, "BoundaryPolygons_B")
+    atlas_b.add_container(container, "BoundaryPolygons_C")
+    atlas_b.donut_i(
+        distance_list=[(50, 500), (100, 500)],
+        container="BoundaryPolygons_A",
+        distribution="areal",
+    )
+    atlas_b.donut_i(
+        distance_list=[(50, 500), (100, 500)],
+        container="BoundaryPolygons_B",
+        distribution="areal",
+    )
+    atlas_b.donut_i(
+        distance_list=[(50, 500), (100, 500)],
+        container="BoundaryPolygons_C",
+        distribution="areal",
+    )
+
+    for candidate in atlas_b.candidates:
+        assert candidate.params["distribution"] == "areal"
+        assert (
+            candidate.container.name == "BoundaryPolygons_A"
+            or candidate.container.name == "BoundaryPolygons_B"
+            or candidate.container.name == "BoundaryPolygons_C"
+        )
+    assert len(atlas_b.candidates) == 6
+
+
 def test_voronoi_mask_without_snapping(points):
     atlas = Atlas("test", in_memory=True)
     atlas.add_sensitive(points)
