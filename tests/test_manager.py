@@ -189,39 +189,27 @@ def test_donut_iterate_mask_with_container(points, container):
     assert len(atlas.candidates) == 4
 
 
-def test_many_containers_many_candidates_relationship(points, container, tmpdir):
+def test_many_to_many_container_relationships(points, container, tmpdir):
     atlas_a = Atlas("test_a")
     atlas_a.add_sensitive(points)
     atlas_a.add_container(container, "BoundaryPolygons_A")
+    atlas_a.add_container(container, "BoundaryPolygons_B")
+    atlas_a.donut(50, 500, container="BoundaryPolygons_A")
 
     atlas_b = Atlas("test_b")
     atlas_b.add_sensitive(points)
-    atlas_b.add_container(container, "BoundaryPolygons_B")
+    atlas_b.add_container(container, "BoundaryPolygons_A")
+    atlas_b.relate_container("BoundaryPolygons_B")
     atlas_b.add_container(container, "BoundaryPolygons_C")
-    atlas_b.donut_i(
-        distance_list=[(50, 500), (100, 500)],
-        container="BoundaryPolygons_A",
-        distribution="areal",
-    )
-    atlas_b.donut_i(
-        distance_list=[(50, 500), (100, 500)],
-        container="BoundaryPolygons_B",
-        distribution="areal",
-    )
-    atlas_b.donut_i(
-        distance_list=[(50, 500), (100, 500)],
-        container="BoundaryPolygons_C",
-        distribution="areal",
-    )
+    atlas_b.donut(50, 500, container="BoundaryPolygons_B")
+    atlas_b.donut(50, 500, container="BoundaryPolygons_C")
 
-    for candidate in atlas_b.candidates:
-        assert candidate.params["distribution"] == "areal"
-        assert (
-            candidate.container.name == "BoundaryPolygons_A"
-            or candidate.container.name == "BoundaryPolygons_B"
-            or candidate.container.name == "BoundaryPolygons_C"
-        )
-    assert len(atlas_b.candidates) == 6
+    assert len(atlas_a.containers) == 2
+    assert len(atlas_b.containers) == 3
+
+    assert atlas_a.candidates[0].container.name == "BoundaryPolygons_A"
+    assert atlas_b.candidates[0].container.name == "BoundaryPolygons_B"
+    assert atlas_b.candidates[1].container.name == "BoundaryPolygons_C"
 
 
 def test_voronoi_mask_without_snapping(points):

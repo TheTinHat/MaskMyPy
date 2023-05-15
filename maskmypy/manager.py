@@ -3,12 +3,7 @@ from pathlib import Path
 from typing import List, Optional
 from dataclasses import dataclass, field
 from geopandas import GeoDataFrame, read_file
-from sqlalchemy import (
-    ForeignKey,
-    PickleType,
-    create_engine,
-    select,
-)
+from sqlalchemy import ForeignKey, PickleType, create_engine, select, Column, Table
 from sqlalchemy.orm import (
     DeclarativeBase,
     Mapped,
@@ -150,15 +145,25 @@ class Atlas:
         if self.session.get(Sensitive, self.name) is None:
             raise ValueError("Add sensitive layer before adding containers.")
 
-        if self.session.get(Container, name) is not None:
-            raise ValueError("Container with this name already exists.")
-
         id = tools.checksum(gdf)
-        container = Container(name=name, id=id, sensitive=self.sensitive)
+        container = self.session.get(Container, name)
+
+        if container and container.id == id:
+            container.sensitives.append(self.sensitive)
+        elif container and container.id != id:
+            raise ValueError("A different container with this name already exists")
+        else:
+            container = Container(name=name, id=id)
+            container.sensitives.append(self.sensitive)
         self.session.add(container)
         self.save_gdf(gdf, id)
         self.session.commit()
         return container
+
+    def relate_container(self, name):
+        container = self.get_container(name)
+        self.sensitive.containers.append(container)
+        self.session.commit()
 
     def get_container(self, name):
         return self.session.get(Container, name)
@@ -168,10 +173,17 @@ class Atlas:
         if self.session.get(Sensitive, self.name) is None:
             raise ValueError("Add sensitive layer before adding census layers.")
 
-        if self.session.get(Census, name) is not None:
-            raise ValueError("Census layer with this name already exists.")
         id = tools.checksum(gdf)
-        census = Census(name=name, id=id, pop_col=pop_col, sensitive=self.sensitive)
+        census = self.session.get(Census, name)
+
+        if census and census.id == id:
+            census.sensitives.append(self.sensitive)
+        elif census and census.id != id:
+            raise ValueError("A different census with this name already exists")
+        else:
+            census = Census(name=name, id=id, pop_col=pop_col)
+            census.sensitives.append(self.sensitive)
+
         self.session.add(census)
         self.save_gdf(gdf, id)
         self.session.commit()
@@ -185,10 +197,17 @@ class Atlas:
         if self.session.get(Sensitive, self.name) is None:
             raise ValueError("Add sensitive layer before adding address layers.")
 
-        if self.session.get(Address, name) is not None:
-            raise ValueError("Address layer with this name already exists.")
         id = tools.checksum(gdf)
-        address = Address(name=name, id=id, sensitive=self.sensitive)
+        address = self.session.get(Address, name)
+
+        if address and address.id == id:
+            address.sensitives.append(self.sensitive)
+        elif address and address.id != id:
+            raise ValueError("A different address with this name already exists")
+        else:
+            address = Address(name=name, id=id)
+            address.sensitives.append(self.sensitive)
+
         self.session.add(address)
         self.save_gdf(gdf, id)
         self.session.commit()
@@ -285,14 +304,42 @@ class Atlas:
         self.session.commit()
 
 
+container_association_table = Table(
+    "container_association_table",
+    Base.metadata,
+    Column("sensitive_name", ForeignKey("sensitive_table.name"), primary_key=True),
+    Column("container_name", ForeignKey("container_table.name"), primary_key=True),
+)
+
+census_association_table = Table(
+    "census_association_table",
+    Base.metadata,
+    Column("sensitive_name", ForeignKey("sensitive_table.name"), primary_key=True),
+    Column("census_name", ForeignKey("census_table.name"), primary_key=True),
+)
+
+address_association_table = Table(
+    "address_association_table",
+    Base.metadata,
+    Column("sensitive_name", ForeignKey("sensitive_table.name"), primary_key=True),
+    Column("address_name", ForeignKey("address_table.name"), primary_key=True),
+)
+
+
 class Sensitive(Base):
     __tablename__ = "sensitive_table"
     name: Mapped[str] = mapped_column(primary_key=True)
     id: Mapped[str]
     candidates: Mapped[Optional[List["Candidate"]]] = relationship(back_populates="sensitive")
-    containers: Mapped[Optional[List["Container"]]] = relationship(back_populates="sensitive")
-    censuses: Mapped[Optional[List["Census"]]] = relationship(back_populates="sensitive")
-    addresses: Mapped[Optional[List["Address"]]] = relationship(back_populates="sensitive")
+    containers: Mapped[Optional[List["Container"]]] = relationship(
+        secondary=container_association_table, back_populates="sensitives"
+    )
+    censuses: Mapped[Optional[List["Census"]]] = relationship(
+        secondary=census_association_table, back_populates="sensitives"
+    )
+    addresses: Mapped[Optional[List["Address"]]] = relationship(
+        secondary=address_association_table, back_populates="sensitives"
+    )
     nnd_min: Mapped[Optional[float]]
     nnd_max: Mapped[Optional[float]]
     nnd_mean: Mapped[Optional[float]]
@@ -363,8 +410,9 @@ class Container(Base):
     __tablename__ = "container_table"
     name: Mapped[str] = mapped_column(primary_key=True)
     id: Mapped[str]
-    sensitive_name: Mapped[str] = mapped_column(ForeignKey("sensitive_table.name"))
-    sensitive: Mapped["Sensitive"] = relationship(back_populates="containers")
+    sensitives: Mapped[Optional[List["Sensitive"]]] = relationship(
+        secondary=container_association_table, back_populates="containers"
+    )
     candidates: Mapped[Optional[List["Candidate"]]] = relationship(back_populates="container")
 
     def __repr__(self):
@@ -376,8 +424,9 @@ class Census(Base):
     name: Mapped[str] = mapped_column(primary_key=True)
     pop_col: Mapped[str]
     id: Mapped[str]
-    sensitive_name: Mapped[str] = mapped_column(ForeignKey("sensitive_table.name"))
-    sensitive: Mapped["Sensitive"] = relationship(back_populates="censuses")
+    sensitives: Mapped[Optional[List["Sensitive"]]] = relationship(
+        secondary=census_association_table, back_populates="censuses"
+    )
     candidates: Mapped[Optional[List["Candidate"]]] = relationship(back_populates="census")
 
     def __repr__(self):
@@ -388,14 +437,10 @@ class Address(Base):
     __tablename__ = "address_table"
     name: Mapped[str] = mapped_column(primary_key=True)
     id: Mapped[str]
-    sensitive_name: Mapped[str] = mapped_column(ForeignKey("sensitive_table.name"))
-    sensitive: Mapped["Sensitive"] = relationship(back_populates="addresses")
+    sensitives: Mapped[Optional[List["Sensitive"]]] = relationship(
+        secondary=address_association_table, back_populates="addresses"
+    )
     candidates: Mapped[Optional[List["Candidate"]]] = relationship(back_populates="address")
 
     def __repr__(self):
         return f"({self.name}, {self.id})"
-
-
-# class Stats(Base):
-#     __tablename__ = "stats_table"
-#     id
