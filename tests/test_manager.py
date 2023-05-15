@@ -97,31 +97,8 @@ def test_add_candidate_with_container_address(points, container, address):
     assert atlas.candidates[0].address.name == "address_layer"
 
 
-def test_get_container_address(points, container, address):
+def test_add_identical_candidates(points):
     atlas = Atlas("test", in_memory=True)
-    atlas.add_sensitive(points)
-    container_layer = atlas.add_container(container, "container_layer")
-    address_layer = atlas.add_address(address, "address_layer")
-    assert atlas.get_container("container_layer") == container_layer
-    assert atlas.get_address("address_layer") == address_layer
-
-
-def test_add_existing_container(points, container, address, tmpdir):
-    atlas = Atlas("test")
-    atlas.add_sensitive(points)
-    atlas.add_container(container, "container")
-    atlas.add_container(container, "container")
-    assert len(atlas.containers) == 1
-
-    with pytest.raises(ValueError):
-        atlas.add_container(address, "container")
-
-    atlas.add_container(container, "other_container")
-    assert len(atlas.containers) == 2
-
-
-def test_add_identical_candidates(points, tmpdir):
-    atlas = Atlas("test")
     atlas.add_sensitive(points)
     donut1 = Donut(points, 50, 500, seed=123)
     donut2 = Donut(points, 50, 500, seed=123)
@@ -130,8 +107,8 @@ def test_add_identical_candidates(points, tmpdir):
         atlas.add_candidate(donut2.run(), donut2.params)
 
 
-def test_add_layers_before_sensitive(points, address, container, tmpdir):
-    atlas = Atlas("test")
+def test_add_layers_before_sensitive(points, address, container):
+    atlas = Atlas("test", in_memory=True)
     donut = Donut(points, 50, 500)
 
     with pytest.raises(ValueError):
@@ -144,8 +121,8 @@ def test_add_layers_before_sensitive(points, address, container, tmpdir):
         atlas.add_address(address, "AddressPoints")
 
 
-def test_generic_mask(points, tmpdir):
-    atlas = Atlas("test")
+def test_generic_mask(points):
+    atlas = Atlas("test", in_memory=True)
     atlas.add_sensitive(points)
     atlas.mask(Donut, low=50, high=500)
     assert len(atlas.candidates) == 1
@@ -250,11 +227,15 @@ def test_location_swap_with_address_object(points, address):
 
 
 def test_gpkg_layer_deduplication(points, tmpdir):
-    atlas = Atlas("test")
-    atlas.add_sensitive(points)
-    atlas_clone = Atlas("test_clone")
-    atlas_clone.add_sensitive(points)
-    # Assertion required
+    atlas_a = Atlas("test_a", "file.db")
+    atlas_a.add_sensitive(points)
+    initial_size = os.path.getsize("file.gpkg")
+
+    atlas_b = Atlas("test_b", "file.db")
+    atlas_b.add_sensitive(points)
+    final_size = os.path.getsize("file.gpkg")
+
+    assert initial_size == final_size
 
 
 def test_add_container(points, container, tmpdir):
@@ -265,15 +246,44 @@ def test_add_container(points, container, tmpdir):
     assert atlas.sensitive.containers[0].name == "BoundaryPolygons"
 
 
-def test_add_duplicate_containers(points, container, tmpdir):
-    atlas = Atlas("test")
+def test_get_container_address(points, container, address):
+    atlas = Atlas("test", in_memory=True)
     atlas.add_sensitive(points)
-    atlas.add_container(container, "BoundaryPolygons")
-    atlas.add_container(container, "BoundaryAreas")
-    # Assertion required
+    container_layer = atlas.add_container(container, "container_layer")
+    address_layer = atlas.add_address(address, "address_layer")
+    assert atlas.get_container("container_layer") == container_layer
+    assert atlas.get_address("address_layer") == address_layer
 
 
-def test_containers_all(points, container, tmpdir):
+def test_add_existing_container(points, container, address, tmpdir):
+    atlas = Atlas("test", in_memory=True)
+    atlas.add_sensitive(points)
+    atlas.add_container(container, "container")
+    atlas.add_container(container, "container")
+    assert len(atlas.containers) == 1
+
+    with pytest.raises(ValueError):
+        atlas.add_container(address, "container")
+
+    atlas.add_container(container, "other_container")
+    assert len(atlas.containers) == 2
+
+
+def test_add_existing_address(points, container, address, tmpdir):
+    atlas = Atlas("test", in_memory=True)
+    atlas.add_sensitive(points)
+    atlas.add_address(address, "address")
+    atlas.add_address(address, "address")
+    assert len(atlas.addresses) == 1
+
+    with pytest.raises(ValueError):
+        atlas.add_address(container, "address")
+
+    atlas.add_address(container, "other_address")
+    assert len(atlas.addresses) == 2
+
+
+def test_containers_all_method(points, container, tmpdir):
     atlas_a = Atlas("test_a")
     atlas_a.add_sensitive(points)
     atlas_a.add_container(container, "Container_A")
