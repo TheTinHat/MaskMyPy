@@ -106,6 +106,20 @@ def test_get_container_address(points, container, address):
     assert atlas.get_address("address_layer") == address_layer
 
 
+def test_add_existing_container(points, container, address, tmpdir):
+    atlas = Atlas("test")
+    atlas.add_sensitive(points)
+    atlas.add_container(container, "container")
+    atlas.add_container(container, "container")
+    assert len(atlas.containers) == 1
+
+    with pytest.raises(ValueError):
+        atlas.add_container(address, "container")
+
+    atlas.add_container(container, "other_container")
+    assert len(atlas.containers) == 2
+
+
 def test_add_identical_candidates(points, tmpdir):
     atlas = Atlas("test")
     atlas.add_sensitive(points)
@@ -205,9 +219,9 @@ def test_many_to_many_container_relationships(points, container, tmpdir):
     atlas_b.donut(50, 500, container="BoundaryPolygons_C")
 
     assert len(atlas_a.containers) == 2
-    assert len(atlas_b.containers) == 3
-
     assert atlas_a.candidates[0].container.name == "BoundaryPolygons_A"
+
+    assert len(atlas_b.containers) == 3
     assert atlas_b.candidates[0].container.name == "BoundaryPolygons_B"
     assert atlas_b.candidates[1].container.name == "BoundaryPolygons_C"
 
