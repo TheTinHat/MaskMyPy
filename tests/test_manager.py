@@ -368,3 +368,41 @@ def test_nnd_calculation(points):
     assert atlas.candidates[0].nnd_max > 0
     assert atlas.candidates[0].nnd_max > atlas.candidates[0].nnd_min
     assert atlas.candidates[0].nnd_max > atlas.candidates[0].nnd_mean
+
+
+def test_analyze_all(points, address):
+    atlas = Atlas("test", in_memory=True)
+    atlas.add_sensitive(points)
+    atlas.add_address(address, "Addresses")
+    atlas.donut(low=50, high=500)
+    atlas.donut(low=100, high=1000)
+    assert atlas.candidates[0].k_max is None
+    assert atlas.candidates[1].k_max is None
+    assert atlas.candidates[0].drift is None
+
+    atlas.analyze_all(address="Addresses")
+    assert isinstance(atlas.candidates[0].k_max, int)
+    assert isinstance(atlas.candidates[1].k_max, int)
+    assert isinstance(atlas.candidates[0].drift, float)
+
+
+def test_rank(points, address):
+    atlas = Atlas("test", in_memory=True)
+    atlas.add_sensitive(points)
+    atlas.add_address(address, "Addresses")
+    atlas.donut(low=5, high=50)
+    atlas.donut(low=500, high=5000)
+    atlas.analyze_all(address="Addresses")
+
+    ranked = atlas.rank("drift")
+    assert ranked[0].drift < ranked[1].drift
+
+    ranked = atlas.rank("nnd_min")
+    assert ranked[0].nnd_min < ranked[1].nnd_min
+
+    k_floor = atlas.candidates[1].k_min
+    ranked = atlas.rank("nnd_min", min_k=k_floor)
+    assert len(ranked) == 1
+
+    ranked = atlas.rank("drift", desc=True)
+    assert ranked[0].drift > ranked[1].drift

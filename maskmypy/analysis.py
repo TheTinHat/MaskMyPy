@@ -102,10 +102,10 @@ K_Summary = namedtuple("K_Summary", ["k_min", "k_max", "k_med", "k_mean"])
 
 
 def summarize_k(gdf: GeoDataFrame, k_col="k_anonymity") -> K_Summary:
-    k_min = gdf.loc[:, "k_anonymity"].min()
-    k_max = gdf.loc[:, "k_anonymity"].max()
-    k_med = gdf.loc[:, "k_anonymity"].median()
-    k_mean = gdf.loc[:, "k_anonymity"].mean()
+    k_min = int(gdf.loc[:, "k_anonymity"].min())
+    k_max = int(gdf.loc[:, "k_anonymity"].max())
+    k_med = float(gdf.loc[:, "k_anonymity"].median())
+    k_mean = float(gdf.loc[:, "k_anonymity"].mean())
 
     return K_Summary(k_min=k_min, k_max=k_max, k_med=k_med, k_mean=k_mean)
 

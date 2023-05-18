@@ -149,7 +149,7 @@ class Atlas:
         container = self.session.get(Container, name)
 
         if container and container.id != id:
-            raise ValueError("A different container with this name already exists")
+            raise ValueError("A different container layer with this name already exists")
 
         elif container and container.id == id:
             if container not in self.containers:
@@ -183,7 +183,7 @@ class Atlas:
         census = self.session.get(Census, name)
 
         if census and census.id != id:
-            raise ValueError("A different census with this name already exists")
+            raise ValueError("A different census layer with this name already exists")
         elif census and census.id == id:
             if census not in self.censuses:
                 self.sensitive.censuses.append(census)
@@ -216,7 +216,7 @@ class Atlas:
         address = self.session.get(Address, name)
 
         if address and address.id != id:
-            raise ValueError("A different address with this name already exists")
+            raise ValueError("A different address layer with this name already exists")
 
         elif address and address.id == id:
             if address not in self.addresses:
@@ -328,6 +328,38 @@ class Atlas:
         candidate.k_med = k.k_med
         self.session.commit()
 
+    def analyze_all(self, address=None, census=None):
+        K_FIELDS = ["k_min", "k_max", "k_mean", "k_med"]
+
+        address = self.get_address(address) if isinstance(address, str) else address
+        census = self.get_census(census) if isinstance(census, str) else census
+
+        for candidate in self.candidates:
+            if not candidate.drift:
+                self.drift(candidate)
+
+            if not all([getattr(candidate, field) for field in K_FIELDS]):
+                if address:
+                    self.calculate_k(candidate, address)
+                elif census:
+                    self.estimate_k(candidate, census)
+
+    def rank(self, metric, min_k=None, desc=False):
+        stmt = select(Candidate).where(Candidate.sensitive == self.sensitive)
+
+        if min_k:
+            stmt = stmt.where(Candidate.k_min >= min_k)
+
+        metric = getattr(Candidate, metric)
+
+        if not desc:
+            stmt = stmt.order_by(metric)
+        elif desc:
+            stmt = stmt.order_by(metric.desc())
+
+        results = self.session.execute(stmt).scalars()
+        return [result for result in results]
+
 
 container_association_table = Table(
     "container_association_table",
@@ -404,7 +436,8 @@ class Candidate(Base):
     nnd_max: Mapped[Optional[float]]
     nnd_mean: Mapped[Optional[float]]
 
-    def __repr__(self):
+    @property
+    def pretty(self):
         param_string = "\n- ".join([f"{key} = {value}" for key, value in self.params.items()])
 
         return (
