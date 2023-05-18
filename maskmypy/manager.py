@@ -437,7 +437,7 @@ class Candidate(Base):
     nnd_mean: Mapped[Optional[float]]
 
     @property
-    def pretty(self):
+    def __repr__(self):
         param_string = "\n- ".join([f"{key} = {value}" for key, value in self.params.items()])
 
         return (
