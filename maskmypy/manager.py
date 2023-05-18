@@ -39,8 +39,8 @@ class Atlas:
         self.session = Session(self.engine, expire_on_commit=False)
         Base.metadata.create_all(self.engine)
 
-    @property
-    def gpkg_path(self):
+    @cached_property
+    def _gpkg_path(self):
         return self.filepath.with_suffix(".gpkg")
 
     @cached_property
@@ -82,6 +82,10 @@ class Atlas:
     def addresses_all(self):
         return self.session.scalars(select(Address)).all()
 
+    @property
+    def nominee(self):
+        return self.session.get(Candidate, self.sensitive.nominee)
+
     @classmethod
     def load(cls, name, filepath):
         filepath = Path(filepath).with_suffix(".db")
@@ -93,13 +97,13 @@ class Atlas:
         if self.in_memory:
             return self.layers.get(id)
         else:
-            return read_file(self.gpkg_path, driver="GPKG", layer=id)
+            return read_file(self._gpkg_path, driver="GPKG", layer=id)
 
-    def save_gdf(self, gdf, id):
+    def _save_gdf(self, gdf, id):
         if self.in_memory:
             self.layers[id] = gdf.copy(deep=True)
         else:
-            gdf.to_file(self.gpkg_path, driver="GPKG", layer=id)
+            gdf.to_file(self._gpkg_path, driver="GPKG", layer=id)
 
     def add_sensitive(self, gdf):
         if self.session.get(Sensitive, self.name) is not None:
@@ -111,7 +115,7 @@ class Atlas:
             name=self.name, id=id, nnd_min=nnd.min, nnd_max=nnd.max, nnd_mean=nnd.mean
         )
         self.session.add(self.sensitive)
-        self.save_gdf(gdf, id)
+        self._save_gdf(gdf, id)
         self.session.commit()
 
     def add_candidate(self, gdf, params, container=None, census=None, address=None):
@@ -137,7 +141,7 @@ class Atlas:
         )
 
         self.session.add(candidate)
-        self.save_gdf(gdf, id)
+        self._save_gdf(gdf, id)
         self.session.commit()
         return candidate
 
@@ -162,7 +166,7 @@ class Atlas:
             self.sensitive.containers.append(container)
 
         self.session.add(container)
-        self.save_gdf(gdf, id)
+        self._save_gdf(gdf, id)
         self.session.commit()
         return container
 
@@ -195,7 +199,7 @@ class Atlas:
             self.sensitive.censuses.append(census)
 
         self.session.add(census)
-        self.save_gdf(gdf, id)
+        self._save_gdf(gdf, id)
         self.session.commit()
         return census
 
@@ -229,7 +233,7 @@ class Atlas:
             self.sensitive.addresses.append(address)
 
         self.session.add(address)
-        self.save_gdf(gdf, id)
+        self._save_gdf(gdf, id)
         self.session.commit()
         return address
 
@@ -360,6 +364,16 @@ class Atlas:
         results = self.session.execute(stmt).scalars()
         return [result for result in results]
 
+    def nominate(self, candidate):
+        if isinstance(candidate, str):
+            candidate = self.session.get(Candidate, candidate)
+
+        if candidate not in self.candidates:
+            raise ValueError("Specified candidate is for a different sensitive layer.")
+
+        self.sensitive.nominee = candidate.id
+        self.session.commit()
+
 
 container_association_table = Table(
     "container_association_table",
@@ -387,9 +401,13 @@ class Sensitive(Base):
     __tablename__ = "sensitive_table"
     name: Mapped[str] = mapped_column(primary_key=True)
     id: Mapped[str]
-    candidates: Mapped[Optional[List["Candidate"]]] = relationship(back_populates="sensitive")
+    candidates: Mapped[Optional[List["Candidate"]]] = relationship(
+        back_populates="sensitive", foreign_keys="[Candidate.sensitive_name]"
+    )
+    nominee: Mapped[Optional[str]] = mapped_column(ForeignKey("candidate_table.id"))
     containers: Mapped[Optional[List["Container"]]] = relationship(
-        secondary=container_association_table, back_populates="sensitives"
+        secondary=container_association_table,
+        back_populates="sensitives",
     )
     censuses: Mapped[Optional[List["Census"]]] = relationship(
         secondary=census_association_table, back_populates="sensitives"
@@ -407,6 +425,7 @@ class Sensitive(Base):
             f"- Name: {self.name}\n"
             f"- ID: {self.id}\n"
             f"- Candidates: {len(self.candidates)}\n"
+            f"- Nominee: {self.nominee}\n"
             f"- Containers: {len(self.containers)}\n"
             f"- Census Layers: {len(self.censuses)}\n"
             f"- Address Layers: {len(self.addresses)}\n"
@@ -419,7 +438,9 @@ class Candidate(Base):
     id: Mapped[str] = mapped_column(primary_key=True)
     params = mapped_column(PickleType)
     sensitive_name: Mapped[str] = mapped_column(ForeignKey("sensitive_table.name"))
-    sensitive: Mapped["Sensitive"] = relationship(back_populates="candidates")
+    sensitive: Mapped["Sensitive"] = relationship(
+        back_populates="candidates", foreign_keys=[sensitive_name]
+    )
     container_name: Mapped[Optional[str]] = mapped_column(ForeignKey("container_table.name"))
     container: Mapped[Optional["Container"]] = relationship(back_populates="candidates")
     census_name: Mapped[Optional[str]] = mapped_column(ForeignKey("census_table.name"))
@@ -436,7 +457,6 @@ class Candidate(Base):
     nnd_max: Mapped[Optional[float]]
     nnd_mean: Mapped[Optional[float]]
 
-    @property
     def __repr__(self):
         param_string = "\n- ".join([f"{key} = {value}" for key, value in self.params.items()])
 

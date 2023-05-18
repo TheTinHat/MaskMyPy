@@ -34,7 +34,7 @@ def test_in_memory_does_not_write_to_disk(points):
 def test_in_memory_immutability(points):
     crs_1 = points.crs
     atlas = Atlas("test", in_memory=True)
-    atlas.save_gdf(points, "123")
+    atlas._save_gdf(points, "123")
     crs_2 = atlas.read_gdf("123").crs
     points = points.to_crs(4326)
     crs_3 = points.crs
@@ -406,3 +406,15 @@ def test_rank(points, address):
 
     ranked = atlas.rank("drift", desc=True)
     assert ranked[0].drift > ranked[1].drift
+
+
+def test_nominate(points):
+    atlas = Atlas("test", in_memory=True)
+    atlas.add_sensitive(points)
+    cand_0 = atlas.donut(low=5, high=50)
+    atlas.nominate(atlas.candidates[0].id)
+    assert atlas.nominee == cand_0
+
+    cand_1 = atlas.donut(low=500, high=5000)
+    atlas.nominate(atlas.candidates[1])
+    assert atlas.nominee == cand_1
