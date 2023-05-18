@@ -148,13 +148,19 @@ class Atlas:
         id = tools.checksum(gdf)
         container = self.session.get(Container, name)
 
-        if container and container.id == id:
-            container.sensitives.append(self.sensitive)
-        elif container and container.id != id:
+        if container and container.id != id:
             raise ValueError("A different container with this name already exists")
+
+        elif container and container.id == id:
+            if container not in self.containers:
+                self.sensitive.containers.append(container)
+            else:
+                return container
+
         else:
             container = Container(name=name, id=id)
-            container.sensitives.append(self.sensitive)
+            self.sensitive.containers.append(container)
+
         self.session.add(container)
         self.save_gdf(gdf, id)
         self.session.commit()
@@ -176,18 +182,27 @@ class Atlas:
         id = tools.checksum(gdf)
         census = self.session.get(Census, name)
 
-        if census and census.id == id:
-            census.sensitives.append(self.sensitive)
-        elif census and census.id != id:
+        if census and census.id != id:
             raise ValueError("A different census with this name already exists")
+        elif census and census.id == id:
+            if census not in self.censuses:
+                self.sensitive.censuses.append(census)
+            else:
+                return census
+
         else:
             census = Census(name=name, id=id, pop_col=pop_col)
-            census.sensitives.append(self.sensitive)
+            self.sensitive.censuses.append(census)
 
         self.session.add(census)
         self.save_gdf(gdf, id)
         self.session.commit()
         return census
+
+    def relate_census(self, name):
+        census = self.get_census(name)
+        self.sensitive.containers.append(census)
+        self.session.commit()
 
     def get_census(self, name):
         """NEEDS TESTS"""
@@ -200,18 +215,28 @@ class Atlas:
         id = tools.checksum(gdf)
         address = self.session.get(Address, name)
 
-        if address and address.id == id:
-            address.sensitives.append(self.sensitive)
-        elif address and address.id != id:
+        if address and address.id != id:
             raise ValueError("A different address with this name already exists")
+
+        elif address and address.id == id:
+            if address not in self.addresses:
+                self.sensitive.addresses.append(address)
+            else:
+                return address
+
         else:
             address = Address(name=name, id=id)
-            address.sensitives.append(self.sensitive)
+            self.sensitive.addresses.append(address)
 
         self.session.add(address)
         self.save_gdf(gdf, id)
         self.session.commit()
         return address
+
+    def relate_address(self, name):
+        address = self.get_address(name)
+        self.sensitive.containers.append(address)
+        self.session.commit()
 
     def get_address(self, name):
         return self.session.get(Address, name)
