@@ -2,6 +2,7 @@ import pytest
 import os
 from maskmypy import Atlas, Sensitive, Candidate, Donut
 from geopandas import GeoDataFrame
+from pandas.testing import assert_frame_equal
 
 
 def test_filename_appends_db_suffix(tmpdir):
@@ -214,15 +215,7 @@ def test_location_swap_with_address_name(points, address):
     atlas = Atlas("test", in_memory=True)
     atlas.add_sensitive(points)
     atlas.add_address(address, "AddressPoints")
-    atlas.location_swap(5, 10, address="AddressPoints")
-    assert isinstance(atlas.read_gdf(atlas.candidates[0].id), GeoDataFrame)
-
-
-def test_location_swap_with_address_object(points, address):
-    atlas = Atlas("test", in_memory=True)
-    atlas.add_sensitive(points)
-    addr_obj = atlas.add_address(address, "AddressPoints")
-    atlas.location_swap(5, 10, address=addr_obj)
+    atlas.location_swap(5, 10, address_name="AddressPoints")
     assert isinstance(atlas.read_gdf(atlas.candidates[0].id), GeoDataFrame)
 
 
@@ -306,6 +299,9 @@ def test_add_address(points, address):
 
 
 def test_add_layers_on_disk(points, address, container, tmpdir):
+    # Trim address points as quantity is not needed for this test
+    address = address.loc[0:10, :]
+
     atlas = Atlas("test")
     donut = Donut(points, 50, 500)
     atlas.add_sensitive(points)
@@ -313,13 +309,16 @@ def test_add_layers_on_disk(points, address, container, tmpdir):
     atlas.add_container(container, "BoundaryPolygons")
     atlas.add_address(address, "AddressPoints")
 
-    assert isinstance(atlas.sdf, GeoDataFrame)
     assert isinstance(atlas.read_gdf(atlas.candidates[0].id), GeoDataFrame)
-    assert isinstance(atlas.read_gdf(atlas.containers[0].id), GeoDataFrame)
-    assert isinstance(atlas.read_gdf(atlas.addresses[0].id), GeoDataFrame)
+    assert_frame_equal(atlas.sdf, points)
+    assert_frame_equal(atlas.read_gdf(atlas.containers[0].id), container)
+    assert_frame_equal(atlas.read_gdf(atlas.addresses[0].id), address)
 
 
 def test_add_layers_in_memory(points, address, container, tmpdir):
+    # Trim address points as quantity is not needed for this test
+    address = address.loc[0:10, :]
+
     atlas = Atlas("test", in_memory=True)
     donut = Donut(points, 50, 500)
     atlas.add_sensitive(points)
@@ -327,10 +326,10 @@ def test_add_layers_in_memory(points, address, container, tmpdir):
     atlas.add_container(container, "BoundaryPolygons")
     atlas.add_address(address, "AddressPoints")
 
-    assert isinstance(atlas.sdf, GeoDataFrame)
     assert isinstance(atlas.read_gdf(atlas.candidates[0].id), GeoDataFrame)
-    assert isinstance(atlas.read_gdf(atlas.containers[0].id), GeoDataFrame)
-    assert isinstance(atlas.read_gdf(atlas.addresses[0].id), GeoDataFrame)
+    assert_frame_equal(atlas.sdf, points)
+    assert_frame_equal(atlas.read_gdf(atlas.containers[0].id), container)
+    assert_frame_equal(atlas.read_gdf(atlas.addresses[0].id), address)
 
 
 def test_drift_calculation(points):
@@ -338,7 +337,7 @@ def test_drift_calculation(points):
     donut = Donut(points, 50, 500)
     atlas.add_sensitive(points)
     candidate = atlas.add_candidate(donut.run(), donut.params)
-    atlas.drift(candidate)
+    atlas.drift(candidate.id)
     assert isinstance(atlas.candidates[0].drift, float)
 
 
@@ -348,7 +347,7 @@ def test_calculate_k(points, address):
     atlas.add_sensitive(points)
     pop = atlas.add_address(address, "address_points")
     candidate = atlas.add_candidate(donut.run(), donut.params)
-    atlas.calculate_k(candidate, pop)
+    atlas.calculate_k(candidate.id, address_name=pop.name)
     assert atlas.candidates[0].k_max is not None
     assert atlas.candidates[0].k_max > 1
     assert atlas.candidates[0].k_max > atlas.candidates[0].k_min
@@ -380,7 +379,7 @@ def test_analyze_all(points, address):
     assert atlas.candidates[1].k_max is None
     assert atlas.candidates[0].drift is None
 
-    atlas.analyze_all(address="Addresses")
+    atlas.analyze_all(address_name="Addresses")
     assert isinstance(atlas.candidates[0].k_max, int)
     assert isinstance(atlas.candidates[1].k_max, int)
     assert isinstance(atlas.candidates[0].drift, float)
@@ -392,7 +391,7 @@ def test_rank(points, address):
     atlas.add_address(address, "Addresses")
     atlas.donut(low=5, high=50)
     atlas.donut(low=500, high=5000)
-    atlas.analyze_all(address="Addresses")
+    atlas.analyze_all(address_name="Addresses")
 
     ranked = atlas.rank("drift")
     assert ranked[0].drift < ranked[1].drift
@@ -411,10 +410,11 @@ def test_rank(points, address):
 def test_nominate(points):
     atlas = Atlas("test", in_memory=True)
     atlas.add_sensitive(points)
+
     cand_0 = atlas.donut(low=5, high=50)
     atlas.nominate(atlas.candidates[0].id)
     assert atlas.nominee == cand_0
 
     cand_1 = atlas.donut(low=500, high=5000)
-    atlas.nominate(atlas.candidates[1])
+    atlas.nominate(atlas.candidates[1].id)
     assert atlas.nominee == cand_1
