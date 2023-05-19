@@ -280,6 +280,18 @@ class Atlas:
             )
         return address
 
+    def drop_candidate(self, id: str, delete: bool = False):
+        pass
+
+    def drop_container(self, name: str, delete: bool = False):
+        pass
+
+    def drop_census(self, name: str, delete: bool = False):
+        pass
+
+    def drop_address(self, name: str, delete: bool = False):
+        pass
+
     def mask(self, mask, **kwargs) -> Candidate:
         mask_args = {"gdf": self.sdf}
         candidate_args = {}
@@ -342,7 +354,9 @@ class Atlas:
         self.session.commit()
         return candidate
 
-    def estimate_k(self, candidate_id: str, census_name: str) -> Candidate:
+    def estimate_k(
+        self, candidate_id: str, census_name: str, return_gdf: bool = False
+    ) -> Candidate | GeoDataFrame:
         candidate = self.get_candidate(candidate_id)
         census = self.get_census(census_name)
 
@@ -358,9 +372,13 @@ class Atlas:
         candidate.k_mean = k.k_min
         candidate.k_med = k.k_med
         self.session.commit()
+        if return_gdf:
+            return kdf
         return candidate
 
-    def calculate_k(self, candidate_id: str, address_name: str) -> Candidate:
+    def calculate_k(
+        self, candidate_id: str, address_name: str, return_gdf: bool = False
+    ) -> Candidate | GeoDataFrame:
         candidate = self.get_candidate(candidate_id)
         address = self.get_address(address_name)
 
@@ -375,7 +393,12 @@ class Atlas:
         candidate.k_mean = k.k_min
         candidate.k_med = k.k_med
         self.session.commit()
+        if return_gdf:
+            return kdf
         return Candidate
+
+    def ripley(self):
+        pass
 
     def analyze_all(self, address_name: str = None, census_name: str = None) -> bool:
         K_FIELDS = ["k_min", "k_max", "k_mean", "k_med"]
