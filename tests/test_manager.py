@@ -394,17 +394,17 @@ def test_rank(points, address):
     atlas.analyze_all(address_name="Addresses")
 
     ranked = atlas.rank("drift")
-    assert ranked[0].drift < ranked[1].drift
+    assert ranked.iloc[0].drift < ranked.iloc[1].drift
 
     ranked = atlas.rank("nnd_min")
-    assert ranked[0].nnd_min < ranked[1].nnd_min
+    assert ranked.iloc[0].nnd_min < ranked.iloc[1].nnd_min
 
     k_floor = atlas.candidates[1].k_min
     ranked = atlas.rank("nnd_min", min_k=k_floor)
     assert len(ranked) == 1
 
     ranked = atlas.rank("drift", desc=True)
-    assert ranked[0].drift > ranked[1].drift
+    assert ranked.iloc[0].drift > ranked.iloc[1].drift
 
 
 def test_nominate(points):

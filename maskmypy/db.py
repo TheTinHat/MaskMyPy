@@ -2,6 +2,7 @@ from typing import List, Optional
 
 from sqlalchemy import Column, ForeignKey, PickleType, Table
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from pandas import Series
 
 
 class Base(DeclarativeBase):
@@ -29,6 +30,8 @@ address_association_table = Table(
     Column("address_name", ForeignKey("address_table.name"), primary_key=True),
 )
 
+SENSITIVE_STATS_FIELDS = ["nnd_min", "nnd_max", "nnd_mean"]
+
 
 class Sensitive(Base):
     __tablename__ = "sensitive_table"
@@ -54,17 +57,31 @@ class Sensitive(Base):
     nnd_mean: Mapped[Optional[float]]
 
     def __repr__(self):
-        return (
-            "Sensitive\n"
-            f"- Name: {self.name}\n"
-            f"- ID: {self.id}\n"
-            f"- Candidates: {len(self.candidates)}\n"
-            f"- Nominee: {self.nominee}\n"
-            f"- Containers: {len(self.containers)}\n"
-            f"- Census Layers: {len(self.censuses)}\n"
-            f"- Address Layers: {len(self.addresses)}\n"
-            f"- Nearest Neighbor Distance (Min/Max/Mean): {self.nnd_min, self.nnd_max, self.nnd_mean}\n"
-        )
+        return f"Sensitive({self.name}, {self.id})"
+
+    @property
+    def as_dict(self):
+        data = {"name": self.name, "id": self.id}
+        for field in SENSITIVE_STATS_FIELDS:
+            data[field] = getattr(self, field)
+
+        data["containers"] = [container.name for container in self.containers]
+        data["censuses"] = [census.name for census in self.censuses]
+        data["addresses"] = [address.name for address in self.addresses]
+        return data
+
+
+CANDIDATE_STATS_FIELDS = [
+    "k_min",
+    "k_max",
+    "k_mean",
+    "k_med",
+    "ripley",
+    "drift",
+    "nnd_min",
+    "nnd_max",
+    "nnd_mean",
+]
 
 
 class Candidate(Base):
@@ -92,30 +109,20 @@ class Candidate(Base):
     nnd_mean: Mapped[Optional[float]]
 
     def __repr__(self):
-        param_string = "\n- ".join([f"{key} = {value}" for key, value in self.params.items()])
-
-        return (
-            "Candidate\n"
-            f"- ID: {self.id}\n"
-            f"Parameters:\n"
-            f"- {param_string}\n"
-            "Related Layers:\n"
-            f"- Sensitive Name: {self.sensitive_name}\n"
-            f"- Container Name: {self.container.name if self.container else 'None'}\n"
-            f"- Census Name: {self.census.name if self.census else 'None'}\n"
-            f"- Addresses Name: {self.address.name if self.address else 'None'}\n"
-        )
+        return f"Candidate({self.sensitive_name}, {self.id})"
 
     @property
-    def stats(self):
-        print(
-            "Candidate Statistics\n"
-            f"- ID: {self.id}\n"
-            f"- K-Anonmity (Min, Max, Mean, Median): {self.k_min, self.k_max, self.k_mean, self.k_med}\n"
-            f"- Ripley: {self.ripley}\n"
-            f"- Drift: {self.drift}\n"
-            f"- NND (Min/Max/Mean): {self.nnd_min, self.nnd_max, self.nnd_mean}\n"
-        )
+    def as_dict(self):
+        data = {"id": self.id}
+        for field in CANDIDATE_STATS_FIELDS:
+            data[field] = getattr(self, field)
+
+        data["container"] = self.container.name if self.container else "None"
+        data["census"] = self.census.name if self.census else "None"
+        data["address"] = self.address.name if self.address else "None"
+        for key, value in self.params.items():
+            data[key] = value
+        return data
 
 
 class Container(Base):
@@ -128,7 +135,7 @@ class Container(Base):
     candidates: Mapped[Optional[List["Candidate"]]] = relationship(back_populates="container")
 
     def __repr__(self):
-        return f"({self.name}, {self.id})"
+        return f"Container({self.name}, {self.id})"
 
 
 class Census(Base):
@@ -142,7 +149,7 @@ class Census(Base):
     candidates: Mapped[Optional[List["Candidate"]]] = relationship(back_populates="census")
 
     def __repr__(self):
-        return f"({self.name}, {self.id})"
+        return f"Census({self.name}, {self.id})"
 
 
 class Address(Base):
@@ -155,4 +162,4 @@ class Address(Base):
     candidates: Mapped[Optional[List["Candidate"]]] = relationship(back_populates="address")
 
     def __repr__(self):
-        return f"({self.name}, {self.id})"
+        return f"Address({self.name}, {self.id})"

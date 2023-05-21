@@ -3,12 +3,13 @@ from functools import cached_property
 from inspect import getfullargspec
 from pathlib import Path
 
+from pandas import DataFrame
 from geopandas import GeoDataFrame, read_file
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session
 
 from . import analysis, tools
-from .db import Address, Base, Candidate, Census, Container, Sensitive
+from .db import Address, Base, Candidate, Census, Container, Sensitive, CANDIDATE_STATS_FIELDS
 from .masks import Donut, LocationSwap, Street, Voronoi
 
 
@@ -415,20 +416,22 @@ class Atlas:
         return True
 
     def rank(self, metric: str, min_k: int = None, desc: bool = False) -> list:
+        if metric not in CANDIDATE_STATS_FIELDS:
+            raise ValueError(
+                f"Invalid metric name. Valid choices include: {[field for field in CANDIDATE_STATS_FIELDS]}"
+            )
+
         stmt = select(Candidate).where(Candidate.sensitive == self.sensitive)
+        stmt = stmt.where(Candidate.k_min >= min_k) if min_k is not None else stmt
+        metric_object = getattr(Candidate, metric).desc() if desc else getattr(Candidate, metric)
+        stmt = stmt.order_by(metric_object)
 
-        if min_k:
-            stmt = stmt.where(Candidate.k_min >= min_k)
+        ranked_candidates = self.session.execute(stmt).scalars().all()
 
-        metric = getattr(Candidate, metric)
-
-        if not desc:
-            stmt = stmt.order_by(metric)
-        elif desc:
-            stmt = stmt.order_by(metric.desc())
-
-        results = self.session.execute(stmt).scalars()
-        return [result for result in results]
+        df = DataFrame().from_records([candidate.as_dict for candidate in ranked_candidates])
+        metric_col = df.pop(metric)
+        df.insert(1, metric, metric_col)
+        return df
 
     def nominate(self, candidate_id: str) -> None:
         candidate = self.get_candidate(candidate_id)
