@@ -30,7 +30,7 @@ address_association_table = Table(
     Column("address_name", ForeignKey("address_table.name"), primary_key=True),
 )
 
-SENSITIVE_STATS_FIELDS = ["nnd_min", "nnd_max", "nnd_mean"]
+SENSITIVE_STATS_FIELDS = ["nnd_min", "nnd_mean", "nnd_max"]
 
 
 class Sensitive(Base):
@@ -73,14 +73,14 @@ class Sensitive(Base):
 
 CANDIDATE_STATS_FIELDS = [
     "k_min",
-    "k_max",
     "k_mean",
     "k_med",
-    "ripley",
+    "k_max",
     "drift",
     "nnd_min",
-    "nnd_max",
     "nnd_mean",
+    "nnd_max",
+    "ripley",
 ]
 
 

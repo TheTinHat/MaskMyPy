@@ -303,7 +303,7 @@ class Atlas:
             if isinstance(container, str):
                 container = self.get_container(container)
             if isinstance(container, Container):
-                mask_args["container"] = self.read_gdf(container.id)
+                mask_args["container"] = self.read_gdf(container.id, project=True)
                 candidate_args["container"] = container
 
         if "census" in arg_spec:
@@ -311,7 +311,7 @@ class Atlas:
             if isinstance(census, str):
                 census = self.get_census(census)
             if isinstance(census, Census):
-                mask_args["census"] = self.read_gdf(census.id)
+                mask_args["census"] = self.read_gdf(census.id, project=True)
                 candidate_args["census"] = census
 
         if "address" in arg_spec:
@@ -319,7 +319,7 @@ class Atlas:
             if isinstance(address, str):
                 address = self.get_address(address)
             if isinstance(address, Address):
-                mask_args["address"] = self.read_gdf(address.id)
+                mask_args["address"] = self.read_gdf(address.id, project=True)
                 candidate_args["address"] = address
 
         m = mask(**mask_args, **kwargs)
@@ -346,8 +346,18 @@ class Atlas:
     def voronoi(self, **kwargs) -> Candidate:
         return self.mask(Voronoi, **kwargs)
 
-    def location_swap(self, low: float, high: float, address_name: str, **kwargs) -> Candidate:
-        return self.mask(LocationSwap, low=low, high=high, address=address_name, **kwargs)
+    def location_swap(self, low: float, high: float, address: str, **kwargs) -> Candidate:
+        return self.mask(LocationSwap, low=low, high=high, address=address, **kwargs)
+
+    def location_swap_i(self, distance_list: list, address: str, **kwargs) -> list[Candidate]:
+        results = []
+        for distance_pair in distance_list:
+            low = distance_pair[0]
+            high = distance_pair[1]
+            if low > high:
+                raise ValueError("Low distance value exceeds high distance value.")
+            results.append(self.location_swap(low=low, high=high, address=address, **kwargs))
+        return results
 
     def drift(self, candidate_id: Candidate | str) -> Candidate:
         candidate = self.get_candidate(candidate_id)
@@ -364,13 +374,13 @@ class Atlas:
         kdf = analysis.estimate_k(
             self.sdf,
             self.mdf(candidate),
-            census_gdf=self.read_gdf(census.id),
+            census_gdf=self.read_gdf(census.id, project=True),
             pop_col=census.pop_col,
         )
         k = analysis.summarize_k(kdf)
         candidate.k_min = k.k_min
         candidate.k_max = k.k_max
-        candidate.k_mean = k.k_min
+        candidate.k_mean = k.k_mean
         candidate.k_med = k.k_med
         self.session.commit()
         if return_gdf:
@@ -386,12 +396,12 @@ class Atlas:
         kdf = analysis.calculate_k(
             self.sdf,
             self.mdf(candidate),
-            address=self.read_gdf(address.id),
+            address=self.read_gdf(address.id, project=True),
         )
         k = analysis.summarize_k(kdf)
         candidate.k_min = k.k_min
         candidate.k_max = k.k_max
-        candidate.k_mean = k.k_min
+        candidate.k_mean = k.k_mean
         candidate.k_med = k.k_med
         self.session.commit()
         if return_gdf:

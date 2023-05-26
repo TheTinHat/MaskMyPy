@@ -215,7 +215,7 @@ def test_location_swap_with_address_name(points, address):
     atlas = Atlas("test", in_memory=True)
     atlas.add_sensitive(points)
     atlas.add_address(address, "AddressPoints")
-    atlas.location_swap(5, 10, address_name="AddressPoints")
+    atlas.location_swap(5, 10, address="AddressPoints")
     assert isinstance(atlas.read_gdf(atlas.candidates[0].id), GeoDataFrame)
 
 
