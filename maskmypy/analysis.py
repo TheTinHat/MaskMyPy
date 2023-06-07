@@ -11,10 +11,10 @@ from collections import namedtuple
 
 
 def displacement(
-    gdf_a: GeoDataFrame, gdf_b: GeoDataFrame, colname: str = "_distance"
+    sensitive_gdf: GeoDataFrame, candidate_gdf: GeoDataFrame, colname: str = "_distance"
 ) -> GeoDataFrame:
-    gdf_b[colname] = gdf_b.geometry.distance(gdf_a.geometry)
-    return gdf_b
+    candidate_gdf[colname] = candidate_gdf.geometry.distance(sensitive_gdf.geometry)
+    return candidate_gdf
 
 
 def estimate_k(
