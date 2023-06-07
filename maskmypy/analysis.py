@@ -7,40 +7,14 @@ from pointpats import PointPattern, k_test
 from pointpats.distance_statistics import KtestResult
 from math import sqrt
 from .candidate import Candidate
-from .tools import validate_geom_type
 from collections import namedtuple
 
 
 def displacement(
-    gdf_a: GeoDataFrame, gdf_b: GeoDataFrame, colname: str = "_distance"
+    sensitive_gdf: GeoDataFrame, candidate_gdf: GeoDataFrame, colname: str = "_distance"
 ) -> GeoDataFrame:
-    gdf_b[colname] = gdf_b.geometry.distance(gdf_a.geometry)
-    return gdf_b
-
-
-# def estimate_k(
-#     sensitive_gdf: GeoDataFrame,
-#     candidate_gdf: GeoDataFrame,
-#     population_gdf: GeoDataFrame,
-#     pop_col: str = "pop",
-# ) -> GeoDataFrame:
-#     candidate_columns = list(candidate_gdf.columns)
-
-#     if validate_geom_type(population_gdf, "Point"):
-#         candidate_k = _estimate_k_from_addresses(sensitive_gdf, candidate_gdf, population_gdf)
-
-#     elif validate_geom_type(population_gdf, "Polygon", "MultiPolygon"):
-#         candidate_k = _estimate_k_from_polygons(
-#             sensitive_gdf, candidate_gdf, population_gdf, pop_col
-#         )
-#     else:
-#         raise ValueError(
-#             "Population geometry must contain only points, or only polygons/multipolygons"
-#         )
-
-#     candidate_columns.append("k_anonymity")
-#     candidate_k = candidate_k[candidate_k.columns.intersection(candidate_columns)]
-#     return candidate_k
+    candidate_gdf[colname] = candidate_gdf.geometry.distance(sensitive_gdf.geometry)
+    return candidate_gdf
 
 
 def estimate_k(
