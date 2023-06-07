@@ -7,7 +7,6 @@ from pointpats import PointPattern, k_test
 from pointpats.distance_statistics import KtestResult
 from math import sqrt
 from .candidate import Candidate
-from .tools import validate_geom_type
 from collections import namedtuple
 
 
