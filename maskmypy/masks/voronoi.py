@@ -5,10 +5,11 @@ from shapely import Point, voronoi_polygons
 from shapely.ops import nearest_points
 
 from .. import tools
+from .abstract_mask import AbstractMask
 
 
 @dataclass
-class Voronoi:
+class Voronoi(AbstractMask):
     gdf: GeoDataFrame
     snap: bool = True
 

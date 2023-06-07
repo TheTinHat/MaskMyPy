@@ -8,10 +8,11 @@ from shapely import Point
 from shapely.affinity import translate
 
 from .. import tools
+from .abstract_mask import AbstractMask
 
 
 @dataclass
-class Donut:
+class Donut(AbstractMask):
     gdf: GeoDataFrame
     low: float
     high: float

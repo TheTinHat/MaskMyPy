@@ -13,10 +13,11 @@ from shapely import Point
 
 from .. import messages as msg
 from .. import tools
+from .abstract_mask import AbstractMask
 
 
 @dataclass
-class Street:
+class Street(AbstractMask):
     gdf: GeoDataFrame
     low: int
     high: int
