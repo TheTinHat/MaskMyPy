@@ -8,4 +8,5 @@ dist
 */__pycache__
 *.pyc
 maskmypy.egg-info
-*/old/*
+.pytest_cache
+__pycache__
