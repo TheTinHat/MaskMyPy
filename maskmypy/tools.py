@@ -48,7 +48,7 @@ def validate_crs(a: CRS, b: CRS, custom_message: str = None) -> bool:
 
 
 def snap_to_streets(gdf: GeoDataFrame) -> GeoDataFrame:
-    snapped_gdf = gdf.copy(deep=True)
+    snapped_gdf = gdf.copy()
     bbox = gdf.to_crs(epsg=4326).total_bounds
     graph = remove_isolated_nodes(
         graph_from_bbox(

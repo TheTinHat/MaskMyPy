@@ -21,7 +21,7 @@ class Atlas:
 
     def __post_init__(self) -> None:
         if self.in_memory:
-            self.layers = dict()
+            self._layers = dict()
             self.engine = create_engine("sqlite://")
         else:
             self.filepath = Path(self.filepath)
@@ -29,7 +29,7 @@ class Atlas:
                 self.filepath = self.filepath.parent / (self.filepath.name + ".db")
             self.engine = create_engine(f"sqlite:///{self.filepath}")
 
-        self.session = Session(self.engine, expire_on_commit=False)
+        self._session = Session(self.engine, expire_on_commit=False)
         Base.metadata.create_all(self.engine)
 
     @cached_property
@@ -57,7 +57,7 @@ class Atlas:
 
     @property
     def containers_all(self) -> list[Container]:
-        return self.session.scalars(select(Container)).all()
+        return self._session.scalars(select(Container)).all()
 
     @property
     def censuses(self) -> list[Census]:
@@ -65,7 +65,7 @@ class Atlas:
 
     @property
     def censuses_all(self) -> list[Census]:
-        return self.session.scalars(select(Census)).all()
+        return self._session.scalars(select(Census)).all()
 
     @property
     def addresses(self) -> list[Address]:
@@ -73,22 +73,22 @@ class Atlas:
 
     @property
     def addresses_all(self) -> list[Address]:
-        return self.session.scalars(select(Address)).all()
+        return self._session.scalars(select(Address)).all()
 
     @property
     def nominee(self) -> Candidate:
-        return self.session.get(Candidate, self.sensitive.nominee)
+        return self._session.get(Candidate, self.sensitive.nominee)
 
     @classmethod
     def load(cls, name: str, filepath: Path | str) -> "Atlas":
         filepath = Path(filepath).with_suffix(".db")
         atlas = cls(name, filepath)
-        atlas.sensitive = atlas.session.get(Sensitive, atlas.name)
+        atlas.sensitive = atlas._session.get(Sensitive, atlas.name)
         return atlas
 
     def read_gdf(self, id: str, project: bool = False) -> GeoDataFrame:
         if self.in_memory:
-            gdf = self.layers.get(id)
+            gdf = self._layers.get(id).copy()
         else:
             gdf = read_file(self._gpkg_path, driver="GPKG", layer=id)
 
@@ -98,14 +98,14 @@ class Atlas:
 
     def _save_gdf(self, gdf: GeoDataFrame, id: str) -> bool:
         if self.in_memory:
-            self.layers[id] = gdf.copy(deep=True)
+            self._layers[id] = gdf.copy()
             return True
         else:
             gdf.to_file(self._gpkg_path, driver="GPKG", layer=id)
             return True
 
     def add_sensitive(self, gdf: GeoDataFrame) -> Sensitive:
-        if self.session.get(Sensitive, self.name) is not None:
+        if self._session.get(Sensitive, self.name) is not None:
             raise ValueError("Sensitive layer already exists.")
         id = tools.checksum(gdf)
         nnd = analysis.nnd(gdf)
@@ -118,9 +118,9 @@ class Atlas:
             nnd_mean=nnd.mean,
             crs=gdf.crs.srs,
         )
-        self.session.add(self.sensitive)
+        self._session.add(self.sensitive)
         self._save_gdf(gdf, id)
-        self.session.commit()
+        self._session.commit()
         return self.sensitive
 
     def add_candidate(
@@ -131,13 +131,13 @@ class Atlas:
         census: Census = None,
         address: Address = None,
     ) -> Candidate:
-        if self.session.get(Sensitive, self.name) is None:
+        if self._session.get(Sensitive, self.name) is None:
             raise ValueError("Add sensitive layer before adding candidates.")
 
         id = tools.checksum(gdf)
         nnd = analysis.nnd(gdf)
 
-        if self.session.get(Candidate, id) is not None:
+        if self._session.get(Candidate, id) is not None:
             raise ValueError("Candidate already exists.")
 
         candidate = Candidate(
@@ -152,17 +152,17 @@ class Atlas:
             nnd_mean=nnd.mean,
         )
 
-        self.session.add(candidate)
+        self._session.add(candidate)
         self._save_gdf(gdf, id)
-        self.session.commit()
+        self._session.commit()
         return candidate
 
     def add_container(self, gdf: GeoDataFrame, name: str) -> Container:
-        if self.session.get(Sensitive, self.name) is None:
+        if self._session.get(Sensitive, self.name) is None:
             raise ValueError("Add sensitive layer before adding containers.")
 
         id = tools.checksum(gdf)
-        container = self.session.get(Container, name)
+        container = self._session.get(Container, name)
 
         if container and container.id != id:
             raise ValueError("A different container layer with this name already exists")
@@ -177,18 +177,18 @@ class Atlas:
             container = Container(name=name, id=id)
             self.sensitive.containers.append(container)
 
-        self.session.add(container)
+        self._session.add(container)
         self._save_gdf(gdf, id)
-        self.session.commit()
+        self._session.commit()
         return container
 
     def add_census(self, gdf: GeoDataFrame, name: str, pop_col: str) -> Census:
         """NEEDS TESTS"""
-        if self.session.get(Sensitive, self.name) is None:
+        if self._session.get(Sensitive, self.name) is None:
             raise ValueError("Add sensitive layer before adding census layers.")
 
         id = tools.checksum(gdf)
-        census = self.session.get(Census, name)
+        census = self._session.get(Census, name)
 
         if census and census.id != id:
             raise ValueError("A different census layer with this name already exists")
@@ -202,17 +202,17 @@ class Atlas:
             census = Census(name=name, id=id, pop_col=pop_col)
             self.sensitive.censuses.append(census)
 
-        self.session.add(census)
+        self._session.add(census)
         self._save_gdf(gdf, id)
-        self.session.commit()
+        self._session.commit()
         return census
 
     def add_address(self, gdf: GeoDataFrame, name: str) -> Address:
-        if self.session.get(Sensitive, self.name) is None:
+        if self._session.get(Sensitive, self.name) is None:
             raise ValueError("Add sensitive layer before adding address layers.")
 
         id = tools.checksum(gdf)
-        address = self.session.get(Address, name)
+        address = self._session.get(Address, name)
 
         if address and address.id != id:
             raise ValueError("A different address layer with this name already exists")
@@ -227,37 +227,37 @@ class Atlas:
             address = Address(name=name, id=id)
             self.sensitive.addresses.append(address)
 
-        self.session.add(address)
+        self._session.add(address)
         self._save_gdf(gdf, id)
-        self.session.commit()
+        self._session.commit()
         return address
 
     def relate_census(self, name: str) -> Census:
         census = self.get_census(name, other=True)
         self.sensitive.containers.append(census)
-        self.session.commit()
+        self._session.commit()
         return census
 
     def relate_container(self, name: str) -> Container:
         container = self.get_container(name, other=True)
         self.sensitive.containers.append(container)
-        self.session.commit()
+        self._session.commit()
         return container
 
     def relate_address(self, name: str) -> Address:
         address = self.get_address(name, other=True)
         self.sensitive.containers.append(address)
-        self.session.commit()
+        self._session.commit()
         return address
 
     def get_candidate(self, id: str) -> Candidate:
-        candidate = self.session.get(Candidate, id)
+        candidate = self._session.get(Candidate, id)
         if candidate not in self.candidates:
             raise ValueError("Specified candidate is for a different sensitive layer.")
         return candidate
 
     def get_container(self, name: str, other: bool = False) -> Container:
-        container = self.session.get(Container, name)
+        container = self._session.get(Container, name)
         if container not in self.containers and other is False:
             raise ValueError(
                 "Specified container is for a different sensitive layer. Either set `other=True` or use `relate_container()` first."
@@ -266,7 +266,7 @@ class Atlas:
 
     def get_census(self, name: str, other: bool = False) -> Census:
         """NEEDS TESTS"""
-        census = self.session.get(Census, name)
+        census = self._session.get(Census, name)
         if census not in self.censuses and other is False:
             raise ValueError(
                 "Specified census layer is for a different sensitive layer. Either set `other=True` or use `relate_census()` first."
@@ -274,7 +274,7 @@ class Atlas:
         return census
 
     def get_address(self, name: str, other: bool = False) -> Address:
-        address = self.session.get(Address, name)
+        address = self._session.get(Address, name)
         if address not in self.addresses and other is False:
             raise ValueError(
                 "Specified address layer is for a different sensitive layer. Either set `other=True` or use `relate_address()` first."
@@ -362,7 +362,7 @@ class Atlas:
     def drift(self, candidate_id: Candidate | str) -> Candidate:
         candidate = self.get_candidate(candidate_id)
         candidate.drift = analysis.drift(self.sdf, self.mdf(candidate))
-        self.session.commit()
+        self._session.commit()
         return candidate
 
     def estimate_k(
@@ -382,7 +382,7 @@ class Atlas:
         candidate.k_max = k.k_max
         candidate.k_mean = k.k_mean
         candidate.k_med = k.k_med
-        self.session.commit()
+        self._session.commit()
         if return_gdf:
             return kdf
         return candidate
@@ -403,7 +403,7 @@ class Atlas:
         candidate.k_max = k.k_max
         candidate.k_mean = k.k_mean
         candidate.k_med = k.k_med
-        self.session.commit()
+        self._session.commit()
         if return_gdf:
             return kdf
         return Candidate
@@ -436,7 +436,7 @@ class Atlas:
         metric_object = getattr(Candidate, metric).desc() if desc else getattr(Candidate, metric)
         stmt = stmt.order_by(metric_object)
 
-        ranked_candidates = self.session.execute(stmt).scalars().all()
+        ranked_candidates = self._session.execute(stmt).scalars().all()
 
         df = DataFrame().from_records([candidate.as_dict for candidate in ranked_candidates])
         metric_col = df.pop(metric)
@@ -447,4 +447,4 @@ class Atlas:
         candidate = self.get_candidate(candidate_id)
 
         self.sensitive.nominee = candidate.id
-        self.session.commit()
+        self._session.commit()

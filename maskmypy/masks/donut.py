@@ -27,7 +27,7 @@ class Donut(AbstractMask):
 
         # Validate and initialize input parameters
         tools.validate_geom_type(self.gdf, "Point")
-        self.mdf = self.gdf.copy(deep=True)
+        self.mdf = self.gdf.copy()
 
         if self.low >= self.high:
             raise ValueError("Minimum displacement distance is larger than or equal to maximum.")

@@ -32,7 +32,7 @@ class Street(AbstractMask):
         # Validate and initialize input parameters
         tools.validate_geom_type(self.gdf, "Point")
         self.crs = self.gdf.crs
-        self.mdf = self.gdf.copy(deep=True).to_crs(epsg=4326)
+        self.mdf = self.gdf.copy().to_crs(epsg=4326)
 
         if self.low >= self.high:
             raise ValueError("Minimum is larger than or equal to maximum.")

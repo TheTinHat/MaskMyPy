@@ -37,17 +37,17 @@ CONTAINER = gpd.read_file("tests/data/boundary.geojson").to_crs(epsg=26910)
 
 @pytest.fixture
 def points():
-    return POINTS.copy(deep=True)
+    return POINTS.copy()
 
 
 @pytest.fixture
 def address():
-    return ADDRESS.copy(deep=True)
+    return ADDRESS.copy()
 
 
 @pytest.fixture
 def container():
-    return CONTAINER.copy(deep=True)
+    return CONTAINER.copy()
 
 
 # @pytest.fixture

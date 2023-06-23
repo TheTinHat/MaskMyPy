@@ -11,9 +11,9 @@ from .db import Candidate
 
 
 def displacement(
-    sensitive_gdf: GeoDataFrame, candidate_gdf: GeoDataFrame, colname: str = "_distance"
+    sensitive_gdf: GeoDataFrame, candidate_gdf: GeoDataFrame, col: str = "_distance"
 ) -> GeoDataFrame:
-    candidate_gdf[colname] = candidate_gdf.geometry.distance(sensitive_gdf.geometry)
+    candidate_gdf[col] = candidate_gdf.geometry.distance(sensitive_gdf.geometry)
     return candidate_gdf
 
 
