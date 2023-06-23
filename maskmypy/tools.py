@@ -18,7 +18,7 @@ def crop(gdf: GeoDataFrame, bbox: list, padding: float) -> GeoDataFrame:
 
 
 def checksum(gdf: GeoDataFrame) -> str:
-    return sha256(hash_pandas_object(gdf).values).hexdigest()[0:12]
+    return sha256(bytearray(hash_pandas_object(gdf).values)).hexdigest()[0:12]
 
 
 def pad(bbox: list, padding: float) -> list:
@@ -44,7 +44,7 @@ def validate_crs(a: CRS, b: CRS, custom_message: str = None) -> bool:
     if a != b:
         raise ValueError(message)
     else:
-        return
+        return True
 
 
 def snap_to_streets(gdf: GeoDataFrame) -> GeoDataFrame:

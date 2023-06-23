@@ -28,12 +28,13 @@ setup(
         "develop": [
             "pytest",
             "black",
+            "psutil",
             # "mkdocs-material",
             # "mkdocs-roamlinks-plugin",
             # "mkdocs-git-revision-date-localized-plugin",
             # "mkdocstrings-python",
         ],
-        "extra": ["contextily>=1.2.0", "psutil"],
+        "extra": ["contextily>=1.2.0"],
     },
     python_requires=">=3.10",
     entry_points={

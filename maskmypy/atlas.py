@@ -425,7 +425,7 @@ class Atlas:
                     self.estimate_k(candidate.id, census_name)
         return True
 
-    def rank(self, metric: str, min_k: int = None, desc: bool = False) -> list:
+    def rank(self, metric: str, min_k: int = None, desc: bool = False) -> DataFrame:
         if metric not in CANDIDATE_STATS_FIELDS:
             raise ValueError(
                 f"Invalid metric name. Valid choices include: {[field for field in CANDIDATE_STATS_FIELDS]}"
