@@ -92,7 +92,7 @@ NND_Summary = namedtuple("NND_Summary", ["min", "max", "mean"])
 
 
 def nnd(gdf: GeoDataFrame) -> NND_Summary:
-    "Returns nearest neighbor distances in a tuple of (min, mean, max)"
+    "Returns nearest neighbor distances in a tuple of (min, max, mean)"
     pp = _gdf_to_pointpattern(gdf)
     return NND_Summary(min=pp.min_nnd, max=pp.max_nnd, mean=pp.mean_nnd)
 
