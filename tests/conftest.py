@@ -30,9 +30,9 @@ def tmpdir():
     shutil.rmtree("./tmp")
 
 
-POINTS = gpd.read_file("tests/points.geojson").to_crs(epsg=26910)
-ADDRESS = gpd.read_file("tests/addresses.geojson").to_crs(epsg=26910)
-CONTAINER = gpd.read_file("tests/boundary.geojson").to_crs(epsg=26910)
+POINTS = gpd.read_file("tests/data/points.geojson").to_crs(epsg=26910)
+ADDRESS = gpd.read_file("tests/data/addresses.geojson").to_crs(epsg=26910)
+CONTAINER = gpd.read_file("tests/data/boundary.geojson").to_crs(epsg=26910)
 
 
 @pytest.fixture

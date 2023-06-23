@@ -68,18 +68,29 @@ def _disaggregate(gdf_a: GeoDataFrame, gdf_b: GeoDataFrame, gdf_b_col: str) -> G
     return gdf
 
 
-def k_satisfaction(gdf: GeoDataFrame, min_k: int, k_col: str = "k_anonymity") -> float:
-    return gdf.loc[gdf[k_col] >= min_k, k_col].count() / gdf[k_col].count()
+def k_satisfaction(gdf: GeoDataFrame, min_k: int, col: str = "k_anonymity") -> float:
+    return gdf.loc[gdf[col] >= min_k, col].count() / gdf[col].count()
+
+
+DD_Summary = namedtuple("DD_Summary", ["dist_min", "dist_max", "dist_med", "dist_mean"])
+
+
+def summarize_displacement(gdf: GeoDataFrame, col="_distance"):
+    dist_min = int(gdf.loc[:, col].min())
+    dist_max = int(gdf.loc[:, col].max())
+    dist_med = float(gdf.loc[:, col].median())
+    dist_mean = float(gdf.loc[:, col].mean())
+    return DD_Summary(dist_min=dist_min, dist_max=dist_max, dist_med=dist_med, dist_mean=dist_mean)
 
 
 K_Summary = namedtuple("K_Summary", ["k_min", "k_max", "k_med", "k_mean"])
 
 
-def summarize_k(gdf: GeoDataFrame, k_col="k_anonymity") -> K_Summary:
-    k_min = int(gdf.loc[:, "k_anonymity"].min())
-    k_max = int(gdf.loc[:, "k_anonymity"].max())
-    k_med = float(gdf.loc[:, "k_anonymity"].median())
-    k_mean = float(gdf.loc[:, "k_anonymity"].mean())
+def summarize_k(gdf: GeoDataFrame, col="k_anonymity") -> K_Summary:
+    k_min = int(gdf.loc[:, col].min())
+    k_max = int(gdf.loc[:, col].max())
+    k_med = float(gdf.loc[:, col].median())
+    k_mean = float(gdf.loc[:, col].mean())
 
     return K_Summary(k_min=k_min, k_max=k_max, k_med=k_med, k_mean=k_mean)
 
