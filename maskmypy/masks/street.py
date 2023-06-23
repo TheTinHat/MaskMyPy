@@ -11,7 +11,6 @@ from osmnx.graph import graph_from_bbox
 from osmnx.utils_graph import remove_isolated_nodes
 from shapely import Point
 
-from .. import messages as msg
 from .. import tools
 from .abstract_mask import AbstractMask
 
