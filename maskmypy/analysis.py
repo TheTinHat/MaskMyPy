@@ -6,8 +6,8 @@ from numpy import array, square
 from pointpats import PointPattern, k_test
 from pointpats.distance_statistics import KtestResult
 from math import sqrt
-from .candidate import Candidate
 from collections import namedtuple
+from .db import Candidate
 
 
 def displacement(

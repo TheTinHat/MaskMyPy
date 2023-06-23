@@ -6,7 +6,7 @@ from sqlalchemy import select
 from sqlalchemy.dialects.sqlite import insert
 
 from . import analysis, tools
-from .storage import CandidateMeta, Storage
+from .deprecated.storage import CandidateMeta, Storage
 
 
 @dataclass

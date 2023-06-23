@@ -5,7 +5,7 @@ import geopandas as gpd
 from sqlalchemy import select
 from sqlalchemy.dialects.sqlite import insert
 
-from . import analysis, tools
+from .. import analysis, tools
 from .storage import SensitiveMeta, Storage
 
 

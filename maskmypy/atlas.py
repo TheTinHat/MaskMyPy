@@ -1,347 +1,450 @@
 from dataclasses import dataclass, field
-from getpass import getuser
-from itertools import zip_longest
+from functools import cached_property
+from inspect import getfullargspec
 from pathlib import Path
 
-import pandas as pd
-from geopandas import GeoDataFrame
-from pointpats.distance_statistics import KtestResult
-from pyproj.crs.crs import CRS
-from sqlalchemy import select
-from sqlalchemy.dialects.sqlite import insert
+from pandas import DataFrame
+from geopandas import GeoDataFrame, read_file
+from sqlalchemy import create_engine, select
+from sqlalchemy.orm import Session
 
-from . import analysis
-from . import messages as msg
-from . import tools
-from .candidate import Candidate
+from . import analysis, tools
+from .db import Address, Base, Candidate, Census, Container, Sensitive, CANDIDATE_STATS_FIELDS
 from .masks import Donut, LocationSwap, Street, Voronoi
-from .reference import Reference
-from .sensitive import Sensitive
-from .storage import AtlasMeta, CandidateMeta, Storage
 
 
 @dataclass
 class Atlas:
     name: str
-    input: GeoDataFrame = field(repr=False)
-    container: GeoDataFrame = None
-    population: GeoDataFrame = None
-    pop_col: str = "pop"
-    sensitive: Sensitive = None
-    candidates: list[Candidate] = field(default_factory=list[Candidate])
-    reference: dict[Reference] = field(default_factory=dict[Reference])
-    directory: Path = field(default_factory=lambda: Path.cwd())
-    author: str = field(default_factory=lambda: getuser())
-    storage: Storage = None
-    autosave: bool = True
-    autoflush: bool = True
-    nominee: str = None
+    filepath: Path = field(default_factory=lambda: Path.cwd() / "atlas.db")
+    in_memory: bool = False
 
     def __post_init__(self) -> None:
-        if not self.storage:
-            self.storage = Storage(directory=Path(self.directory), name=self.name)
-
-        if isinstance(self.directory, str):
-            self.directory = Path(self.directory)
-
-        if not self.sensitive:
-            self.sensitive = Sensitive(sdf=self.input, storage=self.storage)
-        del self.input
-
-        if self.container is not None:
-            tools.validate_crs(self.crs, self.container.crs)
-            tools.validate_geom_type(self.container, "Polygon", "MultiPolygon")
-            self._container_id = "_".join([self.sid, "container"])
+        if self.in_memory:
+            self.layers = dict()
+            self.engine = create_engine("sqlite://")
         else:
-            self._container_id = "NULL"
+            self.filepath = Path(self.filepath)
+            if self.filepath.suffix != ".db":
+                self.filepath = self.filepath.parent / (self.filepath.name + ".db")
+            self.engine = create_engine(f"sqlite:///{self.filepath}")
 
-        if self.population is not None:
-            assert self.population.crs == self.crs
-            tools.validate_geom_type(self.population, "Polygon", "MultiPolygon", "Point")
-            self._population_id = "_".join([self.sid, "population"])
-        else:
-            self._population_id = "NULL"
+        self.session = Session(self.engine, expire_on_commit=False)
+        Base.metadata.create_all(self.engine)
 
-        if self.autosave:
-            self.save()
+    @cached_property
+    def _gpkg_path(self) -> Path:
+        return self.filepath.with_suffix(".gpkg")
+
+    @cached_property
+    def sdf(self) -> GeoDataFrame:
+        return self.read_gdf(self.sensitive.id)
+
+    def mdf(self, candidate_or_id: Candidate | str) -> GeoDataFrame:
+        c = candidate_or_id
+        if isinstance(c, str):
+            return self.read_gdf(c)
+        elif isinstance(c, Candidate):
+            return self.read_gdf(c.id)
 
     @property
-    def sid(self) -> str:
-        return self.sensitive.sid
+    def candidates(self) -> list[Candidate]:
+        return self.sensitive.candidates
 
     @property
-    def cids(self) -> list[str]:
-        return [candidate.cid for candidate in self.candidates]
+    def containers(self) -> list[Container]:
+        return self.sensitive.containers
 
     @property
-    def crs(self) -> CRS:
-        return self.sensitive.sdf.crs
+    def containers_all(self) -> list[Container]:
+        return self.session.scalars(select(Container)).all()
 
-    def save(self) -> None:
-        # Save sensitive
-        self.sensitive.save()
+    @property
+    def censuses(self) -> list[Census]:
+        return self.sensitive.censuses
 
-        # Save candidates
-        for candidate in self.candidates:
-            candidate.save()
+    @property
+    def censuses_all(self) -> list[Census]:
+        return self.session.scalars(select(Census)).all()
 
-        # Save container
-        if self.container is not None:
-            self.storage.save_gdf(self.container, self._container_id)
+    @property
+    def addresses(self) -> list[Address]:
+        return self.sensitive.addresses
 
-        # Save population
-        if self.population is not None:
-            self.storage.save_gdf(self.population, self._population_id)
+    @property
+    def addresses_all(self) -> list[Address]:
+        return self.session.scalars(select(Address)).all()
 
-        # Save metadata to database
-        self.storage.session.execute(
-            insert(AtlasMeta)
-            .values(
-                name=self.name,
-                sid=self.sensitive.sid,
-                author=self.author,
-                autosave=self.autosave,
-                autoflush=self.autoflush,
-                container_id=self._container_id,
-                population_id=self._population_id,
-                pop_col=self.pop_col,
-                nominee=self.nominee,
-            )
-            .on_conflict_do_nothing()
-        )
-        self.storage.session.commit()
+    @property
+    def nominee(self) -> Candidate:
+        return self.session.get(Candidate, self.sensitive.nominee)
 
     @classmethod
-    def load(cls, name: str, directory: Path = Path.cwd()) -> "Atlas":
-        storage = Storage(name=name, directory=directory)
+    def load(cls, name: str, filepath: Path | str) -> "Atlas":
+        filepath = Path(filepath).with_suffix(".db")
+        atlas = cls(name, filepath)
+        atlas.sensitive = atlas.session.get(Sensitive, atlas.name)
+        return atlas
 
-        # Load atlas metadata
-        atlas_meta = (
-            storage.session.execute(select(AtlasMeta).filter_by(name=name)).scalars().first()
+    def read_gdf(self, id: str, project: bool = False) -> GeoDataFrame:
+        if self.in_memory:
+            gdf = self.layers.get(id)
+        else:
+            gdf = read_file(self._gpkg_path, driver="GPKG", layer=id)
+
+        if project:
+            gdf = gdf.to_crs(self.sensitive.crs)
+        return gdf
+
+    def _save_gdf(self, gdf: GeoDataFrame, id: str) -> bool:
+        if self.in_memory:
+            self.layers[id] = gdf.copy(deep=True)
+            return True
+        else:
+            gdf.to_file(self._gpkg_path, driver="GPKG", layer=id)
+            return True
+
+    def add_sensitive(self, gdf: GeoDataFrame) -> Sensitive:
+        if self.session.get(Sensitive, self.name) is not None:
+            raise ValueError("Sensitive layer already exists.")
+        id = tools.checksum(gdf)
+        nnd = analysis.nnd(gdf)
+
+        self.sensitive = Sensitive(
+            name=self.name,
+            id=id,
+            nnd_min=nnd.min,
+            nnd_max=nnd.max,
+            nnd_mean=nnd.mean,
+            crs=gdf.crs.srs,
         )
+        self.session.add(self.sensitive)
+        self._save_gdf(gdf, id)
+        self.session.commit()
+        return self.sensitive
 
-        # Load sensitive
-        sensitive = Sensitive.load(atlas_meta.sid, storage=storage)
+    def add_candidate(
+        self,
+        gdf: GeoDataFrame,
+        params: dict,
+        container: Container = None,
+        census: Census = None,
+        address: Address = None,
+    ) -> Candidate:
+        if self.session.get(Sensitive, self.name) is None:
+            raise ValueError("Add sensitive layer before adding candidates.")
 
-        # Load candidates
-        candidate_list = (
-            storage.session.execute(
-                select(CandidateMeta)
-                .filter_by(sid=atlas_meta.sid)
-                .order_by(CandidateMeta.timestamp)
-            )
-            .scalars()
-            .all()
-        )
-        candidates = []
-        for candidate in candidate_list:
-            candidates.append(Candidate.load(candidate.cid, storage))
+        id = tools.checksum(gdf)
+        nnd = analysis.nnd(gdf)
 
-        # Load container
-        if atlas_meta.container_id != "NULL":
-            container = storage.read_gdf(atlas_meta.container_id)
-        else:
-            container = None
+        if self.session.get(Candidate, id) is not None:
+            raise ValueError("Candidate already exists.")
 
-        # Load population
-        if atlas_meta.population_id != "NULL":
-            population = storage.read_gdf(atlas_meta.population_id)
-        else:
-            population = None
-
-        return cls(
-            name=name,
-            input=sensitive.sdf,
-            sensitive=sensitive,
-            candidates=candidates,
-            directory=directory,
-            container=container,
-            population=population,
-            pop_col=atlas_meta.pop_col,
-            author=atlas_meta.author,
-            autosave=atlas_meta.autosave,
-            autoflush=atlas_meta.autoflush,
-            nominee=atlas_meta.nominee,
-        )
-
-    def set(self, candidate: Candidate) -> None:
-        assert candidate.mdf.crs == self.crs, msg.candidate_crs_mismatch_msg
-        assert candidate.cid != self.sid, msg.candidate_identical_to_sensitive_msg
-        assert candidate.sid == self.sid, msg.candidate_atlas_sid_mismatch_msg
-
-        if candidate.cid not in self.cids:
-            self.candidates.append(candidate)
-            if self.autosave:
-                candidate.save()
-            if self.autoflush:
-                candidate.flush()
-        else:
-            print(f"Candidate {candidate.cid} already exists. Skipping...")
-
-    def get(self, index: int = -1, cid: str = None) -> Candidate:
-        if cid is not None:
-            candidate = [c for c in self.candidates if c.cid == cid]
-            if len(candidate) == 1:
-                return candidate[0].get()
-            elif len(candidate) == 0:
-                raise ValueError("Could not find candidate")
-            elif len(candidate) > 1:
-                raise RuntimeError("Found multiple candidates with same CID")
-        else:
-            return self.candidates[index].get()
-
-    def flush(self) -> None:
-        for candidate in self.candidates:
-            candidate.flush()
-
-    def create_candidate(self, mdf: GeoDataFrame, parameters: dict) -> Candidate:
         candidate = Candidate(
-            sid=self.sid,
-            storage=self.storage,
-            mdf=mdf,
-            parameters=parameters,
+            id=id,
+            sensitive=self.sensitive,
+            params=params,
+            container=container,
+            census=census,
+            address=address,
+            nnd_min=nnd.min,
+            nnd_max=nnd.max,
+            nnd_mean=nnd.mean,
         )
-        self.set(candidate)
+
+        self.session.add(candidate)
+        self._save_gdf(gdf, id)
+        self.session.commit()
         return candidate
 
-    def nominate(self, cid: str):
-        self.nominee = cid
+    def add_container(self, gdf: GeoDataFrame, name: str) -> Container:
+        if self.session.get(Sensitive, self.name) is None:
+            raise ValueError("Add sensitive layer before adding containers.")
 
-    def get_nominee(self):
-        return self.get(cid=self.nominee)
+        id = tools.checksum(gdf)
+        container = self.session.get(Container, name)
+
+        if container and container.id != id:
+            raise ValueError("A different container layer with this name already exists")
+
+        elif container and container.id == id:
+            if container not in self.containers:
+                self.sensitive.containers.append(container)
+            else:
+                return container
+
+        else:
+            container = Container(name=name, id=id)
+            self.sensitive.containers.append(container)
+
+        self.session.add(container)
+        self._save_gdf(gdf, id)
+        self.session.commit()
+        return container
+
+    def add_census(self, gdf: GeoDataFrame, name: str, pop_col: str) -> Census:
+        """NEEDS TESTS"""
+        if self.session.get(Sensitive, self.name) is None:
+            raise ValueError("Add sensitive layer before adding census layers.")
+
+        id = tools.checksum(gdf)
+        census = self.session.get(Census, name)
+
+        if census and census.id != id:
+            raise ValueError("A different census layer with this name already exists")
+        elif census and census.id == id:
+            if census not in self.censuses:
+                self.sensitive.censuses.append(census)
+            else:
+                return census
+
+        else:
+            census = Census(name=name, id=id, pop_col=pop_col)
+            self.sensitive.censuses.append(census)
+
+        self.session.add(census)
+        self._save_gdf(gdf, id)
+        self.session.commit()
+        return census
+
+    def add_address(self, gdf: GeoDataFrame, name: str) -> Address:
+        if self.session.get(Sensitive, self.name) is None:
+            raise ValueError("Add sensitive layer before adding address layers.")
+
+        id = tools.checksum(gdf)
+        address = self.session.get(Address, name)
+
+        if address and address.id != id:
+            raise ValueError("A different address layer with this name already exists")
+
+        elif address and address.id == id:
+            if address not in self.addresses:
+                self.sensitive.addresses.append(address)
+            else:
+                return address
+
+        else:
+            address = Address(name=name, id=id)
+            self.sensitive.addresses.append(address)
+
+        self.session.add(address)
+        self._save_gdf(gdf, id)
+        self.session.commit()
+        return address
+
+    def relate_census(self, name: str) -> Census:
+        census = self.get_census(name, other=True)
+        self.sensitive.containers.append(census)
+        self.session.commit()
+        return census
+
+    def relate_container(self, name: str) -> Container:
+        container = self.get_container(name, other=True)
+        self.sensitive.containers.append(container)
+        self.session.commit()
+        return container
+
+    def relate_address(self, name: str) -> Address:
+        address = self.get_address(name, other=True)
+        self.sensitive.containers.append(address)
+        self.session.commit()
+        return address
+
+    def get_candidate(self, id: str) -> Candidate:
+        candidate = self.session.get(Candidate, id)
+        if candidate not in self.candidates:
+            raise ValueError("Specified candidate is for a different sensitive layer.")
+        return candidate
+
+    def get_container(self, name: str, other: bool = False) -> Container:
+        container = self.session.get(Container, name)
+        if container not in self.containers and other is False:
+            raise ValueError(
+                "Specified container is for a different sensitive layer. Either set `other=True` or use `relate_container()` first."
+            )
+        return container
+
+    def get_census(self, name: str, other: bool = False) -> Census:
+        """NEEDS TESTS"""
+        census = self.session.get(Census, name)
+        if census not in self.censuses and other is False:
+            raise ValueError(
+                "Specified census layer is for a different sensitive layer. Either set `other=True` or use `relate_census()` first."
+            )
+        return census
+
+    def get_address(self, name: str, other: bool = False) -> Address:
+        address = self.session.get(Address, name)
+        if address not in self.addresses and other is False:
+            raise ValueError(
+                "Specified address layer is for a different sensitive layer. Either set `other=True` or use `relate_address()` first."
+            )
+        return address
+
+    def drop_candidate(self, id: str, delete: bool = False):
+        pass
+
+    def drop_container(self, name: str, delete: bool = False):
+        pass
+
+    def drop_census(self, name: str, delete: bool = False):
+        pass
+
+    def drop_address(self, name: str, delete: bool = False):
+        pass
 
     def mask(self, mask, **kwargs) -> Candidate:
-        m = mask(gdf=self.sensitive.sdf, **kwargs)
+        mask_args = {"gdf": self.sdf}
+        candidate_args = {}
+        arg_spec = getfullargspec(mask)[0]
+
+        if "container" in arg_spec:
+            container = kwargs.pop("container", None)
+            if isinstance(container, str):
+                container = self.get_container(container)
+            if isinstance(container, Container):
+                mask_args["container"] = self.read_gdf(container.id, project=True)
+                candidate_args["container"] = container
+
+        if "census" in arg_spec:
+            census = kwargs.pop("census", None)
+            if isinstance(census, str):
+                census = self.get_census(census)
+            if isinstance(census, Census):
+                mask_args["census"] = self.read_gdf(census.id, project=True)
+                candidate_args["census"] = census
+
+        if "address" in arg_spec:
+            address = kwargs.pop("address", None)
+            if isinstance(address, str):
+                address = self.get_address(address)
+            if isinstance(address, Address):
+                mask_args["address"] = self.read_gdf(address.id, project=True)
+                candidate_args["address"] = address
+
+        m = mask(**mask_args, **kwargs)
         mdf = m.run()
         params = m.params
-        return self.create_candidate(mdf, params)
+        return self.add_candidate(mdf, params, **candidate_args)
 
-    def mask_i(self, mask, low_list: list, high_list: list, **kwargs) -> list[Candidate]:
-        values = self._zip_longest_autofill(low_list, high_list)
-        for low_val, high_val in values:
-            self.mask(mask, low=low_val, high=high_val, **kwargs)
-        return list(self.candidates)[(0 - len(values)) :]
+    def donut(self, low: float, high: float, **kwargs: dict) -> Candidate:
+        return self.mask(Donut, low=low, high=high, **kwargs)
 
-    def donut(self, low: float, high: float, **kwargs) -> Candidate:
-        return self.mask(Donut, low=low, high=high, container=self.container, **kwargs)
+    def donut_i(self, distance_list: list, **kwargs) -> list[Candidate]:
+        results = []
+        for distance_pair in distance_list:
+            low = distance_pair[0]
+            high = distance_pair[1]
+            if low > high:
+                raise ValueError("Low distance value exceeds high distance value.")
+            results.append(self.donut(low=low, high=high, **kwargs))
+        return results
 
-    def donut_i(self, low_list: list, high_list: list, **kwargs) -> list[Candidate]:
-        return self.mask_i(Donut, low_list, high_list, container=self.container, **kwargs)
-
-    def street(self, low: float, high: float, **kwargs) -> Candidate:
+    def street(self, low: int, high: int, **kwargs) -> Candidate:
         return self.mask(Street, low=low, high=high, **kwargs)
-
-    def street_i(self, low_list: list, high_list: list, **kwargs) -> list[Candidate]:
-        return self.mask_i(Street, low_list, high_list, **kwargs)
-
-    def locationswap(self, low: float, high: float, **kwargs) -> Candidate:
-        return self.mask(LocationSwap, low=low, high=high, addresses=self.population, **kwargs)
-
-    def locationswap_i(self, low_list: list, high_list: list, **kwargs) -> list[Candidate]:
-        return self.mask_i(LocationSwap, low_list, high_list, addresses=self.population, **kwargs)
 
     def voronoi(self, **kwargs) -> Candidate:
         return self.mask(Voronoi, **kwargs)
 
-    def benchmark_custom_mask(self, CustomMask):
-        for candidate in self.candidates:
-            self.ripleys_k(candidate)
+    def location_swap(self, low: float, high: float, address: str, **kwargs) -> Candidate:
+        return self.mask(LocationSwap, low=low, high=high, address=address, **kwargs)
 
-    def ripleys_k(
-        self,
-        candidate: Candidate = None,
-        steps: int = 10,
-        max_dist: float = None,
-        graph: bool = False,
-        subtitle: str = None,
-    ) -> KtestResult:
-        candidate = self.get() if not candidate else candidate.get()
-        max_dist = analysis.ripleys_rot(self.sensitive.sdf) if not max_dist else max_dist
+    def location_swap_i(self, distance_list: list, address: str, **kwargs) -> list[Candidate]:
+        results = []
+        for distance_pair in distance_list:
+            low = distance_pair[0]
+            high = distance_pair[1]
+            if low > high:
+                raise ValueError("Low distance value exceeds high distance value.")
+            results.append(self.location_swap(low=low, high=high, address=address, **kwargs))
+        return results
 
-        sensitive_rk = self.sensitive.ripleys_k(steps=steps, max_dist=max_dist)
+    def drift(self, candidate_id: Candidate | str) -> Candidate:
+        candidate = self.get_candidate(candidate_id)
+        candidate.drift = analysis.drift(self.sdf, self.mdf(candidate))
+        self.session.commit()
+        return candidate
 
-        candidate_rk = analysis.ripleys_k(
-            candidate.mdf, max_dist=max_dist, min_dist=(max_dist / steps), steps=steps
+    def estimate_k(
+        self, candidate_id: str, census_name: str, return_gdf: bool = False
+    ) -> Candidate | GeoDataFrame:
+        candidate = self.get_candidate(candidate_id)
+        census = self.get_census(census_name)
+
+        kdf = analysis.estimate_k(
+            self.sdf,
+            self.mdf(candidate),
+            census_gdf=self.read_gdf(census.id, project=True),
+            pop_col=census.pop_col,
         )
-        candidate.ripley_rmse = analysis.ripley_rmse(candidate_rk, sensitive_rk)
+        k = analysis.summarize_k(kdf)
+        candidate.k_min = k.k_min
+        candidate.k_max = k.k_max
+        candidate.k_mean = k.k_mean
+        candidate.k_med = k.k_med
+        self.session.commit()
+        if return_gdf:
+            return kdf
+        return candidate
 
-        if graph:
-            subtitle = candidate.cid if subtitle is None else subtitle
-            analysis.graph_ripleyresults(candidate_rk, sensitive_rk, subtitle).savefig(
-                f"{self.directory}/rk_{candidate.cid}.png"
+    def calculate_k(
+        self, candidate_id: str, address_name: str, return_gdf: bool = False
+    ) -> Candidate | GeoDataFrame:
+        candidate = self.get_candidate(candidate_id)
+        address = self.get_address(address_name)
+
+        kdf = analysis.calculate_k(
+            self.sdf,
+            self.mdf(candidate),
+            address=self.read_gdf(address.id, project=True),
+        )
+        k = analysis.summarize_k(kdf)
+        candidate.k_min = k.k_min
+        candidate.k_max = k.k_max
+        candidate.k_mean = k.k_mean
+        candidate.k_med = k.k_med
+        self.session.commit()
+        if return_gdf:
+            return kdf
+        return Candidate
+
+    def ripley(self):
+        pass
+
+    def analyze_all(self, address_name: str = None, census_name: str = None) -> bool:
+        K_FIELDS = ["k_min", "k_max", "k_mean", "k_med"]
+
+        for candidate in self.candidates:
+            if not candidate.drift:
+                self.drift(candidate.id)
+
+            if not all([getattr(candidate, field) for field in K_FIELDS]):
+                if address_name:
+                    self.calculate_k(candidate.id, address_name)
+                elif census_name:
+                    self.estimate_k(candidate.id, census_name)
+        return True
+
+    def rank(self, metric: str, min_k: int = None, desc: bool = False) -> list:
+        if metric not in CANDIDATE_STATS_FIELDS:
+            raise ValueError(
+                f"Invalid metric name. Valid choices include: {[field for field in CANDIDATE_STATS_FIELDS]}"
             )
 
-        return candidate_rk
+        stmt = select(Candidate).where(Candidate.sensitive == self.sensitive)
+        stmt = stmt.where(Candidate.k_min >= min_k) if min_k is not None else stmt
+        metric_object = getattr(Candidate, metric).desc() if desc else getattr(Candidate, metric)
+        stmt = stmt.order_by(metric_object)
 
-    def ripleys_all(self, *args, **kwargs) -> bool:
-        for candidate in self.candidates:
-            kwargs["candidate"] = candidate
-            self.ripleys_k(*args, **kwargs)
-        return
+        ranked_candidates = self.session.execute(stmt).scalars().all()
 
-    def estimate_k(self, candidate: Candidate = None) -> GeoDataFrame:
-        candidate = self.get() if candidate is None else candidate.get()
-
-        candidate_k = analysis.estimate_k(
-            sensitive_gdf=self.sensitive.sdf,
-            candidate_gdf=candidate.mdf,
-            population_gdf=self.population,
-            pop_col=self.pop_col,
-        )
-
-        return candidate_k
-
-    def summarize_k(self, candidate: Candidate = None):
-        candidate = self.get() if candidate is None else candidate.get()
-
-        candidate_k = self.estimate_k(candidate)
-
-        k_summary = analysis.summarize_k(candidate_k)
-
-        candidate.k_min = k_summary.k_min
-        candidate.k_max = k_summary.k_max
-        candidate.k_med = k_summary.k_med
-        candidate.k_mean = k_summary.k_mean
-
-        return k_summary
-
-    def summarize_k_all(self):
-        for candidate in self.candidates:
-            self.summarize_k(candidate)
-        return
-
-    def drift(self, candidate: Candidate = None):
-        candidate = self.get() if candidate is None else candidate.get()
-        candidate.drift = analysis.drift(candidate.mdf, self.sensitive.sdf)
-        return candidate.drift
-
-    def rank(self, metric, min_k=None, desc=False):
-        candidates = [
-            candidate
-            for candidate in self.candidates
-            if hasattr(candidate, metric) and getattr(candidate, metric) is not None
-        ]
-
-        candidates_sorted = sorted(candidates, key=lambda x: getattr(x, metric), reverse=desc)
-
-        if min_k:
-            candidates_sorted = [
-                candidate
-                for candidate in candidates_sorted
-                if candidate.k_min and candidate.k_min >= min_k
-            ]
-
-        df = pd.DataFrame()
-        df["CID"] = [candidate.cid for candidate in candidates_sorted]
-        df[metric] = [getattr(candidate, metric) for candidate in candidates_sorted]
-
-        if min_k is not None:
-            k_col = [candidate.k_min for candidate in candidates_sorted]
-            df["min_k"] = k_col
-
+        df = DataFrame().from_records([candidate.as_dict for candidate in ranked_candidates])
+        metric_col = df.pop(metric)
+        df.insert(1, metric, metric_col)
         return df
 
-    @staticmethod
-    def _zip_longest_autofill(a: any, b: any) -> list:
-        fill = max(b) if len(b) < len(a) else max(a)
-        return list(zip_longest(a, b, fillvalue=fill))
+    def nominate(self, candidate_id: str) -> None:
+        candidate = self.get_candidate(candidate_id)
+
+        self.sensitive.nominee = candidate.id
+        self.session.commit()
