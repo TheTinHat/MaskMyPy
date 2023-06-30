@@ -347,7 +347,7 @@ def test_calculate_k(points, address):
     atlas.add_sensitive(points)
     pop = atlas.add_address(address, "address_points")
     candidate = atlas.add_candidate(donut.run(), donut.params)
-    atlas.calculate_k(candidate.id, address_name=pop.name)
+    atlas.calculate_k(candidate.id, address=pop.name)
     assert atlas.candidates[0].k_max is not None
     assert atlas.candidates[0].k_max > 1
     assert atlas.candidates[0].k_max > atlas.candidates[0].k_min
@@ -379,7 +379,7 @@ def test_analyze_all(points, address):
     assert atlas.candidates[1].k_max is None
     assert atlas.candidates[0].drift is None
 
-    atlas.analyze_all(address_name="Addresses")
+    atlas.analyze_all(address="Addresses")
     assert isinstance(atlas.candidates[0].k_max, int)
     assert isinstance(atlas.candidates[1].k_max, int)
     assert isinstance(atlas.candidates[0].drift, float)
@@ -391,7 +391,7 @@ def test_rank(points, address):
     atlas.add_address(address, "Addresses")
     atlas.donut(low=5, high=50)
     atlas.donut(low=500, high=5000)
-    atlas.analyze_all(address_name="Addresses")
+    atlas.analyze_all(address="Addresses")
 
     ranked = atlas.rank("drift")
     assert ranked.iloc[0].drift < ranked.iloc[1].drift

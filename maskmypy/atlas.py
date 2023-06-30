@@ -356,10 +356,14 @@ class Atlas:
     def voronoi(self, **kwargs) -> Candidate:
         return self._mask(Voronoi, **kwargs)
 
-    def location_swap(self, low: float, high: float, address: str, **kwargs) -> Candidate:
+    def location_swap(
+        self, low: float, high: float, address: Address | str, **kwargs
+    ) -> Candidate:
         return self._mask(LocationSwap, low=low, high=high, address=address, **kwargs)
 
-    def location_swap_i(self, distance_list: list, address: str, **kwargs) -> list[Candidate]:
+    def location_swap_i(
+        self, distance_list: list[list[float, float]], address: Address | str, **kwargs
+    ) -> list[Candidate]:
         results = []
         for distance_pair in distance_list:
             low = distance_pair[0]
@@ -369,17 +373,20 @@ class Atlas:
             results.append(self.location_swap(low=low, high=high, address=address, **kwargs))
         return results
 
-    def drift(self, candidate_id: Candidate | str) -> Candidate:
-        candidate = self.get_candidate(candidate_id)
+    def drift(self, candidate: Candidate | str) -> Candidate:
+        if isinstance(candidate, str):
+            candidate = self.get_candidate(candidate)
         candidate.drift = analysis.drift(self.sdf, self.mdf(candidate))
         self._session.commit()
         return candidate
 
     def estimate_k(
-        self, candidate_id: str, census_name: str, return_gdf: bool = False
+        self, candidate: Candidate | str, census: Census | str, return_gdf: bool = False
     ) -> Candidate | GeoDataFrame:
-        candidate = self.get_candidate(candidate_id)
-        census = self.get_census(census_name)
+        if isinstance(candidate, str):
+            candidate = self.get_candidate(candidate)
+        if isinstance(census, str):
+            census = self.get_census(census)
 
         kdf = analysis.estimate_k(
             self.sdf,
@@ -398,10 +405,12 @@ class Atlas:
         return candidate
 
     def calculate_k(
-        self, candidate_id: str, address_name: str, return_gdf: bool = False
+        self, candidate: Candidate | str, address: Address | str, return_gdf: bool = False
     ) -> Candidate | GeoDataFrame:
-        candidate = self.get_candidate(candidate_id)
-        address = self.get_address(address_name)
+        if isinstance(candidate, str):
+            candidate = self.get_candidate(candidate)
+        if isinstance(address, str):
+            address = self.get_address(address)
 
         kdf = analysis.calculate_k(
             self.sdf,
@@ -421,7 +430,7 @@ class Atlas:
     def ripley(self):
         pass
 
-    def analyze_all(self, address_name: str = None, census_name: str = None) -> bool:
+    def analyze_all(self, address: Address | str = None, census: Census | str = None) -> bool:
         K_FIELDS = ["k_min", "k_max", "k_mean", "k_med"]
 
         for candidate in self.candidates:
@@ -429,10 +438,10 @@ class Atlas:
                 self.drift(candidate.id)
 
             if not all([getattr(candidate, field) for field in K_FIELDS]):
-                if address_name:
-                    self.calculate_k(candidate.id, address_name)
-                elif census_name:
-                    self.estimate_k(candidate.id, census_name)
+                if address:
+                    self.calculate_k(candidate, address)
+                elif census:
+                    self.estimate_k(candidate, census)
         return True
 
     def rank(self, metric: str, min_k: int = None, desc: bool = False) -> DataFrame:
@@ -453,8 +462,9 @@ class Atlas:
         df.insert(1, metric, metric_col)
         return df
 
-    def nominate(self, candidate_id: str) -> None:
-        candidate = self.get_candidate(candidate_id)
+    def nominate(self, candidate: Candidate | str) -> None:
+        if isinstance(candidate, Candidate):
+            candidate = candidate.id
 
-        self.sensitive.nominee = candidate.id
+        self.sensitive.nominee = candidate
         self._session.commit()
