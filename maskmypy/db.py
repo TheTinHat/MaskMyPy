@@ -2,7 +2,6 @@ from typing import List, Optional
 
 from sqlalchemy import Column, ForeignKey, PickleType, Table
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-from pandas import Series
 
 
 class Base(DeclarativeBase):
