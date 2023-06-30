@@ -15,7 +15,7 @@ class Voronoi(AbstractMask):
 
     def __post_init__(self) -> None:
         # Validate and initialize input parameters
-        tools.validate_geom_type(self.gdf, "Point")
+        tools._validate_geom_type(self.gdf, "Point")
         self.mdf = self.gdf.copy()
 
     def _generate_voronoi_polygons(self) -> GeoSeries:

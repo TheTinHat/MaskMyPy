@@ -49,15 +49,15 @@ class Atlas:
         del self.input
 
         if self.container is not None:
-            tools.validate_crs(self.crs, self.container.crs)
-            tools.validate_geom_type(self.container, "Polygon", "MultiPolygon")
+            tools._validate_crs(self.crs, self.container.crs)
+            tools._validate_geom_type(self.container, "Polygon", "MultiPolygon")
             self._container_id = "_".join([self.sid, "container"])
         else:
             self._container_id = "NULL"
 
         if self.population is not None:
             assert self.population.crs == self.crs
-            tools.validate_geom_type(self.population, "Polygon", "MultiPolygon", "Point")
+            tools._validate_geom_type(self.population, "Polygon", "MultiPolygon", "Point")
             self._population_id = "_".join([self.sid, "population"])
         else:
             self._population_id = "NULL"

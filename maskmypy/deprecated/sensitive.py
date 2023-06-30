@@ -23,9 +23,9 @@ class Sensitive:
     def __post_init__(self) -> None:
         self.sdf = self.sdf.copy(deep=True)
         if not self.sid:
-            self.sid = tools.checksum(self.sdf)
+            self.sid = tools._checksum(self.sdf)
         elif self.sid:
-            assert self.sid == tools.checksum(self.sdf)
+            assert self.sid == tools._checksum(self.sdf)
 
         self.nnd_min, self.nnd_max, self.nnd_mean = analysis.nnd(self.sdf)
 

@@ -22,14 +22,14 @@ class LocationSwap(AbstractMask):
         self._rng = random.default_rng(seed=self.seed)
 
         # Validate and initialize input parameters
-        tools.validate_geom_type(self.gdf, "Point")
+        tools._validate_geom_type(self.gdf, "Point")
         self.mdf = self.gdf.copy(deep=True)
 
         if self.low >= self.high:
             raise ValueError("Minimum displacement distance is larger than or equal to maximum.")
 
-        tools.validate_geom_type(self.address, "Point")
-        tools.validate_crs(self.gdf.crs, self.address.crs)
+        tools._validate_geom_type(self.address, "Point")
+        tools._validate_crs(self.gdf.crs, self.address.crs)
 
     def _mask_point(self, point: Point) -> Point:
         min_buffer = point.buffer(self.low)

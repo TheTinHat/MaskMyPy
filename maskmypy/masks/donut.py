@@ -26,15 +26,15 @@ class Donut(AbstractMask):
         self._rng = random.default_rng(seed=self.seed)
 
         # Validate and initialize input parameters
-        tools.validate_geom_type(self.gdf, "Point")
+        tools._validate_geom_type(self.gdf, "Point")
         self.mdf = self.gdf.copy()
 
         if self.low >= self.high:
             raise ValueError("Minimum displacement distance is larger than or equal to maximum.")
 
         if self.container is not None:
-            tools.validate_geom_type(self.container, "Polygon", "MultiPolygon")
-            tools.validate_crs(self.gdf.crs, self.container.crs)
+            tools._validate_geom_type(self.container, "Polygon", "MultiPolygon")
+            tools._validate_crs(self.gdf.crs, self.container.crs)
 
     def _generate_random_offset(self) -> tuple[float, float]:
         if self.distribution == "uniform":

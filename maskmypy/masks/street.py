@@ -30,7 +30,7 @@ class Street(AbstractMask):
         self._rng = random.default_rng(seed=self.seed)
 
         # Validate and initialize input parameters
-        tools.validate_geom_type(self.gdf, "Point")
+        tools._validate_geom_type(self.gdf, "Point")
         self.crs = self.gdf.crs
         self.mdf = self.gdf.copy().to_crs(epsg=4326)
 
@@ -40,7 +40,7 @@ class Street(AbstractMask):
         self._get_osm()
 
     def _get_osm(self) -> None:
-        bbox = tools.pad(self.mdf.total_bounds, self.padding)
+        bbox = tools._pad(self.mdf.total_bounds, self.padding)
         self.graph = add_edge_lengths(
             remove_isolated_nodes(
                 graph_from_bbox(

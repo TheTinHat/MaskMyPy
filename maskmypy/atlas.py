@@ -107,7 +107,7 @@ class Atlas:
     def add_sensitive(self, gdf: GeoDataFrame) -> Sensitive:
         if self._session.get(Sensitive, self.name) is not None:
             raise ValueError("Sensitive layer already exists.")
-        id = tools.checksum(gdf)
+        id = tools._checksum(gdf)
         nnd = analysis.nnd(gdf)
 
         self.sensitive = Sensitive(
@@ -134,7 +134,7 @@ class Atlas:
         if self._session.get(Sensitive, self.name) is None:
             raise ValueError("Add sensitive layer before adding candidates.")
 
-        id = tools.checksum(gdf)
+        id = tools._checksum(gdf)
         nnd = analysis.nnd(gdf)
 
         if self._session.get(Candidate, id) is not None:
@@ -161,7 +161,7 @@ class Atlas:
         if self._session.get(Sensitive, self.name) is None:
             raise ValueError("Add sensitive layer before adding containers.")
 
-        id = tools.checksum(gdf)
+        id = tools._checksum(gdf)
         container = self._session.get(Container, name)
 
         if container and container.id != id:
@@ -187,7 +187,7 @@ class Atlas:
         if self._session.get(Sensitive, self.name) is None:
             raise ValueError("Add sensitive layer before adding census layers.")
 
-        id = tools.checksum(gdf)
+        id = tools._checksum(gdf)
         census = self._session.get(Census, name)
 
         if census and census.id != id:
@@ -211,7 +211,7 @@ class Atlas:
         if self._session.get(Sensitive, self.name) is None:
             raise ValueError("Add sensitive layer before adding address layers.")
 
-        id = tools.checksum(gdf)
+        id = tools._checksum(gdf)
         address = self._session.get(Address, name)
 
         if address and address.id != id:
