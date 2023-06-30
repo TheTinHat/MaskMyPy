@@ -1,6 +1,5 @@
 from hashlib import sha256
 
-import matplotlib.pyplot as plt
 from geopandas import GeoDataFrame
 from osmnx import graph_to_gdfs
 from osmnx.distance import nearest_nodes
@@ -9,7 +8,6 @@ from osmnx.projection import project_graph
 from osmnx.utils_graph import remove_isolated_nodes
 from pandas.util import hash_pandas_object
 from pyproj.crs.crs import CRS
-from shapely.geometry import LineString
 
 
 def crop(gdf: GeoDataFrame, bbox: list[float], padding: float) -> GeoDataFrame:

@@ -1,3 +1,6 @@
+from collections import namedtuple
+from math import sqrt
+
 import matplotlib.pyplot as plt
 from geopandas import GeoDataFrame, sjoin
 from matplotlib.axis import Axis
@@ -5,8 +8,8 @@ from matplotlib.figure import Figure
 from numpy import array, square
 from pointpats import PointPattern, k_test
 from pointpats.distance_statistics import KtestResult
-from math import sqrt
-from collections import namedtuple
+from shapely.geometry import LineString
+
 from .db import Candidate
 
 
