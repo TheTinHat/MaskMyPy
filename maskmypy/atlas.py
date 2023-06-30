@@ -293,7 +293,7 @@ class Atlas:
     def drop_address(self, name: str, delete: bool = False):
         pass
 
-    def mask(self, mask, **kwargs) -> Candidate:
+    def _mask(self, mask, **kwargs) -> Candidate:
         mask_args = {"gdf": self.sdf}
         candidate_args = {}
         arg_spec = getfullargspec(mask)[0]
@@ -328,7 +328,7 @@ class Atlas:
         return self.add_candidate(mdf, params, **candidate_args)
 
     def donut(self, low: float, high: float, **kwargs: dict) -> Candidate:
-        return self.mask(Donut, low=low, high=high, **kwargs)
+        return self._mask(Donut, low=low, high=high, **kwargs)
 
     def donut_i(self, distance_list: list, **kwargs) -> list[Candidate]:
         results = []
@@ -341,13 +341,13 @@ class Atlas:
         return results
 
     def street(self, low: int, high: int, **kwargs) -> Candidate:
-        return self.mask(Street, low=low, high=high, **kwargs)
+        return self._mask(Street, low=low, high=high, **kwargs)
 
     def voronoi(self, **kwargs) -> Candidate:
-        return self.mask(Voronoi, **kwargs)
+        return self._mask(Voronoi, **kwargs)
 
     def location_swap(self, low: float, high: float, address: str, **kwargs) -> Candidate:
-        return self.mask(LocationSwap, low=low, high=high, address=address, **kwargs)
+        return self._mask(LocationSwap, low=low, high=high, address=address, **kwargs)
 
     def location_swap_i(self, distance_list: list, address: str, **kwargs) -> list[Candidate]:
         results = []

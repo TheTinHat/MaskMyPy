@@ -125,7 +125,7 @@ def test_add_layers_before_sensitive(points, address, container):
 def test_generic_mask(points):
     atlas = Atlas("test", in_memory=True)
     atlas.add_sensitive(points)
-    atlas.mask(Donut, low=50, high=500)
+    atlas._mask(Donut, low=50, high=500)
     assert len(atlas.candidates) == 1
 
 
@@ -133,7 +133,7 @@ def test_generic_mask_with_container_name(points, container, address):
     atlas = Atlas("test", in_memory=True)
     atlas.add_sensitive(points)
     atlas.add_container(container, "BoundaryPolygons")
-    atlas.mask(Donut, low=50, high=500, distribution="areal", container="BoundaryPolygons")
+    atlas._mask(Donut, low=50, high=500, distribution="areal", container="BoundaryPolygons")
     assert atlas.candidates[0].params["distribution"] == "areal"
     assert atlas.candidates[0].container.name == "BoundaryPolygons"
 
@@ -142,7 +142,7 @@ def test_generic_mask_with_container_object(points, container, address):
     atlas = Atlas("test", in_memory=True)
     atlas.add_sensitive(points)
     cont_obj = atlas.add_container(container, "BoundaryPolygons")
-    atlas.mask(Donut, low=50, high=500, distribution="areal", container=cont_obj)
+    atlas._mask(Donut, low=50, high=500, distribution="areal", container=cont_obj)
     assert atlas.candidates[0].params["distribution"] == "areal"
     assert atlas.candidates[0].container.name == "BoundaryPolygons"
 
