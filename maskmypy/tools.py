@@ -12,7 +12,7 @@ from pyproj.crs.crs import CRS
 from shapely.geometry import LineString
 
 
-def crop(gdf: GeoDataFrame, bbox: list, padding: float) -> GeoDataFrame:
+def crop(gdf: GeoDataFrame, bbox: list[float], padding: float) -> GeoDataFrame:
     bbox = pad(bbox, padding)
     return gdf.cx[bbox[0] : bbox[2], bbox[1] : bbox[3]]
 
@@ -21,7 +21,7 @@ def checksum(gdf: GeoDataFrame) -> str:
     return sha256(bytearray(hash_pandas_object(gdf).values)).hexdigest()[0:12]
 
 
-def pad(bbox: list, padding: float) -> list:
+def pad(bbox: list[float], padding: float) -> list:
     pad_x = (bbox[2] - bbox[0]) * padding
     pad_y = (bbox[3] - bbox[1]) * padding
     bbox[0] = bbox[0] - pad_x
@@ -68,38 +68,3 @@ def snap_to_streets(gdf: GeoDataFrame) -> GeoDataFrame:
     )
 
     return snapped_gdf
-
-
-def map_displacement(
-    sensitive_gdf: GeoDataFrame,
-    candidate_gdf: GeoDataFrame,
-    filename: str = None,
-    address: GeoDataFrame = None,
-) -> plt:
-    import contextily as ctx
-
-    lines = sensitive_gdf.copy()
-    lines = lines.join(candidate_gdf, how="left", rsuffix="_masked")
-    lines.geometry = lines.apply(
-        lambda x: LineString([x["geometry"], x["geometry_masked"]]), axis=1
-    )
-    ax = lines.plot(color="black", zorder=2, linewidth=1, figsize=[10, 10])
-    ax = sensitive_gdf.plot(ax=ax, color="red", zorder=3, markersize=12)
-    ax = candidate_gdf.plot(ax=ax, color="blue", zorder=4, markersize=12)
-    if isinstance(address, GeoDataFrame):
-        ax = address.plot(ax=ax, color="grey", zorder=1, markersize=6)
-
-    ctx.add_basemap(ax, crs=sensitive_gdf.crs, source=ctx.providers.OpenStreetMap.Mapnik)
-    plt.title("Displacement Distances", fontsize=16)
-    plt.figtext(
-        0.5,
-        0.025,
-        "Sensitive points (red), Masked points (blue). \n KEEP CONFIDENTIAL",
-        wrap=True,
-        horizontalalignment="center",
-        fontsize=12,
-    )
-    if filename:
-        plt.savefig(filename)
-
-    return plt
