@@ -36,7 +36,7 @@ def test_in_memory_immutability(points):
     crs_1 = points.crs
     atlas = Atlas("test", in_memory=True)
     atlas._save_gdf(points, "123")
-    crs_2 = atlas.read_gdf("123").crs
+    crs_2 = atlas.get_gdf("123").crs
     points = points.to_crs(4326)
     crs_3 = points.crs
     assert crs_1 == crs_2
@@ -80,7 +80,7 @@ def test_add_candidate(points, tmpdir):
     params = donut.params
     atlas.add_candidate(mdf, params)
     assert len(atlas.candidates) == 1
-    assert len(atlas.read_gdf(atlas.candidates[0].id)) == len(points)
+    assert len(atlas.get_gdf(atlas.candidates[0].id)) == len(points)
 
 
 def test_add_candidate_with_container_address(points, container, address):
@@ -216,7 +216,7 @@ def test_location_swap_with_address_name(points, address):
     atlas.add_sensitive(points)
     atlas.add_address(address, "AddressPoints")
     atlas.location_swap(5, 10, address="AddressPoints")
-    assert isinstance(atlas.read_gdf(atlas.candidates[0].id), GeoDataFrame)
+    assert isinstance(atlas.get_gdf(atlas.candidates[0].id), GeoDataFrame)
 
 
 def test_gpkg_layer_deduplication(points, tmpdir):
@@ -235,7 +235,7 @@ def test_add_container(points, container, tmpdir):
     atlas = Atlas("test")
     atlas.add_sensitive(points)
     atlas.add_container(container, "BoundaryPolygons")
-    assert isinstance(atlas.read_gdf(atlas.containers[0].id), GeoDataFrame)
+    assert isinstance(atlas.get_gdf(atlas.containers[0].id), GeoDataFrame)
     assert atlas.sensitive.containers[0].name == "BoundaryPolygons"
 
 
@@ -294,7 +294,7 @@ def test_add_address(points, address):
     atlas.add_sensitive(points)
     atlas.add_address(address, "AddressPoints")
     atlas.add_address(address, "OtherAddressPoints")
-    assert isinstance(atlas.read_gdf(atlas.addresses[0].id), GeoDataFrame)
+    assert isinstance(atlas.get_gdf(atlas.addresses[0].id), GeoDataFrame)
     assert atlas.sensitive.addresses[0].name == "AddressPoints"
 
 
@@ -309,10 +309,10 @@ def test_add_layers_on_disk(points, address, container, tmpdir):
     atlas.add_container(container, "BoundaryPolygons")
     atlas.add_address(address, "AddressPoints")
 
-    assert isinstance(atlas.read_gdf(atlas.candidates[0].id), GeoDataFrame)
+    assert isinstance(atlas.get_gdf(atlas.candidates[0].id), GeoDataFrame)
     assert_frame_equal(atlas.sdf, points)
-    assert_frame_equal(atlas.read_gdf(atlas.containers[0].id), container)
-    assert_frame_equal(atlas.read_gdf(atlas.addresses[0].id), address)
+    assert_frame_equal(atlas.get_gdf(atlas.containers[0].id), container)
+    assert_frame_equal(atlas.get_gdf(atlas.addresses[0].id), address)
 
 
 def test_add_layers_in_memory(points, address, container, tmpdir):
@@ -326,10 +326,10 @@ def test_add_layers_in_memory(points, address, container, tmpdir):
     atlas.add_container(container, "BoundaryPolygons")
     atlas.add_address(address, "AddressPoints")
 
-    assert isinstance(atlas.read_gdf(atlas.candidates[0].id), GeoDataFrame)
+    assert isinstance(atlas.get_gdf(atlas.candidates[0].id), GeoDataFrame)
     assert_frame_equal(atlas.sdf, points)
-    assert_frame_equal(atlas.read_gdf(atlas.containers[0].id), container)
-    assert_frame_equal(atlas.read_gdf(atlas.addresses[0].id), address)
+    assert_frame_equal(atlas.get_gdf(atlas.containers[0].id), container)
+    assert_frame_equal(atlas.get_gdf(atlas.addresses[0].id), address)
 
 
 def test_drift_calculation(points):

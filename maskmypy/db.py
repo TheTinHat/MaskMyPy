@@ -123,6 +123,9 @@ class Candidate(Base):
             data[key] = value
         return data
 
+    def gdf(self, atlas):
+        return atlas.get_gdf(self.id)
+
 
 class Container(Base):
     __tablename__ = "container_table"
@@ -135,6 +138,9 @@ class Container(Base):
 
     def __repr__(self):
         return f"Container({self.name}, {self.id})"
+
+    def gdf(self, atlas):
+        return atlas.get_gdf(self.id)
 
 
 class Census(Base):
@@ -150,6 +156,9 @@ class Census(Base):
     def __repr__(self):
         return f"Census({self.name}, {self.id})"
 
+    def gdf(self, atlas):
+        return atlas.get_gdf(self.id)
+
 
 class Address(Base):
     __tablename__ = "address_table"
@@ -162,3 +171,6 @@ class Address(Base):
 
     def __repr__(self):
         return f"Address({self.name}, {self.id})"
+
+    def gdf(self, atlas):
+        return atlas.get_gdf(self.id)

@@ -1,7 +1,7 @@
 import geopandas as gpd
 import pytest
 
-from maskmypy import analysis
+from maskmypy import analysis, Atlas
 
 
 @pytest.fixture
@@ -17,7 +17,9 @@ def test_displacement():
     pass
 
 
-def test_estimate_k_address(atlas):
+def test_estimate_k_address(points, address):
+    atlas = Atlas("test", in_memory=True)
+    atlas.add_sensitive(points)
     atlas.donut(50, 500)
     k = analysis.estimate_k(atlas.sensitive, atlas.get().mdf, atlas.population)
     analysis.summarize_k(k)
@@ -38,10 +40,12 @@ def test_mean_center_drift(points):
     assert drift == 50
 
 
-def test_ripleys_k(atlas):
+def test_ripleys_k(points):
+    atlas = Atlas("test", in_memory=True)
+    atlas.add_sensitive(points)
     atlas.donut(10, 100)
     distance_steps = 10
-    max_dist = analysis.ripleys_rot(atlas.sensitive)
+    max_dist = analysis._ripleys_rot(atlas.sensitive)
     min_dist = max_dist / distance_steps
     kresult_sensitive = analysis.ripleys_k(
         atlas.sensitive, max_dist=max_dist, min_dist=min_dist, steps=distance_steps

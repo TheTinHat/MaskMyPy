@@ -256,7 +256,7 @@ class Atlas:
         subtitle: str = None,
     ) -> KtestResult:
         candidate = self.get() if not candidate else candidate.get()
-        max_dist = analysis.ripleys_rot(self.sensitive.sdf) if not max_dist else max_dist
+        max_dist = analysis._ripleys_rot(self.sensitive.sdf) if not max_dist else max_dist
 
         sensitive_rk = self.sensitive.ripleys_k(steps=steps, max_dist=max_dist)
 

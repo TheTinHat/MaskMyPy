@@ -9,7 +9,15 @@ from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session
 
 from . import analysis, tools
-from .db import Address, Base, Candidate, Census, Container, Sensitive, CANDIDATE_STATS_FIELDS
+from .db import (
+    Address,
+    Base,
+    Candidate,
+    Census,
+    Container,
+    Sensitive,
+    CANDIDATE_STATS_FIELDS,
+)
 from .masks import Donut, LocationSwap, Street, Voronoi
 
 
@@ -38,14 +46,14 @@ class Atlas:
 
     @cached_property
     def sdf(self) -> GeoDataFrame:
-        return self.read_gdf(self.sensitive.id)
+        return self.get_gdf(self.sensitive.id)
 
     def mdf(self, candidate_or_id: Candidate | str) -> GeoDataFrame:
         c = candidate_or_id
         if isinstance(c, str):
-            return self.read_gdf(c)
+            return self.get_gdf(c)
         elif isinstance(c, Candidate):
-            return self.read_gdf(c.id)
+            return self.get_gdf(c.id)
 
     @property
     def candidates(self) -> list[Candidate]:
@@ -86,7 +94,7 @@ class Atlas:
         atlas.sensitive = atlas._session.get(Sensitive, atlas.name)
         return atlas
 
-    def read_gdf(self, id: str, project: bool = False) -> GeoDataFrame:
+    def get_gdf(self, id: str, project: bool = False) -> GeoDataFrame:
         if self.in_memory:
             gdf = self._layers.get(id).copy()
         else:
@@ -113,9 +121,9 @@ class Atlas:
         self.sensitive = Sensitive(
             name=self.name,
             id=id,
-            nnd_min=nnd.min,
-            nnd_max=nnd.max,
-            nnd_mean=nnd.mean,
+            nnd_min=nnd.dist_min,
+            nnd_max=nnd.dist_max,
+            nnd_mean=nnd.dist_mean,
             crs=gdf.crs.srs,
         )
         self._session.add(self.sensitive)
@@ -147,9 +155,9 @@ class Atlas:
             container=container,
             census=census,
             address=address,
-            nnd_min=nnd.min,
-            nnd_max=nnd.max,
-            nnd_mean=nnd.mean,
+            nnd_min=nnd.dist_min,
+            nnd_max=nnd.dist_max,
+            nnd_mean=nnd.dist_mean,
         )
 
         self._session.add(candidate)
@@ -303,7 +311,7 @@ class Atlas:
             if isinstance(container, str):
                 container = self.get_container(container)
             if isinstance(container, Container):
-                mask_args["container"] = self.read_gdf(container.id, project=True)
+                mask_args["container"] = self.get_gdf(container.id, project=True)
                 candidate_args["container"] = container
 
         if "census" in arg_spec:
@@ -311,7 +319,7 @@ class Atlas:
             if isinstance(census, str):
                 census = self.get_census(census)
             if isinstance(census, Census):
-                mask_args["census"] = self.read_gdf(census.id, project=True)
+                mask_args["census"] = self.get_gdf(census.id, project=True)
                 candidate_args["census"] = census
 
         if "address" in arg_spec:
@@ -319,7 +327,7 @@ class Atlas:
             if isinstance(address, str):
                 address = self.get_address(address)
             if isinstance(address, Address):
-                mask_args["address"] = self.read_gdf(address.id, project=True)
+                mask_args["address"] = self.get_gdf(address.id, project=True)
                 candidate_args["address"] = address
 
         m = mask(**mask_args, **kwargs)
@@ -391,7 +399,7 @@ class Atlas:
         kdf = analysis.estimate_k(
             self.sdf,
             self.mdf(candidate),
-            census_gdf=self.read_gdf(census.id, project=True),
+            census_gdf=self.get_gdf(census.id, project=True),
             pop_col=census.pop_col,
         )
         k = analysis.summarize_k(kdf)
@@ -415,7 +423,7 @@ class Atlas:
         kdf = analysis.calculate_k(
             self.sdf,
             self.mdf(candidate),
-            address=self.read_gdf(address.id, project=True),
+            address_gdf=self.get_gdf(address.id, project=True),
         )
         k = analysis.summarize_k(kdf)
         candidate.k_min = k.k_min

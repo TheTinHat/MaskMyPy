@@ -66,13 +66,13 @@ class Sensitive:
         return datetime.fromtimestamp(self.timestamp // 1000000000).strftime("%Y-%m-%d %H:%M:%S")
 
     def ripleys_k(self, steps=10, max_dist=None):
-        max_dist = analysis.ripleys_rot(self.sdf) if not max_dist else max_dist
+        max_dist = analysis._ripleys_rot(self.sdf) if not max_dist else max_dist
         try:
             return self.ripley_results[steps][max_dist]
         except Exception:
             result = analysis.ripleys_k(
                 self.sdf,
-                max_dist=analysis.ripleys_rot(self.sdf),
+                max_dist=analysis._ripleys_rot(self.sdf),
                 min_dist=(max_dist / steps),
                 steps=steps,
             )

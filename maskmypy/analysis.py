@@ -16,6 +16,7 @@ from .db import Candidate
 def displacement(
     sensitive_gdf: GeoDataFrame, candidate_gdf: GeoDataFrame, col: str = "_distance"
 ) -> GeoDataFrame:
+    candidate_gdf = candidate_gdf.copy()
     candidate_gdf[col] = candidate_gdf.geometry.distance(sensitive_gdf.geometry)
     return candidate_gdf
 
@@ -26,6 +27,7 @@ def estimate_k(
     population_gdf: GeoDataFrame,
     pop_col: str = "pop",
 ) -> GeoDataFrame:
+    candidate_gdf = candidate_gdf.copy()
     pop_col_adjusted = "_".join([pop_col, "adjusted"])
     candidate_gdf["k_anonymity"] = (
         displacement(sensitive_gdf, candidate_gdf)
@@ -39,13 +41,14 @@ def estimate_k(
 
 
 def calculate_k(
-    sensitive_gdf: GeoDataFrame, candidate_gdf: GeoDataFrame, address: GeoDataFrame
+    sensitive_gdf: GeoDataFrame, candidate_gdf: GeoDataFrame, address_gdf: GeoDataFrame
 ) -> GeoDataFrame:
+    candidate_gdf = candidate_gdf.copy()
     candidate_gdf_tmp = displacement(sensitive_gdf, candidate_gdf).assign(
         geometry=lambda x: x.buffer(x["_distance"])
     )
     candidate_gdf["k_anonymity"] = (
-        sjoin(address, candidate_gdf_tmp, how="left", rsuffix="candidate")
+        sjoin(address_gdf, candidate_gdf_tmp, how="left", rsuffix="candidate")
         .groupby("index_candidate")
         .size()
     )
@@ -78,7 +81,7 @@ def k_satisfaction(gdf: GeoDataFrame, min_k: int, col: str = "k_anonymity") -> f
 DD_Summary = namedtuple("DD_Summary", ["dist_min", "dist_max", "dist_med", "dist_mean"])
 
 
-def summarize_displacement(gdf: GeoDataFrame, col="_distance"):
+def summarize_displacement(gdf: GeoDataFrame, col="_distance") -> DD_Summary:
     dist_min = int(gdf.loc[:, col].min())
     dist_max = int(gdf.loc[:, col].max())
     dist_med = float(gdf.loc[:, col].median())
@@ -94,7 +97,6 @@ def summarize_k(gdf: GeoDataFrame, col="k_anonymity") -> K_Summary:
     k_max = int(gdf.loc[:, col].max())
     k_med = float(gdf.loc[:, col].median())
     k_mean = float(gdf.loc[:, col].mean())
-
     return K_Summary(k_min=k_min, k_max=k_max, k_med=k_med, k_mean=k_mean)
 
 
@@ -102,13 +104,13 @@ def _gdf_to_pointpattern(gdf: GeoDataFrame) -> PointPattern:
     return PointPattern(list(zip(gdf.geometry.x, gdf.geometry.y)))
 
 
-NND_Summary = namedtuple("NND_Summary", ["min", "max", "mean"])
+NND_Summary = namedtuple("NND_Summary", ["dist_min", "dist_max", "dist_mean"])
 
 
 def nnd(gdf: GeoDataFrame) -> NND_Summary:
     "Returns nearest neighbor distances in a tuple of (min, max, mean)"
     pp = _gdf_to_pointpattern(gdf)
-    return NND_Summary(min=pp.min_nnd, max=pp.max_nnd, mean=pp.mean_nnd)
+    return NND_Summary(dist_min=pp.min_nnd, dist_max=pp.max_nnd, dist_mean=pp.mean_nnd)
 
 
 def drift(gdf_a: GeoDataFrame, gdf_b: GeoDataFrame) -> float:
@@ -117,7 +119,7 @@ def drift(gdf_a: GeoDataFrame, gdf_b: GeoDataFrame) -> float:
     return float(centroid_a.distance(centroid_b).iloc[0])
 
 
-def ripleys_rot(gdf: GeoDataFrame) -> float:
+def _ripleys_rot(gdf: GeoDataFrame) -> float:
     return _gdf_to_pointpattern(gdf).rot
 
 
@@ -125,7 +127,7 @@ def ripleys_k(
     gdf: GeoDataFrame, max_dist: float = None, min_dist: float = None, steps: int = 10
 ) -> KtestResult:
     if not max_dist:
-        max_dist = ripleys_rot(gdf)
+        max_dist = _ripleys_rot(gdf)
 
     if not min_dist:
         min_dist = max_dist / steps
@@ -205,7 +207,7 @@ def map_displacement(
     sensitive_gdf: GeoDataFrame,
     candidate_gdf: GeoDataFrame,
     filename: str = None,
-    address: GeoDataFrame = None,
+    address_gdf: GeoDataFrame = None,
 ) -> plt:
     import contextily as ctx
 
@@ -217,8 +219,8 @@ def map_displacement(
     ax = lines.plot(color="black", zorder=2, linewidth=1, figsize=[10, 10])
     ax = sensitive_gdf.plot(ax=ax, color="red", zorder=3, markersize=12)
     ax = candidate_gdf.plot(ax=ax, color="blue", zorder=4, markersize=12)
-    if isinstance(address, GeoDataFrame):
-        ax = address.plot(ax=ax, color="grey", zorder=1, markersize=6)
+    if isinstance(address_gdf, GeoDataFrame):
+        ax = address_gdf.plot(ax=ax, color="grey", zorder=1, markersize=6)
 
     ctx.add_basemap(ax, crs=sensitive_gdf.crs, source=ctx.providers.OpenStreetMap.Mapnik)
     plt.title("Displacement Distances", fontsize=16)
