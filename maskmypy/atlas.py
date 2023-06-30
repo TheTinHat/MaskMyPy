@@ -330,7 +330,7 @@ class Atlas:
     def donut(self, low: float, high: float, **kwargs: dict) -> Candidate:
         return self._mask(Donut, low=low, high=high, **kwargs)
 
-    def donut_i(self, distance_list: list, **kwargs) -> list[Candidate]:
+    def donut_i(self, distance_list: list[list[float, float]], **kwargs) -> list[Candidate]:
         results = []
         for distance_pair in distance_list:
             low = distance_pair[0]
@@ -342,6 +342,16 @@ class Atlas:
 
     def street(self, low: int, high: int, **kwargs) -> Candidate:
         return self._mask(Street, low=low, high=high, **kwargs)
+
+    def street_i(self, distance_list: list[list[int, int]], **kwargs) -> list[Candidate]:
+        results = []
+        for distance_pair in distance_list:
+            low = distance_pair[0]
+            high = distance_pair[1]
+            if low > high:
+                raise ValueError("Low distance value exceeds high distance value.")
+            results.append(self.street(low=low, high=high, **kwargs))
+        return results
 
     def voronoi(self, **kwargs) -> Candidate:
         return self._mask(Voronoi, **kwargs)
