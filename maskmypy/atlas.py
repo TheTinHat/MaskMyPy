@@ -3,21 +3,13 @@ from functools import cached_property
 from inspect import getfullargspec
 from pathlib import Path
 
-from pandas import DataFrame
 from geopandas import GeoDataFrame, read_file
+from pandas import DataFrame
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session
 
 from . import analysis, tools
-from .db import (
-    Address,
-    Base,
-    Candidate,
-    Census,
-    Container,
-    Sensitive,
-    CANDIDATE_STATS_FIELDS,
-)
+from .db import CANDIDATE_STATS_FIELDS, Address, Base, Candidate, Census, Container, Sensitive
 from .masks import Donut, LocationSwap, Street, Voronoi
 
 
@@ -94,7 +86,16 @@ class Atlas:
         atlas.sensitive = atlas._session.get(Sensitive, atlas.name)
         return atlas
 
-    def get_gdf(self, id: str, project: bool = False) -> GeoDataFrame:
+    def get_gdf(
+        self,
+        object_or_id: str | Sensitive | Candidate | Address | Container | Census,
+        project: bool = False,
+    ) -> GeoDataFrame:
+        if hasattr(object_or_id, "id"):
+            id = object_or_id.id
+        elif isinstance(object_or_id, str):
+            id = object_or_id
+
         if self.in_memory:
             gdf = self._layers.get(id).copy()
         else:
