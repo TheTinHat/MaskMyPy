@@ -19,7 +19,7 @@ numpy==1.23.1
 osmnx==1.2.1
 packaging==21.3
 pandas==1.4.3
-Pillow==9.3.0
+Pillow==10.0.1
 pluggy==1.0.0
 py==1.11.0
 pyparsing==3.0.9
