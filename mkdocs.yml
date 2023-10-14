@@ -2,10 +2,9 @@ site_name: MaskMyPy Documentation
 site_description: Geographic Masking Python Package
 site_url: https://thetinhat.github.io/MaskMyPy/
 theme:
-    name: 'material'
-    site_url: https://thetinhat.github.io/MaskMyPy/
-    logo: assets/python_logo.png
-
+  name: 'material'
+  site_url: https://thetinhat.github.io/MaskMyPy/
+  logo: assets/python_logo.png
 markdown_extensions:
   - footnotes
   - toc:
@@ -15,7 +14,6 @@ markdown_extensions:
   - pymdownx.inlinehilite
   - pymdownx.snippets
   - pymdownx.superfences
-
 plugins:
   - search
   - roamlinks
@@ -33,6 +31,5 @@ plugins:
           paths: [.]
   - git-revision-date-localized:
       timezone: America/Vancouver
-
 extra_css:
   - assets/style.css

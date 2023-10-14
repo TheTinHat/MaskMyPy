@@ -1,34 +1,21 @@
-# atlas = Atlas(sensitive)
-#
-# atlas.donut()
-# altas.street()
-# atlas.analyze(save_graphs=true)
-#
-# # The 'ranking' is just a list of results. Provide functions to sort this list.
-# atlas.prune(by="k_est", min="5")
-# atlas.sort_by("ddist")
-#
-# atlas[0]
-# test_1 = atlas.to_gdf(0)
-# atlas.to_json(file="./results.json")
-# del atlas
-#
-# atlas = Atlas.from_json(file="./results.json", gdf=sensitive)
-#
-# test_2 = atlas.to_gdf(0)
-#
-# assert test_1 == test_2
 from dataclasses import dataclass, field
 from pathlib import Path
 from time import time_ns
 
 from geopandas import GeoDataFrame
 
+from . import tools
+
 
 @dataclass
 class Atlas2:
     sensitive: GeoDataFrame
     candidates: list = field(default_factory=list)
+    contexts: dict = field(default_factory=dict)
+
+    def add_contexts(self, *args: GeoDataFrame):
+        for arg in args:
+            self.contexts[checksum(arg)] = arg
 
     def __getitem__(self, idx):
         return self.candidates[idx]
@@ -39,32 +26,47 @@ class Atlas2:
     def __len__(self):
         return len(self.candidates)
 
-    def sort(by):
+    def sort(self, by):
         return sorted(self.candidates, key=by)
 
-    def mkgdf(idx, persist=False):
+    def mkgdf(self, idx, persist=False):
         gdf = self.mask(self.sensitive, self.candidates[idx]["kwargs"])
         if persist:
             self.candidates[idx]["gdf"]
 
         return gdf
 
-    def to_shp(idx, filename):
+    def to_shp(self, idx=None, hash=None, filename=None):
+        """
+        Create a shapefile named `filename`.shp for a given candidate based on it's
+        index (`idx`) or hash (`hash`). If no filename is provided, the shapefile
+        is named `hash`.shp.
+        """
+        if not filename:
+            if idx:
+                hash = tools._checksum(self.candidates[idx])
+            elif hash:
+                filename = f"{hash}.shp"
         self.to_gdf(idx).to_file(filename)
 
-    def prune(by, min=None, max=None):
+    def prune(self, by, min=None, max=None):
+        """
+        Prune candidates based on a given attribute (e.g. `k_min`).
+        If the value for that attribute is below `min` or above `max`,
+        drop the candidate.
+        """
         self.candidates = [
             c for c in self.candidates if getattr(c, by) >= min and getattr(c, by) <= max
         ]
 
-    def to_json(file: Path = None):
+    def to_json(self, file: Path = None):
         pass
 
-    def from_json(json, gdf=None):
+    def from_json(self, json, gdf=None):
         pass
 
-    def mask(mask, **kwargs):
-        candidate = {"mask": str(mask), "kwargs": kwargs, "timestamp_ns": time_ns()}
+    def mask(self, mask, **kwargs):
+        candidate = {"mask": mask.__name__, "kwargs": kwargs, "timestamp_ns": time_ns()}
         if "seed" not in candidate["kwargs"]:
             candidate["kwargs"]["seed"] = genseed()
 

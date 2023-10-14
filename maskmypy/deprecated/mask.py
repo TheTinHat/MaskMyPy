@@ -125,7 +125,6 @@ class Mask:
                 self.mask.at[index, "CONTAINED"] = 1
         self.try_count += 1
         if self.try_count > self.max_tries:
-
             for index, row in gdf.iterrows():
                 self.mask.loc[index, "CONTAINED"] = 0
             warn(

@@ -4,8 +4,6 @@ import shutil
 import geopandas as gpd
 import pytest
 
-from maskmypy import Atlas
-
 
 def pytest_addoption(parser):
     parser.addoption("--runslow", action="store_true", default=False, help="run slow tests")
