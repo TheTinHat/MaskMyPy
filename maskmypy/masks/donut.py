@@ -11,6 +11,30 @@ from .. import tools
 from .abstract_mask import AbstractMask
 
 
+def donut(
+    gdf: GeoDataFrame,
+    low: float,
+    high: float,
+    container: GeoDataFrame = None,
+    distribution: str = "uniform",
+    seed: int = None,
+) -> GeoDataFrame:
+    # Initialize random number generator
+
+    return Donut(**locals()).run()
+
+
+def _validate_donut(gdf, low, high, container):
+    tools._validate_geom_type(gdf, "Point")
+
+    if low >= high:
+        raise ValueError("Minimum displacement distance is larger than or equal to maximum.")
+
+    if container is not None:
+        tools._validate_geom_type(container, "Polygon", "MultiPolygon")
+        tools._validate_crs(gdf.crs, container.crs)
+
+
 @dataclass
 class Donut(AbstractMask):
     gdf: GeoDataFrame

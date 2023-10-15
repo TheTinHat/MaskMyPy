@@ -1,21 +1,25 @@
+import json
 from dataclasses import dataclass, field
 from pathlib import Path
 from time import time_ns
 
 from geopandas import GeoDataFrame
+from pandas import DataFrame, Series, concat
 
-from . import tools
+from . import masks, tools
 
 
 @dataclass
 class Atlas2:
     sensitive: GeoDataFrame
     candidates: list = field(default_factory=list)
+    # This should be in the post init
     contexts: dict = field(default_factory=dict)
+    context_layer_keys = ["addresses", "container", "census"]
 
-    def add_contexts(self, *args: GeoDataFrame):
-        for arg in args:
-            self.contexts[checksum(arg)] = arg
+    def add_contexts(self, *gdf: GeoDataFrame):
+        for x in gdf:
+            self.contexts[tools._checksum(x)] = x
 
     def __getitem__(self, idx):
         return self.candidates[idx]
@@ -29,10 +33,33 @@ class Atlas2:
     def sort(self, by):
         return sorted(self.candidates, key=by)
 
-    def mkgdf(self, idx, persist=False):
-        gdf = self.mask(self.sensitive, self.candidates[idx]["kwargs"])
-        if persist:
-            self.candidates[idx]["gdf"]
+    def drop_gdfs(self):
+        """
+        Drop GeoDataFrames from all candidates. Use this
+        to save memory. To regenerate a dropped GeoDataFrame,
+        use 'Atlas.gen_gdf()'.
+        """
+        for candidate in self.candidates:
+            candidate.pop("gdf", None)
+
+    def gen_gdf(self, idx, persist=False):
+        """
+        Regenerates the GeoDataFrame for a given candidate.
+        """
+        checksum_before = self[idx]["checksum"]
+        mask_func = getattr(masks, self[idx]["mask"])
+        candidate = self.mask(
+            mask_func, append=False, drop_gdf=False, **self.candidates[idx]["kwargs"]
+        )
+        gdf = candidate["gdf"]
+        checksum_after = candidate.pop("checksum")
+
+        assert checksum_before == checksum_after
+
+        self[idx] = candidate
+
+        if not persist:
+            del candidate["gdf"]
 
         return gdf
 
@@ -55,31 +82,87 @@ class Atlas2:
         If the value for that attribute is below `min` or above `max`,
         drop the candidate.
         """
-        self.candidates = [
-            c for c in self.candidates if getattr(c, by) >= min and getattr(c, by) <= max
-        ]
+        self.candidates = [c for c in self.candidates if c[by] >= min and c[by] <= max]
 
-    def to_json(self, file: Path = None):
-        pass
+    def save_candidates(self, file: Path = None):
+        gdfs = []
+        for candidate in self.candidates:
+            gdfs.append(candidate.pop("gdf", None))
 
-    def from_json(self, json, gdf=None):
-        pass
+        with open(file, "w") as f:
+            json.dump(self.candidates, f)
 
-    def mask(self, mask, **kwargs):
-        candidate = {"mask": mask.__name__, "kwargs": kwargs, "timestamp_ns": time_ns()}
-        if "seed" not in candidate["kwargs"]:
-            candidate["kwargs"]["seed"] = genseed()
+        for i in range(len(gdfs)):
+            if gdfs[i] is not None:
+                self.candidates[i]["gdf"] = gdfs[i]
 
-        candidate["gdf"] = mask(self.sensitive, seed=candidate["args"]["seed"], **kwargs)
-        candidate = analyze(candidate["gdf"], self.sensitive)
-        del candidate["gdf"]
-        self.candidates.append(candidate)
+    def _hydrate_kwargs(self, **kwargs: dict) -> dict:
+        """
+        Find any keyword arguments that contain context layer checksums and
+        attempt to restore the layer from Atlas.contexts.
+        """
+        for key, value in kwargs.items():
+            if isinstance(value, str) and value.startswith("context_"):
+                checksum = value.split("_")[1]
+                try:
+                    kwargs[key] = self.contexts[checksum]
+                except KeyError as e:
+                    raise KeyError(
+                        f"Error: cannot find context layer for '{key}, {value}', \
+                        try loading it first using Atlas.add_contexts(). {e}"
+                    )
+        return kwargs
+
+    def _dehydrate_kwargs(self, **kwargs):
+        for key, value in kwargs.items():
+            if isinstance(value, GeoDataFrame):
+                kwargs[key] = "_".join(["context", tools._checksum(value)])
+        return kwargs
+
+    def mask(self, mask_func, drop_gdf=True, append=True, **kwargs):
+        candidate = {
+            "mask": mask_func.__name__,
+            "kwargs": self._hydrate_kwargs(**kwargs),
+            "timestamp_ns": time_ns(),
+        }
+        # If a seed is provided, use it, otherwise create one
+        candidate["kwargs"]["seed"] = candidate["kwargs"].get("seed") or tools.gen_seed()
+
+        # Apply the mask
+        candidate["gdf"] = mask_func(self.sensitive, **candidate["kwargs"])
+
+        # Validate checksums
+        checksum_before = kwargs.get("checksum", None)
+        checksum_after = tools._checksum(candidate["gdf"])
+        if checksum_before and checksum_before != checksum_after:
+            raise ValueError(
+                f"Checksum of masked GeoDataFrame ({checksum_after}) does not match that which is on record \
+                for this candidate ({checksum_before}). Did any input layers get modified?"
+            )
+        else:
+            candidate["checksum"] = checksum_after
+
+        # Analyze results
+        candidate["stats"] = analyze(candidate["gdf"], self.sensitive)
+
+        candidate["kwargs"] = self._dehydrate_kwargs(**candidate["kwargs"])
+
+        if drop_gdf:
+            del candidate["gdf"]
+        if append:
+            self.candidates.append(candidate)
         return candidate
+
+    def as_df(self):
+        df = DataFrame(data=self.candidates)
+        df.drop(columns="gdf", errors="ignore", axis=1)
+        df = concat([df.drop(["kwargs"], axis=1), df["kwargs"].apply(Series)], axis=1)
+        df = concat([df.drop(["stats"], axis=1), df["stats"].apply(Series)], axis=1)
+        return df
 
 
 def analyze(candidate_gdf, sensitive_gdf) -> dict:
-    pass
-
+    return {"test": "Hello"}
     # if idx is None and candidate is None:
     #     for candidate in self.candidates:
     #         candidate = self.analyze_privacy(candidate)

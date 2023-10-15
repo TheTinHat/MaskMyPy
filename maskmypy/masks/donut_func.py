@@ -22,9 +22,12 @@ def donut(
     seed = int(SystemRandom().random() * (10**10)) if not seed else seed
     _rng = random.default_rng(seed=seed)
 
-    # Validate and initialize input parameters
+    _validate_donut(gdf, low, high, container)
+    return gdf
+
+
+def _validate_donut(gdf, low, high, container):
     tools._validate_geom_type(gdf, "Point")
-    mdf = gdf.copy()
 
     if low >= high:
         raise ValueError("Minimum displacement distance is larger than or equal to maximum.")

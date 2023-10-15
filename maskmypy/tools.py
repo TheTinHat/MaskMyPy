@@ -1,6 +1,8 @@
 from hashlib import sha256
+from random import SystemRandom
 
 from geopandas import GeoDataFrame
+from numpy import random
 from osmnx import graph_to_gdfs
 from osmnx.distance import nearest_nodes
 from osmnx.graph import graph_from_bbox
@@ -43,6 +45,16 @@ def _validate_crs(a: CRS, b: CRS, custom_message: str = None) -> bool:
         raise ValueError(message)
     else:
         return True
+
+
+def gen_rng(seed: int = None):
+    if not seed:
+        seed = gen_seed()
+    return random.default_rng(seed=seed)
+
+
+def gen_seed() -> int:
+    return int(SystemRandom().random() * (10**32))
 
 
 def snap_to_streets(gdf: GeoDataFrame) -> GeoDataFrame:
