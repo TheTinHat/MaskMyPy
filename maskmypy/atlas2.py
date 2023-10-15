@@ -2,6 +2,7 @@ import json
 from dataclasses import dataclass, field
 from pathlib import Path
 from time import time_ns
+from typing import Callable
 
 from geopandas import GeoDataFrame
 from pandas import DataFrame, Series, concat
@@ -16,10 +17,6 @@ class Atlas2:
     # This should be in the post init
     contexts: dict = field(default_factory=dict)
     context_layer_keys = ["addresses", "container", "census"]
-
-    def add_contexts(self, *gdf: GeoDataFrame):
-        for x in gdf:
-            self.contexts[tools._checksum(x)] = x
 
     def __getitem__(self, idx):
         return self.candidates[idx]
@@ -46,8 +43,10 @@ class Atlas2:
         """
         Regenerates the GeoDataFrame for a given candidate.
         """
-        checksum_before = self[idx]["checksum"]
-        mask_func = getattr(masks, self[idx]["mask"])
+        checksum_before = self.candidates[idx]["checksum"]
+
+        mask_func = getattr(masks, self.candidates[idx]["mask"])
+
         candidate = self.mask(
             mask_func, append=False, drop_gdf=False, **self.candidates[idx]["kwargs"]
         )
@@ -56,7 +55,7 @@ class Atlas2:
 
         assert checksum_before == checksum_after
 
-        self[idx] = candidate
+        self.candidates[idx] = candidate
 
         if not persist:
             del candidate["gdf"]
@@ -75,6 +74,10 @@ class Atlas2:
             elif hash:
                 filename = f"{hash}.shp"
         self.to_gdf(idx).to_file(filename)
+
+    def add_contexts(self, *gdf: GeoDataFrame):
+        for x in gdf:
+            self.contexts[tools._checksum(x)] = x
 
     def prune(self, by, min=None, max=None):
         """
@@ -96,42 +99,39 @@ class Atlas2:
             if gdfs[i] is not None:
                 self.candidates[i]["gdf"] = gdfs[i]
 
-    def _hydrate_kwargs(self, **kwargs: dict) -> dict:
+    def _hydrate_mask_kwargs(self, **mask_kwargs: dict) -> dict:
         """
         Find any keyword arguments that contain context layer checksums and
         attempt to restore the layer from Atlas.contexts.
         """
-        for key, value in kwargs.items():
+        for key, value in mask_kwargs.items():
             if isinstance(value, str) and value.startswith("context_"):
                 checksum = value.split("_")[1]
                 try:
-                    kwargs[key] = self.contexts[checksum]
+                    mask_kwargs[key] = self.contexts[checksum]
                 except KeyError as e:
                     raise KeyError(
                         f"Error: cannot find context layer for '{key}, {value}', \
                         try loading it first using Atlas.add_contexts(). {e}"
                     )
-        return kwargs
+        return mask_kwargs
 
-    def _dehydrate_kwargs(self, **kwargs):
-        for key, value in kwargs.items():
+    def _dehydrate_mask_kwargs(self, **mask_kwargs: dict) -> dict:
+        for key, value in mask_kwargs.items():
             if isinstance(value, GeoDataFrame):
-                kwargs[key] = "_".join(["context", tools._checksum(value)])
-        return kwargs
+                mask_kwargs[key] = "_".join(["context", tools._checksum(value)])
+        return mask_kwargs
 
-    def mask(self, mask_func, drop_gdf=True, append=True, **kwargs):
+    def mask(self, mask_func: Callable, drop_gdf: bool = True, append: bool = True, **kwargs):
         candidate = {
             "mask": mask_func.__name__,
-            "kwargs": self._hydrate_kwargs(**kwargs),
+            "kwargs": self._hydrate_mask_kwargs(**kwargs),
             "timestamp_ns": time_ns(),
         }
-        # If a seed is provided, use it, otherwise create one
         candidate["kwargs"]["seed"] = candidate["kwargs"].get("seed") or tools.gen_seed()
 
-        # Apply the mask
         candidate["gdf"] = mask_func(self.sensitive, **candidate["kwargs"])
 
-        # Validate checksums
         checksum_before = kwargs.get("checksum", None)
         checksum_after = tools._checksum(candidate["gdf"])
         if checksum_before and checksum_before != checksum_after:
@@ -145,7 +145,7 @@ class Atlas2:
         # Analyze results
         candidate["stats"] = analyze(candidate["gdf"], self.sensitive)
 
-        candidate["kwargs"] = self._dehydrate_kwargs(**candidate["kwargs"])
+        candidate["kwargs"] = self._dehydrate_mask_kwargs(**candidate["kwargs"])
 
         if drop_gdf:
             del candidate["gdf"]

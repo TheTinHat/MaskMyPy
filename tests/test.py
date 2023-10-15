@@ -28,10 +28,10 @@ def test_atlas_restore_from_json(points):
     check_1a = atlas[0]["checksum"]
     check_2a = atlas[1]["checksum"]
 
-    atlas.save_candidates("tmp_test.json")
+    atlas.save_candidates("/tmp/tmp_test.json")
     del atlas
 
-    with open("tmp_test.json") as f:
+    with open("/tmp/tmp_test.json") as f:
         candidates = json.load(f)
 
     atlas2 = Atlas2(points, candidates=candidates)
@@ -48,26 +48,15 @@ def test_atlas_restore_from_json(points):
 def test_atlas_context_hydration(points, container):
     atlas = Atlas2(points)
     atlas.mask(donut, container=container, low=50, high=500)
-    atlas.save_candidates("tmp_test.json")
+    atlas.save_candidates("/tmp/tmp_test.json")
     del atlas
 
-    with open("tmp_test.json") as f:
-        candidates = json.load(f)
-
-    atlas2 = Atlas2(points, candidates=candidates)
-    atlas2.add_contexts(container)
-    atlas2.gen_gdf(0)
-
-
-def test_atlas_context_hydration_missing_context(points, container):
-    atlas = Atlas2(points)
-    atlas.mask(donut, container=container, low=50, high=500)
-    atlas.save_candidates("tmp_test.json")
-    del atlas
-
-    with open("tmp_test.json") as f:
+    with open("/tmp/tmp_test.json") as f:
         candidates = json.load(f)
 
     atlas2 = Atlas2(points, candidates=candidates)
     with pytest.raises(KeyError):
         atlas2.gen_gdf(0)
+
+    atlas2.add_contexts(container)
+    atlas2.gen_gdf(0)
