@@ -17,7 +17,7 @@ class Atlas2:
     population: GeoDataFrame = None
 
     def __post_init__(self):
-        self.contexts = {}
+        self.layers = {}
 
     def __getitem__(self, idx):
         return self.candidates[idx]
@@ -28,18 +28,18 @@ class Atlas2:
     def __len__(self):
         return len(self.candidates)
 
-    def add_contexts(self, *gdf: GeoDataFrame):
+    def add_layers(self, *gdf: GeoDataFrame):
         """
         Add GeoDataFrames to the context store.
         """
         for x in gdf:
-            self.contexts[tools.checksum(x)] = x
+            self.layers[tools.checksum(x)] = x
 
     def mask(
         self,
         mask_func: Callable,
-        drop_gdf: bool = True,
-        append: bool = True,
+        keep_gdf: bool = False,
+        keep_candidate: bool = True,
         **kwargs,
     ):
         candidate = {
@@ -50,10 +50,10 @@ class Atlas2:
 
         candidate["kwargs"]["seed"] = candidate["kwargs"].get("seed") or tools.gen_seed()
 
-        candidate["gdf"] = mask_func(self.sensitive, **candidate["kwargs"])
+        gdf = mask_func(self.sensitive, **candidate["kwargs"])
 
         checksum_before = kwargs.get("checksum", None)
-        checksum_after = tools.checksum(candidate["gdf"])
+        checksum_after = tools.checksum(gdf)
         if checksum_before and (checksum_before != checksum_after):
             raise ValueError(
                 f"Checksum of masked GeoDataFrame ({checksum_after}) does not match that which \
@@ -65,64 +65,47 @@ class Atlas2:
 
         candidate["kwargs"] = self._dehydrate_mask_kwargs(**candidate["kwargs"])
         candidate["stats"] = evaluate(
-            candidate_gdf=candidate["gdf"],
+            candidate_gdf=gdf,
             sensitive_gdf=self.sensitive,
             population_gdf=self.population,
         )
 
-        if drop_gdf:
-            del candidate["gdf"]
-        if append:
+        if keep_gdf:
+            self.layers[candidate["checksum"]] = gdf
+        if keep_candidate:
             self.candidates.append(candidate)
         return candidate
 
-    def gen_gdf(self, idx, persist=False, custom_mask: Callable = None):
+    def gen_gdf(self, idx, keep=False, custom_mask: Callable = None):
         """
         Regenerates the GeoDataFrame for a given candidate.
         If the candidate was originally generated using a custom masking function,
         specify it using the `custom_mask` parameter.
         """
         checksum_before = self.candidates[idx]["checksum"]
+        if self.layers.get(checksum_before):
+            return self.layers[checksum_before]
 
         mask_func = (
             getattr(masks, self.candidates[idx]["mask"]) if not custom_mask else custom_mask
         )
-
         candidate = self.mask(
-            mask_func, append=False, drop_gdf=False, **self.candidates[idx]["kwargs"]
+            mask_func, keep_candidate=False, keep_gdf=True, **self.candidates[idx]["kwargs"]
         )
-        gdf = candidate["gdf"]
-        checksum_after = candidate.pop("checksum")
+        checksum_after = candidate.get("checksum")
         assert checksum_before == checksum_after
 
-        self.candidates[idx] = candidate
+        gdf = self.layers[checksum_after]
 
-        if not persist:
-            del candidate["gdf"]
+        if not keep:
+            del self.layers[checksum_after]
 
         return gdf
 
-    def drop_gdfs(self):
-        """
-        Drop GeoDataFrames from all candidates. Use this
-        to free memory. To regenerate a dropped GeoDataFrame,
-        use 'Atlas.gen_gdf()'.
-        """
-        for candidate in self.candidates:
-            candidate.pop("gdf", None)
-
-    def to_shp(self, idx=None, checksum=None, filename=None):
-        """
-        Create a shapefile named `filename`.shp for a given candidate based on it's
-        index (`idx`) or hash (`hash`). If no filename is provided, the shapefile
-        is named `hash`.shp.
-        """
-        if not filename:
-            if idx:
-                checksum = tools.checksum(self.candidates[idx])
-            elif checksum:
-                filename = f"{checksum}.shp"
-        self.to_gdf(idx).to_file(filename)
+    # def sort(self, by: str):
+    #     if by in self.candidates[0]['stats'].keys():
+    #
+    #     sorted(self.candidates, key=lambda x: x[])
 
     def prune(self, by, min=None, max=None):
         """
@@ -132,26 +115,17 @@ class Atlas2:
         """
         self.candidates = [c for c in self.candidates if c[by] >= min and c[by] <= max]
 
-    def candidates_to_json(self, file: Path = None):
+    def dump_candidates(self, file: Path = None):
         """
         Saves candidates to a JSON file. As long as the input GeoDataFrames are
         also preserved by the user, this JSON file can be used to later reconstruct
         the atlas, including all resulting candidate GeoDataFrames.
         """
-        gdfs = []
-        for candidate in self.candidates:
-            gdfs.append(candidate.pop("gdf", None))
-
         with open(file, "w") as f:
             json.dump(self.candidates, f)
 
-        for i in range(len(gdfs)):
-            if gdfs[i] is not None:
-                self.candidates[i]["gdf"] = gdfs[i]
-
     def as_df(self):
         df = DataFrame(data=self.candidates)
-        df.drop(columns="gdf", errors="ignore", axis=1)
         df = concat([df.drop(["kwargs"], axis=1), df["kwargs"].apply(Series)], axis=1)
         df = concat([df.drop(["stats"], axis=1), df["stats"].apply(Series)], axis=1)
         return df
@@ -159,17 +133,17 @@ class Atlas2:
     def _hydrate_mask_kwargs(self, **mask_kwargs: dict) -> dict:
         """
         Find any keyword arguments that contain context layer checksums and
-        attempt to restore the layer from Atlas.contexts.
+        attempt to restore the layer from Atlas..
         """
         for key, value in mask_kwargs.items():
             if isinstance(value, str) and value.startswith("context_"):
                 checksum = value.split("_")[1]
                 try:
-                    mask_kwargs[key] = self.contexts[checksum]
+                    mask_kwargs[key] = self.layers[checksum]
                 except KeyError as e:
                     raise KeyError(
-                        f"Error: cannot find context layer for '{key}, {value}', \
-                        try loading it first using Atlas.add_contexts(). {e}"
+                        f"Error: cannot find context layer for '{key}, {checksum}', \
+                        try loading it first using Atlas.add_layers(). {e}"
                     )
         return mask_kwargs
 

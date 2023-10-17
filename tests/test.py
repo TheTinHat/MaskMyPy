@@ -28,7 +28,7 @@ def test_atlas_restore_from_json(points):
     check_1a = atlas[0]["checksum"]
     check_2a = atlas[1]["checksum"]
 
-    atlas.candidates_to_json("/tmp/tmp_test.json")
+    atlas.dump_candidates("/tmp/tmp_test.json")
     del atlas
 
     with open("/tmp/tmp_test.json") as f:
@@ -36,11 +36,11 @@ def test_atlas_restore_from_json(points):
 
     atlas2 = Atlas2(points, candidates=candidates)
 
-    gdf_0 = atlas2.gen_gdf(0, persist=True)
+    gdf_0 = atlas2.gen_gdf(0)
     check_1b = tools.checksum(gdf_0)
     assert check_1a == check_1b
 
-    gdf_1 = atlas2.gen_gdf(1, persist=True)
+    gdf_1 = atlas2.gen_gdf(1)
     check_2b = tools.checksum(gdf_1)
     assert check_2a == check_2b
 
@@ -48,7 +48,7 @@ def test_atlas_restore_from_json(points):
 def test_atlas_context_hydration(points, container):
     atlas = Atlas2(points)
     atlas.mask(donut, container=container, low=50, high=500)
-    atlas.candidates_to_json("/tmp/tmp_test.json")
+    atlas.dump_candidates("/tmp/tmp_test.json")
     del atlas
 
     with open("/tmp/tmp_test.json") as f:
@@ -58,5 +58,5 @@ def test_atlas_context_hydration(points, container):
     with pytest.raises(KeyError):
         atlas2.gen_gdf(0)
 
-    atlas2.add_contexts(container)
+    atlas2.add_layers(container)
     atlas2.gen_gdf(0)
