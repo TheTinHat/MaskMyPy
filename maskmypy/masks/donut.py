@@ -56,8 +56,6 @@ class Donut(AbstractMask):
         if self.low >= self.high:
             raise ValueError("Minimum displacement distance is larger than or equal to maximum.")
 
-        if self.container is not None:
-            tools._validate_geom_type(self.container, "Polygon", "MultiPolygon")
             tools._validate_crs(self.gdf.crs, self.container.crs)
 
     def _generate_random_offset(self) -> tuple[float, float]:
