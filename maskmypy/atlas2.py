@@ -97,10 +97,12 @@ class Atlas2:
     def sort(self, by: str):
         if by in self.candidates[0].keys():
             self.candidates.sort(key=lambda x: x[by])
-        if by in self.candidates[0]["stats"].keys():
+        elif by in self.candidates[0]["stats"].keys():
             self.candidates.sort(key=lambda x: x["stats"][by])
         elif by in self.candidates[0]["kwargs"].keys():
             self.candidates.sort(key=lambda x: x["kwargs"][by])
+        else:
+            raise ValueError(f"Could not find {by} in candidate.")
 
     def prune(self, by, min=None, max=None):
         """
