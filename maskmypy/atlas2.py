@@ -47,22 +47,11 @@ class Atlas2:
             "kwargs": self._hydrate_mask_kwargs(**kwargs),
             "timestamp_ns": time_ns(),
         }
-
         candidate["kwargs"]["seed"] = candidate["kwargs"].get("seed") or tools.gen_seed()
 
         gdf = mask_func(self.sensitive, **candidate["kwargs"])
 
-        checksum_before = kwargs.get("checksum", None)
-        checksum_after = tools.checksum(gdf)
-        if checksum_before and (checksum_before != checksum_after):
-            raise ValueError(
-                f"Checksum of masked GeoDataFrame ({checksum_after}) does not match that which \
-                is on record for this candidate ({checksum_before}). \
-                Did any input layers get modified?"
-            )
-        else:
-            candidate["checksum"] = checksum_after
-
+        candidate["checksum"] = tools.checksum(gdf)
         candidate["kwargs"] = self._dehydrate_mask_kwargs(**candidate["kwargs"])
         candidate["stats"] = evaluate(
             candidate_gdf=gdf,
@@ -86,14 +75,17 @@ class Atlas2:
         if self.layers.get(checksum_before):
             return self.layers[checksum_before]
 
-        mask_func = (
-            getattr(masks, self.candidates[idx]["mask"]) if not custom_mask else custom_mask
-        )
+        mask_func = custom_mask or getattr(masks, self.candidates[idx]["mask"])
+
         candidate = self.mask(
             mask_func, keep_candidate=False, keep_gdf=True, **self.candidates[idx]["kwargs"]
         )
         checksum_after = candidate.get("checksum")
-        assert checksum_before == checksum_after
+
+        if checksum_before != checksum_after:
+            raise ValueError(
+                f"Checksum of masked GeoDataFrame ({checksum_after}) does not match that which is on record for this candidate ({checksum_before}). Did any input layers get modified?"
+            )
 
         gdf = self.layers[checksum_after]
 

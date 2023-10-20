@@ -10,8 +10,6 @@ from pointpats import PointPattern, k_test
 from pointpats.distance_statistics import KtestResult
 from shapely.geometry import LineString
 
-from .db import Candidate
-
 
 def displacement(
     sensitive_gdf: GeoDataFrame, candidate_gdf: GeoDataFrame, col: str = "_distance"
@@ -236,8 +234,3 @@ def map_displacement(
         plt.savefig(filename)
 
     return plt
-
-
-def compare_candidates(sensitive_gdf: GeoDataFrame, *candidates: Candidate):
-    for candidate in candidates:
-        pass
