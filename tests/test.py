@@ -31,10 +31,7 @@ def test_atlas_restore_from_json(points):
     atlas.dump_candidates("/tmp/tmp_test.json")
     del atlas
 
-    with open("/tmp/tmp_test.json") as f:
-        candidates = json.load(f)
-
-    atlas2 = Atlas2(points, candidates=candidates)
+    atlas2 = Atlas2.from_json(points, "/tmp/tmp_test.json")
 
     gdf_0 = atlas2.gen_gdf(0)
     check_1b = tools.checksum(gdf_0)
@@ -51,15 +48,16 @@ def test_atlas_context_hydration(points, container):
     atlas.dump_candidates("/tmp/tmp_test.json")
     del atlas
 
-    with open("/tmp/tmp_test.json") as f:
-        candidates = json.load(f)
-
-    atlas2 = Atlas2(points, candidates=candidates)
+    atlas2 = Atlas2.from_json(points, "/tmp/tmp_test.json")
     with pytest.raises(KeyError):
         atlas2.gen_gdf(0)
 
     atlas2.add_layers(container)
     atlas2.gen_gdf(0)
+    del atlas2
+
+    atlas3 = Atlas2.from_json(points, "/tmp/tmp_test.json", container)
+    atlas3.gen_gdf(0)
 
 
 def test_atlas_sort(points):

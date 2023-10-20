@@ -119,6 +119,15 @@ class Atlas2:
         with open(file, "w") as f:
             json.dump(self.candidates, f)
 
+    @classmethod
+    def from_json(cls, sensitive, candidate_json, *layers: GeoDataFrame):
+        with open("/tmp/tmp_test.json") as f:
+            candidates = json.load(f)
+
+        atlas = cls(sensitive, candidates)
+        atlas.add_layers(*layers)
+        return atlas
+
     def as_df(self):
         df = DataFrame(data=self.candidates)
         df = concat([df.drop(["kwargs"], axis=1), df["kwargs"].apply(Series)], axis=1)
