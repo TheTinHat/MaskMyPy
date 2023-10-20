@@ -1,7 +1,7 @@
 import json
 from dataclasses import dataclass, field
 from pathlib import Path
-from time import time_ns
+from time import time
 from typing import Callable
 
 from geopandas import GeoDataFrame
@@ -45,7 +45,7 @@ class Atlas2:
         candidate = {
             "mask": mask_func.__name__,
             "kwargs": self._hydrate_mask_kwargs(**kwargs),
-            "timestamp_ns": time_ns(),
+            "timestamp": time(),
         }
         candidate["kwargs"]["seed"] = candidate["kwargs"].get("seed") or tools.gen_seed()
 
@@ -94,10 +94,13 @@ class Atlas2:
 
         return gdf
 
-    # def sort(self, by: str):
-    #     if by in self.candidates[0]['stats'].keys():
-    #
-    #     sorted(self.candidates, key=lambda x: x[])
+    def sort(self, by: str):
+        if by in self.candidates[0].keys():
+            self.candidates.sort(key=lambda x: x[by])
+        if by in self.candidates[0]["stats"].keys():
+            self.candidates.sort(key=lambda x: x["stats"][by])
+        elif by in self.candidates[0]["kwargs"].keys():
+            self.candidates.sort(key=lambda x: x["kwargs"][by])
 
     def prune(self, by, min=None, max=None):
         """
@@ -150,19 +153,3 @@ def evaluate(
     candidate_gdf: GeoDataFrame, sensitive_gdf: GeoDataFrame, population_gdf: GeoDataFrame = None
 ) -> dict:
     return {"test": "Hello"}
-    # if idx is None and candidate is None:
-    #     for candidate in self.candidates:
-    #         candidate = self.analyze_privacy(candidate)
-    #         candidate = self.analyze_loss(candidate)
-    #
-    # elif idx is not None and candidate is None:
-    #     self.candidates[idx] = self.analyze_privacy(self.candidates[idx])
-    #     self.candidates[idx] = self.analyze_loss(self.candidates[idx])
-    #
-    # elif idx is None and candidate is not None:
-    #     candidate = self.analyze_privacy(candidate)
-    #     candidate = self.analyze_loss(candidate)
-    #     return candidate
-    #
-    # elif idx is not None and candidate is not None:
-    #     raise Error

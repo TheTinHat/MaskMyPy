@@ -60,3 +60,18 @@ def test_atlas_context_hydration(points, container):
 
     atlas2.add_layers(container)
     atlas2.gen_gdf(0)
+
+
+def test_atlas_sort(points):
+    atlas = Atlas2(points)
+    atlas.mask(donut, low=300, high=399)
+    atlas.mask(donut, low=200, high=299)
+    atlas.mask(donut, low=100, high=199)
+
+    assert atlas[0]["kwargs"]["low"] > atlas[1]["kwargs"]["low"] > atlas[2]["kwargs"]["low"]
+
+    atlas.sort(by="low")
+    assert atlas[0]["kwargs"]["low"] < atlas[1]["kwargs"]["low"] < atlas[2]["kwargs"]["low"]
+
+    atlas.sort(by="timestamp")
+    assert atlas[0]["timestamp"] < atlas[1]["timestamp"] < atlas[2]["timestamp"]
