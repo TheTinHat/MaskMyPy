@@ -56,7 +56,7 @@ def test_atlas_context_hydration(points, container):
     atlas2.gen_gdf(0)
     del atlas2
 
-    atlas3 = Atlas2.from_json(points, "/tmp/tmp_test.json", container)
+    atlas3 = Atlas2.from_json(points, "/tmp/tmp_test.json", layers=[container])
     atlas3.gen_gdf(0)
 
 

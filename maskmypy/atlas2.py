@@ -120,12 +120,15 @@ class Atlas2:
             json.dump(self.candidates, f)
 
     @classmethod
-    def from_json(cls, sensitive, candidate_json, *layers: GeoDataFrame):
+    def from_json(
+        cls, sensitive, candidate_json, population: GeoDataFrame = None, layers: list = None
+    ):
         with open("/tmp/tmp_test.json") as f:
             candidates = json.load(f)
 
-        atlas = cls(sensitive, candidates)
-        atlas.add_layers(*layers)
+        atlas = cls(sensitive, candidates, population)
+        if layers:
+            atlas.add_layers(*layers)
         return atlas
 
     def as_df(self):
