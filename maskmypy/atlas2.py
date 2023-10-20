@@ -110,7 +110,7 @@ class Atlas2:
         """
         self.candidates = [c for c in self.candidates if c[by] >= min and c[by] <= max]
 
-    def dump_candidates(self, file: Path = None):
+    def to_json(self, file: Path):
         """
         Saves candidates to a JSON file. As long as the input GeoDataFrames are
         also preserved by the user, this JSON file can be used to later reconstruct

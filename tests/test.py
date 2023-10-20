@@ -28,7 +28,7 @@ def test_atlas_restore_from_json(points):
     check_1a = atlas[0]["checksum"]
     check_2a = atlas[1]["checksum"]
 
-    atlas.dump_candidates("/tmp/tmp_test.json")
+    atlas.to_json("/tmp/tmp_test.json")
     del atlas
 
     atlas2 = Atlas2.from_json(points, "/tmp/tmp_test.json")
@@ -45,7 +45,7 @@ def test_atlas_restore_from_json(points):
 def test_atlas_context_hydration(points, container):
     atlas = Atlas2(points)
     atlas.mask(donut, container=container, low=50, high=500)
-    atlas.dump_candidates("/tmp/tmp_test.json")
+    atlas.to_json("/tmp/tmp_test.json")
     del atlas
 
     atlas2 = Atlas2.from_json(points, "/tmp/tmp_test.json")
