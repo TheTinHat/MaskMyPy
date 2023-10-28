@@ -61,8 +61,8 @@ def k_satisfaction(gdf: GeoDataFrame, min_k: int, col: str = "k_anonymity") -> f
 def summarize_displacement(gdf: GeoDataFrame, col="_distance") -> dict:
     return
     {
-        "displacement_min": int(gdf.loc[:, col].min()),
-        "displacement_max": int(gdf.loc[:, col].max()),
+        "displacement_min": float(gdf.loc[:, col].min()),
+        "displacement_max": float(gdf.loc[:, col].max()),
         "displacement_med": float(gdf.loc[:, col].median()),
         "displacement_mean": float(gdf.loc[:, col].mean()),
     }
