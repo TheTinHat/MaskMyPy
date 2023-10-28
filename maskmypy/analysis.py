@@ -92,7 +92,7 @@ def ripleys_k(
     gdf: GeoDataFrame, max_dist: float = None, min_dist: float = None, steps: int = 10
 ) -> KtestResult:
     if not max_dist:
-        max_dist = _ripleys_rot(gdf)
+        max_dist = _gdf_to_pointpattern(gdf).rot
 
     if not min_dist:
         min_dist = max_dist / steps
@@ -206,10 +206,6 @@ def _disaggregate(gdf_a: GeoDataFrame, gdf_b: GeoDataFrame, gdf_b_col: str) -> G
 
 def _gdf_to_pointpattern(gdf: GeoDataFrame) -> PointPattern:
     return PointPattern(list(zip(gdf.geometry.x, gdf.geometry.y)))
-
-
-def _ripleys_rot(gdf: GeoDataFrame) -> float:
-    return _gdf_to_pointpattern(gdf).rot
 
 
 def _bounds_from_ripleyresult(result: KtestResult) -> list:
