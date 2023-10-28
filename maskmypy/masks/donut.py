@@ -19,8 +19,7 @@ def donut(
     distribution: str = "uniform",
     seed: int = None,
 ) -> GeoDataFrame:
-    # Initialize random number generator
-
+    _validate_donut(gdf=gdf, low=low, high=high, container=container)
     return Donut(**locals()).run()
 
 

@@ -54,71 +54,38 @@ def calculate_k(
     return candidate_gdf
 
 
-def _disaggregate(gdf_a: GeoDataFrame, gdf_b: GeoDataFrame, gdf_b_col: str) -> GeoDataFrame:
-    new_col = "_".join([gdf_b_col, "adjusted"])
-    gdf_b["_b_area"] = gdf_b.geometry.area
-    gdf = sjoin(gdf_a, gdf_b, how="left", rsuffix="b").rename_axis("_index_2").reset_index()
-    gdf.geometry = gdf.apply(
-        lambda x: x.geometry.intersection(gdf_b.at[x["index_b"], "geometry"]),
-        axis=1,
-    )
-    gdf["_intersected_area"] = gdf.geometry.area
-
-    for i, _ in enumerate(gdf.index):
-        fragments = gdf.loc[gdf["_index_2"] == i, :]
-        for index, row in fragments.iterrows():
-            area_pct = row["_intersected_area"] / row["_b_area"]
-            gdf.at[index, new_col] = row[gdf_b_col] * area_pct
-    return gdf
-
-
 def k_satisfaction(gdf: GeoDataFrame, min_k: int, col: str = "k_anonymity") -> float:
     return gdf.loc[gdf[col] >= min_k, col].count() / gdf[col].count()
 
 
-DD_Summary = namedtuple("DD_Summary", ["dist_min", "dist_max", "dist_med", "dist_mean"])
-
-
 def summarize_displacement(gdf: GeoDataFrame, col="_distance") -> DD_Summary:
-    dist_min = int(gdf.loc[:, col].min())
-    dist_max = int(gdf.loc[:, col].max())
-    dist_med = float(gdf.loc[:, col].median())
-    dist_mean = float(gdf.loc[:, col].mean())
-    return DD_Summary(dist_min=dist_min, dist_max=dist_max, dist_med=dist_med, dist_mean=dist_mean)
+    return
+    {
+        "displacement_min": int(gdf.loc[:, col].min()),
+        "displacement_max": int(gdf.loc[:, col].max()),
+        "displacement_med": float(gdf.loc[:, col].median()),
+        "displacement_mean": float(gdf.loc[:, col].mean()),
+    }
 
 
-K_Summary = namedtuple("K_Summary", ["k_min", "k_max", "k_med", "k_mean"])
-
-
-def summarize_k(gdf: GeoDataFrame, col="k_anonymity") -> K_Summary:
-    k_min = int(gdf.loc[:, col].min())
-    k_max = int(gdf.loc[:, col].max())
-    k_med = float(gdf.loc[:, col].median())
-    k_mean = float(gdf.loc[:, col].mean())
-    return K_Summary(k_min=k_min, k_max=k_max, k_med=k_med, k_mean=k_mean)
-
-
-def _gdf_to_pointpattern(gdf: GeoDataFrame) -> PointPattern:
-    return PointPattern(list(zip(gdf.geometry.x, gdf.geometry.y)))
-
-
-NND_Summary = namedtuple("NND_Summary", ["dist_min", "dist_max", "dist_mean"])
+def summarize_k(gdf: GeoDataFrame, col="k_anonymity") -> dict:
+    return {
+        "k_min": int(gdf.loc[:, col].min()),
+        "k_max": int(gdf.loc[:, col].max()),
+        "k_med": float(gdf.loc[:, col].median()),
+        "k_mean": float(gdf.loc[:, col].mean()),
+    }
 
 
 def nnd(gdf: GeoDataFrame) -> NND_Summary:
-    "Returns nearest neighbor distances in a tuple of (min, max, mean)"
     pp = _gdf_to_pointpattern(gdf)
-    return NND_Summary(dist_min=pp.min_nnd, dist_max=pp.max_nnd, dist_mean=pp.mean_nnd)
+    return {"nnd_min": pp.min_nnd, "nnd_max": pp.max_nnd, "nnd_mean": pp.mean_nnd}
 
 
 def drift(gdf_a: GeoDataFrame, gdf_b: GeoDataFrame) -> float:
     centroid_a = gdf_a.dissolve().centroid
     centroid_b = gdf_b.dissolve().centroid
     return float(centroid_a.distance(centroid_b).iloc[0])
-
-
-def _ripleys_rot(gdf: GeoDataFrame) -> float:
-    return _gdf_to_pointpattern(gdf).rot
 
 
 def ripleys_k(
@@ -137,23 +104,6 @@ def ripleys_k(
         n_simulations=999,
     )
     return k_results
-
-
-def _bounds_from_ripleyresult(result: KtestResult) -> list:
-    step_count = len(result.simulations[0])
-    lower_bounds = []
-    upper_bounds = []
-    for i in range(step_count):
-        values = [sim[i] for sim in result.simulations]
-        lower_bounds.append(min(values))
-        upper_bounds.append(max(values))
-    return list(zip(lower_bounds, upper_bounds))
-
-
-def _legend_deduped_labels(ax: Axis) -> None:
-    handles, labels = ax.get_legend_handles_labels()
-    unique = [(h, l) for i, (h, l) in enumerate(zip(handles, labels)) if l not in labels[:i]]
-    ax.legend(*zip(*unique))
 
 
 def ripley_rmse(c_result: KtestResult, s_result: KtestResult) -> float:
@@ -234,3 +184,46 @@ def map_displacement(
         plt.savefig(filename)
 
     return plt
+
+
+def _disaggregate(gdf_a: GeoDataFrame, gdf_b: GeoDataFrame, gdf_b_col: str) -> GeoDataFrame:
+    new_col = "_".join([gdf_b_col, "adjusted"])
+    gdf_b["_b_area"] = gdf_b.geometry.area
+    gdf = sjoin(gdf_a, gdf_b, how="left", rsuffix="b").rename_axis("_index_2").reset_index()
+    gdf.geometry = gdf.apply(
+        lambda x: x.geometry.intersection(gdf_b.at[x["index_b"], "geometry"]),
+        axis=1,
+    )
+    gdf["_intersected_area"] = gdf.geometry.area
+
+    for i, _ in enumerate(gdf.index):
+        fragments = gdf.loc[gdf["_index_2"] == i, :]
+        for index, row in fragments.iterrows():
+            area_pct = row["_intersected_area"] / row["_b_area"]
+            gdf.at[index, new_col] = row[gdf_b_col] * area_pct
+    return gdf
+
+
+def _gdf_to_pointpattern(gdf: GeoDataFrame) -> PointPattern:
+    return PointPattern(list(zip(gdf.geometry.x, gdf.geometry.y)))
+
+
+def _ripleys_rot(gdf: GeoDataFrame) -> float:
+    return _gdf_to_pointpattern(gdf).rot
+
+
+def _bounds_from_ripleyresult(result: KtestResult) -> list:
+    step_count = len(result.simulations[0])
+    lower_bounds = []
+    upper_bounds = []
+    for i in range(step_count):
+        values = [sim[i] for sim in result.simulations]
+        lower_bounds.append(min(values))
+        upper_bounds.append(max(values))
+    return list(zip(lower_bounds, upper_bounds))
+
+
+def _legend_deduped_labels(ax: Axis) -> None:
+    handles, labels = ax.get_legend_handles_labels()
+    unique = [(h, l) for i, (h, l) in enumerate(zip(handles, labels)) if l not in labels[:i]]
+    ax.legend(*zip(*unique))

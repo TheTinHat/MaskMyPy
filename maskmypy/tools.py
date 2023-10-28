@@ -12,39 +12,8 @@ from pandas.util import hash_pandas_object
 from pyproj.crs.crs import CRS
 
 
-def _crop(gdf: GeoDataFrame, bbox: list[float], padding: float) -> GeoDataFrame:
-    bbox = _pad(bbox, padding)
-    return gdf.cx[bbox[0] : bbox[2], bbox[1] : bbox[3]]
-
-
 def checksum(gdf: GeoDataFrame) -> str:
     return sha256(bytearray(hash_pandas_object(gdf).values)).hexdigest()[0:12]
-
-
-def _pad(bbox: list[float], padding: float) -> list:
-    pad_x = (bbox[2] - bbox[0]) * padding
-    pad_y = (bbox[3] - bbox[1]) * padding
-    bbox[0] = bbox[0] - pad_x
-    bbox[1] = bbox[1] - pad_y
-    bbox[2] = bbox[2] + pad_x
-    bbox[3] = bbox[3] + pad_y
-    return bbox
-
-
-def _validate_geom_type(gdf: GeoDataFrame, *type_as_string: str) -> bool:
-    geom_types = {True if geom_type in type_as_string else False for geom_type in gdf.geom_type}
-    if False in geom_types:
-        raise ValueError(f"GeoDataFrame contains geometry types other than {type_as_string}.")
-    return True
-
-
-def _validate_crs(a: CRS, b: CRS, custom_message: str = None) -> bool:
-    default_message = "CRS do not match. Ensure all CRS match that of sensitive GeoDataFrame."
-    message = default_message if not custom_message else custom_message
-    if a != b:
-        raise ValueError(message)
-    else:
-        return True
 
 
 def gen_rng(seed: int = None):
@@ -78,3 +47,34 @@ def snap_to_streets(gdf: GeoDataFrame) -> GeoDataFrame:
     )
 
     return snapped_gdf
+
+
+def _crop(gdf: GeoDataFrame, bbox: list[float], padding: float) -> GeoDataFrame:
+    bbox = _pad(bbox, padding)
+    return gdf.cx[bbox[0] : bbox[2], bbox[1] : bbox[3]]
+
+
+def _pad(bbox: list[float], padding: float) -> list:
+    pad_x = (bbox[2] - bbox[0]) * padding
+    pad_y = (bbox[3] - bbox[1]) * padding
+    bbox[0] = bbox[0] - pad_x
+    bbox[1] = bbox[1] - pad_y
+    bbox[2] = bbox[2] + pad_x
+    bbox[3] = bbox[3] + pad_y
+    return bbox
+
+
+def _validate_geom_type(gdf: GeoDataFrame, *type_as_string: str) -> bool:
+    geom_types = {True if geom_type in type_as_string else False for geom_type in gdf.geom_type}
+    if False in geom_types:
+        raise ValueError(f"GeoDataFrame contains geometry types other than {type_as_string}.")
+    return True
+
+
+def _validate_crs(a: CRS, b: CRS, custom_message: str = None) -> bool:
+    default_message = "CRS do not match. Ensure all CRS match that of sensitive GeoDataFrame."
+    message = default_message if not custom_message else custom_message
+    if a != b:
+        raise ValueError(message)
+    else:
+        return True

@@ -1,5 +1,5 @@
 from . import analysis
-from .atlas2 import Atlas2
+from .atlas import Atlas
 
 # from .candidate import Candidate
 from .masks import Donut, LocationSwap, Street, Voronoi, donut

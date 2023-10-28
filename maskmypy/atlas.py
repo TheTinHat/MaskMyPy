@@ -1,479 +1,169 @@
+import json
 from dataclasses import dataclass, field
-from functools import cached_property
-from inspect import getfullargspec
 from pathlib import Path
+from time import time
+from typing import Callable
 
-from geopandas import GeoDataFrame, read_file
-from pandas import DataFrame
-from sqlalchemy import create_engine, select
-from sqlalchemy.orm import Session
+from geopandas import GeoDataFrame
+from pandas import DataFrame, Series, concat
 
-from . import analysis, tools
-from .db import CANDIDATE_STATS_FIELDS, Address, Base, Candidate, Census, Container, Sensitive
-from .masks import Donut, LocationSwap, Street, Voronoi
+from . import masks, tools
 
 
 @dataclass
 class Atlas:
-    name: str
-    filepath: Path = field(default_factory=lambda: Path.cwd() / "atlas.db")
-    in_memory: bool = False
+    sensitive: GeoDataFrame
+    candidates: list = field(default_factory=list)
+    population: GeoDataFrame = None
 
-    def __post_init__(self) -> None:
-        if self.in_memory:
-            self._layers = dict()
-            self.engine = create_engine("sqlite://")
-        else:
-            self.filepath = Path(self.filepath)
-            if self.filepath.suffix != ".db":
-                self.filepath = self.filepath.parent / (self.filepath.name + ".db")
-            self.engine = create_engine(f"sqlite:///{self.filepath}")
+    def __post_init__(self):
+        self.layers = {}
 
-        self._session = Session(self.engine, expire_on_commit=False)
-        Base.metadata.create_all(self.engine)
+    def __getitem__(self, idx):
+        return self.candidates[idx]
 
-    @cached_property
-    def _gpkg_path(self) -> Path:
-        return self.filepath.with_suffix(".gpkg")
+    def __setitem__(self, idx, val):
+        self.candidates[idx] = val
 
-    @cached_property
-    def sdf(self) -> GeoDataFrame:
-        return self.get_gdf(self.sensitive.id)
+    def __len__(self):
+        return len(self.candidates)
 
-    def mdf(self, candidate_or_id: Candidate | str) -> GeoDataFrame:
-        c = candidate_or_id
-        if isinstance(c, str):
-            return self.get_gdf(c)
-        elif isinstance(c, Candidate):
-            return self.get_gdf(c.id)
+    def add_layers(self, *gdf: GeoDataFrame):
+        """
+        Add GeoDataFrames to the layer store.
+        """
+        for x in gdf:
+            self.layers[tools.checksum(x)] = x
 
-    @property
-    def candidates(self) -> list[Candidate]:
-        return self.sensitive.candidates
-
-    @property
-    def containers(self) -> list[Container]:
-        return self.sensitive.containers
-
-    @property
-    def containers_all(self) -> list[Container]:
-        return self._session.scalars(select(Container)).all()
-
-    @property
-    def censuses(self) -> list[Census]:
-        return self.sensitive.censuses
-
-    @property
-    def censuses_all(self) -> list[Census]:
-        return self._session.scalars(select(Census)).all()
-
-    @property
-    def addresses(self) -> list[Address]:
-        return self.sensitive.addresses
-
-    @property
-    def addresses_all(self) -> list[Address]:
-        return self._session.scalars(select(Address)).all()
-
-    @property
-    def nominee(self) -> Candidate:
-        return self._session.get(Candidate, self.sensitive.nominee)
-
-    @classmethod
-    def load(cls, name: str, filepath: Path | str) -> "Atlas":
-        filepath = Path(filepath).with_suffix(".db")
-        atlas = cls(name, filepath)
-        atlas.sensitive = atlas._session.get(Sensitive, atlas.name)
-        return atlas
-
-    def get_gdf(
+    def mask(
         self,
-        object_or_id: str | Sensitive | Candidate | Address | Container | Census,
-        project: bool = False,
-    ) -> GeoDataFrame:
-        if hasattr(object_or_id, "id"):
-            id = object_or_id.id
-        elif isinstance(object_or_id, str):
-            id = object_or_id
+        mask_func: Callable,
+        keep_gdf: bool = False,
+        keep_candidate: bool = True,
+        **kwargs,
+    ):
+        candidate = {
+            "mask": mask_func.__name__,
+            "kwargs": self._hydrate_mask_kwargs(**kwargs),
+            "timestamp": time(),
+        }
+        candidate["kwargs"]["seed"] = candidate["kwargs"].get("seed") or tools.gen_seed()
 
-        if self.in_memory:
-            gdf = self._layers.get(id).copy()
-        else:
-            gdf = read_file(self._gpkg_path, driver="GPKG", layer=id)
+        gdf = mask_func(self.sensitive, **candidate["kwargs"])
 
-        if project:
-            gdf = gdf.to_crs(self.sensitive.crs)
+        candidate["checksum"] = tools.checksum(gdf)
+        candidate["kwargs"] = self._dehydrate_mask_kwargs(**candidate["kwargs"])
+        candidate["stats"] = evaluate(
+            candidate_gdf=gdf,
+            sensitive_gdf=self.sensitive,
+            population_gdf=self.population,
+        )
+
+        if keep_gdf:
+            self.layers[candidate["checksum"]] = gdf
+        if keep_candidate:
+            self.candidates.append(candidate)
+        return candidate
+
+    def gen_gdf(self, idx, keep=False, custom_mask: Callable = None):
+        """
+        Regenerates the GeoDataFrame for a given candidate.
+        If the candidate was originally generated using a custom masking function,
+        specify it using the `custom_mask` parameter.
+        """
+        checksum_before = self.candidates[idx]["checksum"]
+        if self.layers.get(checksum_before):
+            return self.layers[checksum_before]
+
+        mask_func = custom_mask or getattr(masks, self.candidates[idx]["mask"])
+
+        candidate = self.mask(
+            mask_func, keep_candidate=False, keep_gdf=True, **self.candidates[idx]["kwargs"]
+        )
+        checksum_after = candidate.get("checksum")
+
+        if checksum_before != checksum_after:
+            raise ValueError(
+                f"Checksum of masked GeoDataFrame ({checksum_after}) does not match that which is on record for this candidate ({checksum_before}). Did any input layers get modified?"
+            )
+
+        gdf = self.layers[checksum_after]
+
+        if not keep:
+            del self.layers[checksum_after]
+
         return gdf
 
-    def _save_gdf(self, gdf: GeoDataFrame, id: str) -> bool:
-        if self.in_memory:
-            self._layers[id] = gdf.copy()
-            return True
+    def sort(self, by: str):
+        if by in self.candidates[0].keys():
+            self.candidates.sort(key=lambda x: x[by])
+        elif by in self.candidates[0]["stats"].keys():
+            self.candidates.sort(key=lambda x: x["stats"][by])
+        elif by in self.candidates[0]["kwargs"].keys():
+            self.candidates.sort(key=lambda x: x["kwargs"][by])
         else:
-            gdf.to_file(self._gpkg_path, driver="GPKG", layer=id)
-            return True
+            raise ValueError(f"Could not find {by} in candidate.")
 
-    def add_sensitive(self, gdf: GeoDataFrame) -> Sensitive:
-        if self._session.get(Sensitive, self.name) is not None:
-            raise ValueError("Sensitive layer already exists.")
-        id = tools._checksum(gdf)
-        nnd = analysis.nnd(gdf)
+    def prune(self, by, min=None, max=None):
+        """
+        Prune candidates based on a given attribute (e.g. `k_min`).
+        If the value for that attribute is below `min` or above `max`,
+        drop the candidate.
+        """
+        self.candidates = [c for c in self.candidates if c[by] >= min and c[by] <= max]
 
-        self.sensitive = Sensitive(
-            name=self.name,
-            id=id,
-            nnd_min=nnd.dist_min,
-            nnd_max=nnd.dist_max,
-            nnd_mean=nnd.dist_mean,
-            crs=gdf.crs.srs,
-        )
-        self._session.add(self.sensitive)
-        self._save_gdf(gdf, id)
-        self._session.commit()
-        return self.sensitive
+    def to_json(self, file: Path):
+        """
+        Saves candidates to a JSON file. As long as the input GeoDataFrames are
+        also preserved by the user, this JSON file can be used to later reconstruct
+        the atlas, including all resulting candidate GeoDataFrames.
+        """
+        with open(file, "w") as f:
+            json.dump(self.candidates, f)
 
-    def add_candidate(
-        self,
-        gdf: GeoDataFrame,
-        params: dict,
-        container: Container = None,
-        census: Census = None,
-        address: Address = None,
-    ) -> Candidate:
-        if self._session.get(Sensitive, self.name) is None:
-            raise ValueError("Add sensitive layer before adding candidates.")
+    @classmethod
+    def from_json(
+        cls, sensitive, candidate_json, population: GeoDataFrame = None, layers: list = None
+    ):
+        with open("/tmp/tmp_test.json") as f:
+            candidates = json.load(f)
 
-        id = tools._checksum(gdf)
-        nnd = analysis.nnd(gdf)
+        atlas = cls(sensitive, candidates, population)
+        if layers:
+            atlas.add_layers(*layers)
+        return atlas
 
-        if self._session.get(Candidate, id) is not None:
-            raise ValueError("Candidate already exists.")
-
-        candidate = Candidate(
-            id=id,
-            sensitive=self.sensitive,
-            params=params,
-            container=container,
-            census=census,
-            address=address,
-            nnd_min=nnd.dist_min,
-            nnd_max=nnd.dist_max,
-            nnd_mean=nnd.dist_mean,
-        )
-
-        self._session.add(candidate)
-        self._save_gdf(gdf, id)
-        self._session.commit()
-        return candidate
-
-    def add_container(self, gdf: GeoDataFrame, name: str) -> Container:
-        if self._session.get(Sensitive, self.name) is None:
-            raise ValueError("Add sensitive layer before adding containers.")
-
-        id = tools._checksum(gdf)
-        container = self._session.get(Container, name)
-
-        if container and container.id != id:
-            raise ValueError("A different container layer with this name already exists")
-
-        elif container and container.id == id:
-            if container not in self.containers:
-                self.sensitive.containers.append(container)
-            else:
-                return container
-
-        else:
-            container = Container(name=name, id=id)
-            self.sensitive.containers.append(container)
-
-        self._session.add(container)
-        self._save_gdf(gdf, id)
-        self._session.commit()
-        return container
-
-    def add_census(self, gdf: GeoDataFrame, name: str, pop_col: str) -> Census:
-        """NEEDS TESTS"""
-        if self._session.get(Sensitive, self.name) is None:
-            raise ValueError("Add sensitive layer before adding census layers.")
-
-        id = tools._checksum(gdf)
-        census = self._session.get(Census, name)
-
-        if census and census.id != id:
-            raise ValueError("A different census layer with this name already exists")
-        elif census and census.id == id:
-            if census not in self.censuses:
-                self.sensitive.censuses.append(census)
-            else:
-                return census
-
-        else:
-            census = Census(name=name, id=id, pop_col=pop_col)
-            self.sensitive.censuses.append(census)
-
-        self._session.add(census)
-        self._save_gdf(gdf, id)
-        self._session.commit()
-        return census
-
-    def add_address(self, gdf: GeoDataFrame, name: str) -> Address:
-        if self._session.get(Sensitive, self.name) is None:
-            raise ValueError("Add sensitive layer before adding address layers.")
-
-        id = tools._checksum(gdf)
-        address = self._session.get(Address, name)
-
-        if address and address.id != id:
-            raise ValueError("A different address layer with this name already exists")
-
-        elif address and address.id == id:
-            if address not in self.addresses:
-                self.sensitive.addresses.append(address)
-            else:
-                return address
-
-        else:
-            address = Address(name=name, id=id)
-            self.sensitive.addresses.append(address)
-
-        self._session.add(address)
-        self._save_gdf(gdf, id)
-        self._session.commit()
-        return address
-
-    def relate_census(self, name: str) -> Census:
-        census = self.get_census(name, other=True)
-        self.sensitive.containers.append(census)
-        self._session.commit()
-        return census
-
-    def relate_container(self, name: str) -> Container:
-        container = self.get_container(name, other=True)
-        self.sensitive.containers.append(container)
-        self._session.commit()
-        return container
-
-    def relate_address(self, name: str) -> Address:
-        address = self.get_address(name, other=True)
-        self.sensitive.containers.append(address)
-        self._session.commit()
-        return address
-
-    def get_candidate(self, id: str) -> Candidate:
-        candidate = self._session.get(Candidate, id)
-        if candidate not in self.candidates:
-            raise ValueError("Specified candidate is for a different sensitive layer.")
-        return candidate
-
-    def get_container(self, name: str, other: bool = False) -> Container:
-        container = self._session.get(Container, name)
-        if container not in self.containers and other is False:
-            raise ValueError(
-                "Specified container is for a different sensitive layer. Either set `other=True` or use `relate_container()` first."
-            )
-        return container
-
-    def get_census(self, name: str, other: bool = False) -> Census:
-        """NEEDS TESTS"""
-        census = self._session.get(Census, name)
-        if census not in self.censuses and other is False:
-            raise ValueError(
-                "Specified census layer is for a different sensitive layer. Either set `other=True` or use `relate_census()` first."
-            )
-        return census
-
-    def get_address(self, name: str, other: bool = False) -> Address:
-        address = self._session.get(Address, name)
-        if address not in self.addresses and other is False:
-            raise ValueError(
-                "Specified address layer is for a different sensitive layer. Either set `other=True` or use `relate_address()` first."
-            )
-        return address
-
-    def drop_candidate(self, id: str, delete: bool = False):
-        pass
-
-    def drop_container(self, name: str, delete: bool = False):
-        pass
-
-    def drop_census(self, name: str, delete: bool = False):
-        pass
-
-    def drop_address(self, name: str, delete: bool = False):
-        pass
-
-    def _mask(self, mask, **kwargs) -> Candidate:
-        mask_args = {"gdf": self.sdf}
-        candidate_args = {}
-        arg_spec = getfullargspec(mask)[0]
-
-        if "container" in arg_spec:
-            container = kwargs.pop("container", None)
-            if isinstance(container, str):
-                container = self.get_container(container)
-            if isinstance(container, Container):
-                mask_args["container"] = self.get_gdf(container.id, project=True)
-                candidate_args["container"] = container
-
-        if "census" in arg_spec:
-            census = kwargs.pop("census", None)
-            if isinstance(census, str):
-                census = self.get_census(census)
-            if isinstance(census, Census):
-                mask_args["census"] = self.get_gdf(census.id, project=True)
-                candidate_args["census"] = census
-
-        if "address" in arg_spec:
-            address = kwargs.pop("address", None)
-            if isinstance(address, str):
-                address = self.get_address(address)
-            if isinstance(address, Address):
-                mask_args["address"] = self.get_gdf(address.id, project=True)
-                candidate_args["address"] = address
-
-        m = mask(**mask_args, **kwargs)
-        mdf = m.run()
-        params = m.params
-        return self.add_candidate(mdf, params, **candidate_args)
-
-    def donut(self, low: float, high: float, **kwargs: dict) -> Candidate:
-        return self._mask(Donut, low=low, high=high, **kwargs)
-
-    def donut_i(self, distance_list: list[list[float, float]], **kwargs) -> list[Candidate]:
-        results = []
-        for distance_pair in distance_list:
-            low = distance_pair[0]
-            high = distance_pair[1]
-            if low > high:
-                raise ValueError("Low distance value exceeds high distance value.")
-            results.append(self.donut(low=low, high=high, **kwargs))
-        return results
-
-    def street(self, low: int, high: int, **kwargs) -> Candidate:
-        return self._mask(Street, low=low, high=high, **kwargs)
-
-    def street_i(self, distance_list: list[list[int, int]], **kwargs) -> list[Candidate]:
-        results = []
-        for distance_pair in distance_list:
-            low = distance_pair[0]
-            high = distance_pair[1]
-            if low > high:
-                raise ValueError("Low distance value exceeds high distance value.")
-            results.append(self.street(low=low, high=high, **kwargs))
-        return results
-
-    def voronoi(self, **kwargs) -> Candidate:
-        return self._mask(Voronoi, **kwargs)
-
-    def location_swap(
-        self, low: float, high: float, address: Address | str, **kwargs
-    ) -> Candidate:
-        return self._mask(LocationSwap, low=low, high=high, address=address, **kwargs)
-
-    def location_swap_i(
-        self, distance_list: list[list[float, float]], address: Address | str, **kwargs
-    ) -> list[Candidate]:
-        results = []
-        for distance_pair in distance_list:
-            low = distance_pair[0]
-            high = distance_pair[1]
-            if low > high:
-                raise ValueError("Low distance value exceeds high distance value.")
-            results.append(self.location_swap(low=low, high=high, address=address, **kwargs))
-        return results
-
-    def drift(self, candidate: Candidate | str) -> Candidate:
-        if isinstance(candidate, str):
-            candidate = self.get_candidate(candidate)
-        candidate.drift = analysis.drift(self.sdf, self.mdf(candidate))
-        self._session.commit()
-        return candidate
-
-    def estimate_k(
-        self, candidate: Candidate | str, census: Census | str, return_gdf: bool = False
-    ) -> Candidate | GeoDataFrame:
-        if isinstance(candidate, str):
-            candidate = self.get_candidate(candidate)
-        if isinstance(census, str):
-            census = self.get_census(census)
-
-        kdf = analysis.estimate_k(
-            self.sdf,
-            self.mdf(candidate),
-            census_gdf=self.get_gdf(census.id, project=True),
-            pop_col=census.pop_col,
-        )
-        k = analysis.summarize_k(kdf)
-        candidate.k_min = k.k_min
-        candidate.k_max = k.k_max
-        candidate.k_mean = k.k_mean
-        candidate.k_med = k.k_med
-        self._session.commit()
-        if return_gdf:
-            return kdf
-        return candidate
-
-    def calculate_k(
-        self, candidate: Candidate | str, address: Address | str, return_gdf: bool = False
-    ) -> Candidate | GeoDataFrame:
-        if isinstance(candidate, str):
-            candidate = self.get_candidate(candidate)
-        if isinstance(address, str):
-            address = self.get_address(address)
-
-        kdf = analysis.calculate_k(
-            self.sdf,
-            self.mdf(candidate),
-            address_gdf=self.get_gdf(address.id, project=True),
-        )
-        k = analysis.summarize_k(kdf)
-        candidate.k_min = k.k_min
-        candidate.k_max = k.k_max
-        candidate.k_mean = k.k_mean
-        candidate.k_med = k.k_med
-        self._session.commit()
-        if return_gdf:
-            return kdf
-        return Candidate
-
-    def ripley(self):
-        pass
-
-    def analyze_all(self, address: Address | str = None, census: Census | str = None) -> bool:
-        K_FIELDS = ["k_min", "k_max", "k_mean", "k_med"]
-
-        for candidate in self.candidates:
-            if not candidate.drift:
-                self.drift(candidate.id)
-
-            if not all([getattr(candidate, field) for field in K_FIELDS]):
-                if address:
-                    self.calculate_k(candidate, address)
-                elif census:
-                    self.estimate_k(candidate, census)
-        return True
-
-    def rank(self, metric: str, min_k: int = None, desc: bool = False) -> DataFrame:
-        if metric not in CANDIDATE_STATS_FIELDS:
-            raise ValueError(
-                f"Invalid metric name. Valid choices include: {[field for field in CANDIDATE_STATS_FIELDS]}"
-            )
-
-        stmt = select(Candidate).where(Candidate.sensitive == self.sensitive)
-        stmt = stmt.where(Candidate.k_min >= min_k) if min_k is not None else stmt
-        metric_object = getattr(Candidate, metric).desc() if desc else getattr(Candidate, metric)
-        stmt = stmt.order_by(metric_object)
-
-        ranked_candidates = self._session.execute(stmt).scalars().all()
-
-        df = DataFrame().from_records([candidate.as_dict for candidate in ranked_candidates])
-        metric_col = df.pop(metric)
-        df.insert(1, metric, metric_col)
+    def as_df(self):
+        df = DataFrame(data=self.candidates)
+        df = concat([df.drop(["kwargs"], axis=1), df["kwargs"].apply(Series)], axis=1)
+        df = concat([df.drop(["stats"], axis=1), df["stats"].apply(Series)], axis=1)
         return df
 
-    def nominate(self, candidate: Candidate | str) -> None:
-        if isinstance(candidate, Candidate):
-            candidate = candidate.id
+    def _hydrate_mask_kwargs(self, **mask_kwargs: dict) -> dict:
+        """
+        Find any keyword arguments that contain context layer checksums and
+        attempt to restore the layer from Atlas..
+        """
+        for key, value in mask_kwargs.items():
+            if isinstance(value, str) and value.startswith("context_"):
+                checksum = value.split("_")[1]
+                try:
+                    mask_kwargs[key] = self.layers[checksum]
+                except KeyError as e:
+                    raise KeyError(
+                        f"Error: cannot find context layer for '{key}, {checksum}', \
+                        try loading it first using Atlas.add_layers(). {e}"
+                    )
+        return mask_kwargs
 
-        self.sensitive.nominee = candidate
-        self._session.commit()
+    def _dehydrate_mask_kwargs(self, **mask_kwargs: dict) -> dict:
+        for key, value in mask_kwargs.items():
+            if isinstance(value, GeoDataFrame):
+                mask_kwargs[key] = "_".join(["context", tools.checksum(value)])
+        return mask_kwargs
+
+
+def evaluate(
+    candidate_gdf: GeoDataFrame, sensitive_gdf: GeoDataFrame, population_gdf: GeoDataFrame = None
+) -> dict:
+    return {"test": "Hello"}

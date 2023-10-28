@@ -1,7 +1,7 @@
 import geopandas as gpd
 import pytest
 
-from maskmypy import analysis, Atlas
+from maskmypy import Atlas, analysis
 
 
 @pytest.fixture

@@ -2,18 +2,18 @@ import json
 
 import pytest
 
-from maskmypy import Atlas2, donut, tools
+from maskmypy import Atlas, analysis, donut, tools
 
 
 def test_atlas_mask(points):
-    atlas = Atlas2(points)
+    atlas = Atlas(points)
     atlas.mask(donut, low=50, high=500)
     assert len(atlas[:]) == 1
     assert atlas[0]["checksum"] != tools.checksum(points)
 
 
 def test_atlas_as_df(points):
-    atlas = Atlas2(points)
+    atlas = Atlas(points)
     atlas.mask(donut, low=50, high=500)
     df = atlas.as_df()
     assert df.iloc[0]["high"] == 500
@@ -21,7 +21,7 @@ def test_atlas_as_df(points):
 
 
 def test_atlas_restore_from_json(points):
-    atlas = Atlas2(points)
+    atlas = Atlas(points)
 
     atlas.mask(donut, low=10, high=100)
     atlas.mask(donut, low=50, high=500)
@@ -31,7 +31,7 @@ def test_atlas_restore_from_json(points):
     atlas.to_json("/tmp/tmp_test.json")
     del atlas
 
-    atlas2 = Atlas2.from_json(points, "/tmp/tmp_test.json")
+    atlas2 = Atlas.from_json(points, "/tmp/tmp_test.json")
 
     gdf_0 = atlas2.gen_gdf(0)
     check_1b = tools.checksum(gdf_0)
@@ -43,12 +43,12 @@ def test_atlas_restore_from_json(points):
 
 
 def test_atlas_context_hydration(points, container):
-    atlas = Atlas2(points)
+    atlas = Atlas(points)
     atlas.mask(donut, container=container, low=50, high=500)
     atlas.to_json("/tmp/tmp_test.json")
     del atlas
 
-    atlas2 = Atlas2.from_json(points, "/tmp/tmp_test.json")
+    atlas2 = Atlas.from_json(points, "/tmp/tmp_test.json")
     with pytest.raises(KeyError):
         atlas2.gen_gdf(0)
 
@@ -56,12 +56,12 @@ def test_atlas_context_hydration(points, container):
     atlas2.gen_gdf(0)
     del atlas2
 
-    atlas3 = Atlas2.from_json(points, "/tmp/tmp_test.json", layers=[container])
+    atlas3 = Atlas.from_json(points, "/tmp/tmp_test.json", layers=[container])
     atlas3.gen_gdf(0)
 
 
 def test_atlas_sort(points):
-    atlas = Atlas2(points)
+    atlas = Atlas(points)
     atlas.mask(donut, low=300, high=399)
     atlas.mask(donut, low=200, high=299)
     atlas.mask(donut, low=100, high=199)
@@ -73,3 +73,11 @@ def test_atlas_sort(points):
 
     atlas.sort(by="timestamp")
     assert atlas[0]["timestamp"] < atlas[1]["timestamp"] < atlas[2]["timestamp"]
+
+
+def test_displacement(points):
+    masked_gdf = donut(points, 50, 500)
+    displacement_gdf = analysis.displacement(points, masked_gdf)
+    assert "_distance" not in points.columns
+    assert "_distance" not in masked_gdf.columns
+    assert "_distance" in displacement_gdf.columns
