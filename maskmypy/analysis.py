@@ -58,7 +58,7 @@ def k_satisfaction(gdf: GeoDataFrame, min_k: int, col: str = "k_anonymity") -> f
     return gdf.loc[gdf[col] >= min_k, col].count() / gdf[col].count()
 
 
-def summarize_displacement(gdf: GeoDataFrame, col="_distance") -> DD_Summary:
+def summarize_displacement(gdf: GeoDataFrame, col="_distance") -> dict:
     return
     {
         "displacement_min": int(gdf.loc[:, col].min()),
@@ -77,7 +77,7 @@ def summarize_k(gdf: GeoDataFrame, col="k_anonymity") -> dict:
     }
 
 
-def nnd(gdf: GeoDataFrame) -> NND_Summary:
+def nnd(gdf: GeoDataFrame) -> dict:
     pp = _gdf_to_pointpattern(gdf)
     return {"nnd_min": pp.min_nnd, "nnd_max": pp.max_nnd, "nnd_mean": pp.mean_nnd}
 
