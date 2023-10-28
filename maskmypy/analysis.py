@@ -155,7 +155,7 @@ def map_displacement(
     sensitive_gdf: GeoDataFrame,
     candidate_gdf: GeoDataFrame,
     filename: str = None,
-    address_gdf: GeoDataFrame = None,
+    context_gdf: GeoDataFrame = None,
 ) -> plt:
     import contextily as ctx
 
@@ -167,8 +167,8 @@ def map_displacement(
     ax = lines.plot(color="black", zorder=2, linewidth=1, figsize=[10, 10])
     ax = sensitive_gdf.plot(ax=ax, color="red", zorder=3, markersize=12)
     ax = candidate_gdf.plot(ax=ax, color="blue", zorder=4, markersize=12)
-    if isinstance(address_gdf, GeoDataFrame):
-        ax = address_gdf.plot(ax=ax, color="grey", zorder=1, markersize=6)
+    if isinstance(context_gdf, GeoDataFrame):
+        ax = context_gdf.plot(ax=ax, color="grey", zorder=1, markersize=6)
 
     ctx.add_basemap(ax, crs=sensitive_gdf.crs, source=ctx.providers.OpenStreetMap.Mapnik)
     plt.title("Displacement Distances", fontsize=16)
