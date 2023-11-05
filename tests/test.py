@@ -1,4 +1,5 @@
 import json
+import statistics
 
 import pytest
 
@@ -81,3 +82,26 @@ def test_displacement(points):
     assert "_distance" not in points.columns
     assert "_distance" not in masked_gdf.columns
     assert "_distance" in displacement_gdf.columns
+
+
+def test_evaluate(points, address):
+    atlas = Atlas(points, population=address)
+    atlas.mask(donut, low=100, high=199, skip_slow_evaluators=False)
+    atlas.mask(donut, low=300, high=399, skip_slow_evaluators=False)
+    assert atlas[0]["stats"]["displacement_min"] < atlas[1]["stats"]["displacement_max"]
+    assert atlas[0]["stats"]["k_satisfaction_50"] < atlas[0]["stats"]["k_satisfaction_5"]
+
+
+def test_ripley(points):
+    atlas = Atlas(points)
+    lows = []
+    for i in range(0, 3):
+        atlas.mask(donut, low=1, high=100, skip_slow_evaluators=False)
+        lows.append(atlas[i]["stats"]["ripley_rmse"])
+
+    highs = []
+    for i in range(3, 6):
+        atlas.mask(donut, low=100, high=200, skip_slow_evaluators=False)
+        highs.append(atlas[i]["stats"]["ripley_rmse"])
+
+    assert (statistics.mean(lows)) < (statistics.mean(highs))

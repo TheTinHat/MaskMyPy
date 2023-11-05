@@ -7,7 +7,7 @@ from typing import Callable
 from geopandas import GeoDataFrame
 from pandas import DataFrame, Series, concat
 
-from . import masks, tools
+from . import analysis, masks, tools
 
 
 @dataclass
@@ -15,6 +15,7 @@ class Atlas:
     sensitive: GeoDataFrame
     candidates: list = field(default_factory=list)
     population: GeoDataFrame = None
+    population_column: str = "pop"
 
     def __post_init__(self):
         self.layers = {}
@@ -40,6 +41,7 @@ class Atlas:
         mask_func: Callable,
         keep_gdf: bool = False,
         keep_candidate: bool = True,
+        skip_slow_evaluators: bool = True,
         **kwargs,
     ):
         candidate = {
@@ -53,10 +55,12 @@ class Atlas:
 
         candidate["checksum"] = tools.checksum(gdf)
         candidate["kwargs"] = self._dehydrate_mask_kwargs(**candidate["kwargs"])
-        candidate["stats"] = evaluate(
-            candidate_gdf=gdf,
+        candidate["stats"] = analysis.evaluate(
             sensitive_gdf=self.sensitive,
+            candidate_gdf=gdf,
             population_gdf=self.population,
+            population_column=self.population_column,
+            skip_slow=skip_slow_evaluators,
         )
 
         if keep_gdf:
@@ -161,9 +165,3 @@ class Atlas:
             if isinstance(value, GeoDataFrame):
                 mask_kwargs[key] = "_".join(["context", tools.checksum(value)])
         return mask_kwargs
-
-
-def evaluate(
-    candidate_gdf: GeoDataFrame, sensitive_gdf: GeoDataFrame, population_gdf: GeoDataFrame = None
-) -> dict:
-    return {"test": "Hello"}

@@ -10,6 +10,48 @@ from pointpats import PointPattern, k_test
 from pointpats.distance_statistics import KtestResult
 from shapely.geometry import LineString
 
+from . import tools
+
+
+def evaluate(
+    sensitive_gdf: GeoDataFrame,
+    candidate_gdf: GeoDataFrame,
+    population_gdf: GeoDataFrame = None,
+    population_column: str = "pop",
+    skip_slow: bool = True,
+) -> dict:
+    stats = {}
+
+    # Information Loss
+    stats["central_drift"] = central_drift(
+        sensitive_gdf=sensitive_gdf, candidate_gdf=candidate_gdf
+    )
+    stats.update(
+        summarize_displacement(
+            displacement(
+                sensitive_gdf=sensitive_gdf,
+                candidate_gdf=candidate_gdf,
+            )
+        )
+    )
+    stats.update(nnd_delta(sensitive_gdf=sensitive_gdf, candidate_gdf=candidate_gdf))
+    if not skip_slow:
+        stats["ripley_rmse"] = ripley_rmse(ripleys_k(sensitive_gdf), ripleys_k(candidate_gdf))
+
+    # Privacy
+    if isinstance(population_gdf, GeoDataFrame):
+        k_gdf = k_anonymity(
+            sensitive_gdf=sensitive_gdf,
+            candidate_gdf=candidate_gdf,
+            population_gdf=population_gdf,
+            pop_col=population_column,
+        )
+        stats.update(summarize_k(k_gdf))
+        stats["k_satisfaction_5"] = k_satisfaction(k_gdf, 5)
+        stats["k_satisfaction_25"] = k_satisfaction(k_gdf, 25)
+        stats["k_satisfaction_50"] = k_satisfaction(k_gdf, 50)
+    return stats
+
 
 def displacement(
     sensitive_gdf: GeoDataFrame, candidate_gdf: GeoDataFrame, col: str = "_distance"
@@ -19,7 +61,24 @@ def displacement(
     return candidate_gdf
 
 
-def estimate_k(
+def k_anonymity(
+    sensitive_gdf: GeoDataFrame,
+    candidate_gdf: GeoDataFrame,
+    population_gdf: GeoDataFrame,
+    pop_col: str = "pop",
+):
+    if tools._validate_geom_type(population_gdf, "Point"):
+        k_gdf = _calculate_k(sensitive_gdf, candidate_gdf, population_gdf)
+    elif tools._validate_geom_type(population_gdf, "Polygon", "MultiPolygon"):
+        if pop_col not in population_gdf:
+            raise ValueError(f"Cannot find population column {pop_col} in population_gdf")
+        k_gdf = _estimate_k(sensitive_gdf, candidate_gdf, population_gdf, pop_col)
+    else:
+        raise ValueError("population_gdf must include either Points or Polygons/MultiPolygons.")
+    return k_gdf
+
+
+def _estimate_k(
     sensitive_gdf: GeoDataFrame,
     candidate_gdf: GeoDataFrame,
     population_gdf: GeoDataFrame,
@@ -38,7 +97,7 @@ def estimate_k(
     return candidate_gdf
 
 
-def calculate_k(
+def _calculate_k(
     sensitive_gdf: GeoDataFrame, candidate_gdf: GeoDataFrame, address_gdf: GeoDataFrame
 ) -> GeoDataFrame:
     candidate_gdf = candidate_gdf.copy()
@@ -59,8 +118,7 @@ def k_satisfaction(gdf: GeoDataFrame, min_k: int, col: str = "k_anonymity") -> f
 
 
 def summarize_displacement(gdf: GeoDataFrame, col="_distance") -> dict:
-    return
-    {
+    return {
         "displacement_min": float(gdf.loc[:, col].min()),
         "displacement_max": float(gdf.loc[:, col].max()),
         "displacement_med": float(gdf.loc[:, col].median()),
@@ -82,9 +140,18 @@ def nnd(gdf: GeoDataFrame) -> dict:
     return {"nnd_min": pp.min_nnd, "nnd_max": pp.max_nnd, "nnd_mean": pp.mean_nnd}
 
 
-def drift(gdf_a: GeoDataFrame, gdf_b: GeoDataFrame) -> float:
-    centroid_a = gdf_a.dissolve().centroid
-    centroid_b = gdf_b.dissolve().centroid
+def nnd_delta(sensitive_gdf: GeoDataFrame, candidate_gdf: GeoDataFrame) -> dict:
+    before = nnd(sensitive_gdf)
+    after = nnd(candidate_gdf)
+    delta = {}
+    for key, value in before.items():
+        delta.update({f"{key}_delta": (after[key] - before[key])})
+    return delta
+
+
+def central_drift(sensitive_gdf: GeoDataFrame, candidate_gdf: GeoDataFrame) -> float:
+    centroid_a = sensitive_gdf.dissolve().centroid
+    centroid_b = candidate_gdf.dissolve().centroid
     return float(centroid_a.distance(centroid_b).iloc[0])
 
 
@@ -106,11 +173,11 @@ def ripleys_k(
     return k_results
 
 
-def ripley_rmse(c_result: KtestResult, s_result: KtestResult) -> float:
-    step_count = len(c_result.statistic)
+def ripley_rmse(sensitive_result: KtestResult, candidate_result: KtestResult) -> float:
+    step_count = len(candidate_result.statistic)
     residuals = []
     for i in range(step_count):
-        residual = c_result.statistic[i] - s_result.statistic[i]
+        residual = candidate_result.statistic[i] - sensitive_result.statistic[i]
         residuals.append(residual)
     return sqrt(square(residuals).mean())
 
@@ -131,18 +198,24 @@ def graph_ripleyresult(result: KtestResult, subtitle: str = None) -> Figure:
 
 
 def graph_ripleyresults(
-    c_result: KtestResult,
-    s_result: KtestResult,
+    sensitive_result: KtestResult,
+    candidate_result: KtestResult,
     subtitle: str = None,
 ) -> Figure:
-    bounds = _bounds_from_ripleyresult(s_result)
+    bounds = _bounds_from_ripleyresult(sensitive_result)
     fig = plt.figure()
     ax = fig.add_subplot(111)
-    ax.plot(s_result.support, bounds, color="#303030", label="Upper/Lower Bounds", alpha=0.25)
-    ax.plot(s_result.support, c_result.statistic, color="#1f77b4", label="Candidate")
-    ax.plot(s_result.support, s_result.statistic, color="#ff7f0e", label="Sensitive")
-    ax.scatter(c_result.support, c_result.statistic, zorder=5, c="#1f77b4")
-    ax.scatter(s_result.support, s_result.statistic, zorder=6, c="#ff7f0e")
+    ax.plot(
+        sensitive_result.support, bounds, color="#303030", label="Upper/Lower Bounds", alpha=0.25
+    )
+    ax.plot(
+        sensitive_result.support, candidate_result.statistic, color="#1f77b4", label="Candidate"
+    )
+    ax.plot(
+        sensitive_result.support, sensitive_result.statistic, color="#ff7f0e", label="Sensitive"
+    )
+    ax.scatter(candidate_result.support, candidate_result.statistic, zorder=5, c="#1f77b4")
+    ax.scatter(sensitive_result.support, sensitive_result.statistic, zorder=6, c="#ff7f0e")
     ax.set_title(subtitle)
     ax.set_xlabel("Distance")
     ax.set_ylabel("K Function")

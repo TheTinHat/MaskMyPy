@@ -21,7 +21,7 @@ def test_estimate_k_address(points, address):
     atlas = Atlas("test", in_memory=True)
     atlas.add_sensitive(points)
     atlas.donut(50, 500)
-    k = analysis.estimate_k(atlas.sensitive, atlas.get().mdf, atlas.population)
+    k = analysis._estimate_k(atlas.sensitive, atlas.get().mdf, atlas.population)
     analysis.summarize_k(k)
 
 
