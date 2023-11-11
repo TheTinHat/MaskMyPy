@@ -6,8 +6,9 @@ from osmnx import graph_from_polygon, graph_to_gdfs
 from osmnx.distance import add_edge_lengths, nearest_nodes
 from osmnx.utils_graph import remove_isolated_nodes
 
-from .mask import Mask
 import maskmypy.tools as tools
+
+from .mask import Mask
 
 
 class Street(Mask):

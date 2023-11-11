@@ -108,13 +108,24 @@ class Atlas:
         else:
             raise ValueError(f"Could not find {by} in candidate.")
 
-    def prune(self, by, min=None, max=None):
+    def prune(self, by: str, min: float, max: float):
         """
         Prune candidates based on a given attribute (e.g. `k_min`).
-        If the value for that attribute is below `min` or above `max`,
+        If the value for that attribute is less than `min` or greater than `max`,
         drop the candidate.
         """
-        self.candidates = [c for c in self.candidates if c[by] >= min and c[by] <= max]
+        if by in self.candidates[0].keys():
+            self.candidates = [c for c in self.candidates if c[by] >= min and c[by] <= max]
+        elif by in self.candidates[0]["stats"].keys():
+            self.candidates = [
+                c for c in self.candidates if c["stats"][by] >= min and c["stats"][by] <= max
+            ]
+        elif by in self.candidates[0]["kwargs"].keys():
+            self.candidates = [
+                c for c in self.candidates if c["kwargs"][by] >= min and c["kwargs"][by] <= max
+            ]
+        else:
+            raise ValueError(f"Could not find {by}.")
 
     def to_json(self, file: Path):
         """

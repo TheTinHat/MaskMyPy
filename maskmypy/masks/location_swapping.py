@@ -4,6 +4,7 @@ from random import SystemRandom
 from geopandas import GeoDataFrame
 from numpy import random
 from shapely import Point
+
 from .. import tools
 from .abstract_mask import AbstractMask
 

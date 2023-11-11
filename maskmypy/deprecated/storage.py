@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from pathlib import Path
+
 from geopandas import GeoDataFrame, read_file
 from sqlalchemy import (
     Boolean,

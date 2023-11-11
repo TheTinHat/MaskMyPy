@@ -95,13 +95,37 @@ def test_evaluate(points, address):
 def test_ripley(points):
     atlas = Atlas(points)
     lows = []
-    for i in range(0, 3):
+    for i in range(0, 4):
         atlas.mask(donut, low=1, high=100, skip_slow_evaluators=False)
         lows.append(atlas[i]["stats"]["ripley_rmse"])
 
     highs = []
-    for i in range(3, 6):
+    for i in range(4, 7):
         atlas.mask(donut, low=100, high=200, skip_slow_evaluators=False)
         highs.append(atlas[i]["stats"]["ripley_rmse"])
 
     assert (statistics.mean(lows)) < (statistics.mean(highs))
+
+def test_atlas_prune(points, address):
+    atlas = Atlas(points, population=address)
+    atlas.mask(donut, low=300, high=399)
+    atlas.mask(donut, low=200, high=299)
+    atlas.mask(donut, low=100, high=199)
+
+    atlas.prune(by="displacement_min", min=200, max=9999)
+    assert len(atlas.candidates) == 2
+
+    atlas.prune(by="low", min=0, max=299)
+    assert len(atlas.candidates) == 1
+        
+
+
+
+
+
+
+
+
+
+
+

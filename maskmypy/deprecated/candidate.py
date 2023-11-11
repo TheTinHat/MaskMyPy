@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 from datetime import datetime
 from time import time_ns
+
 from geopandas import GeoDataFrame
 from sqlalchemy import select
 from sqlalchemy.dialects.sqlite import insert

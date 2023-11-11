@@ -4,8 +4,9 @@ from typing import Union
 from geopandas import GeoDataFrame, sjoin
 from shapely.affinity import translate
 
-from .mask import Mask
 import maskmypy.tools as tools
+
+from .mask import Mask
 
 
 class Donut(Mask):

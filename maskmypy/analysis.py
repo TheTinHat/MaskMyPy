@@ -78,41 +78,6 @@ def k_anonymity(
     return k_gdf
 
 
-def _estimate_k(
-    sensitive_gdf: GeoDataFrame,
-    candidate_gdf: GeoDataFrame,
-    population_gdf: GeoDataFrame,
-    pop_col: str = "pop",
-) -> GeoDataFrame:
-    candidate_gdf = candidate_gdf.copy()
-    pop_col_adjusted = "_".join([pop_col, "adjusted"])
-    candidate_gdf["k_anonymity"] = (
-        displacement(sensitive_gdf, candidate_gdf)
-        .assign(geometry=lambda x: x.geometry.buffer(x["_distance"]), axis=1)
-        .pipe(_disaggregate, gdf_b=population_gdf, gdf_b_col=pop_col)
-        .groupby("_index_2")[pop_col_adjusted]
-        .sum()
-        .round()
-    )
-    return candidate_gdf
-
-
-def _calculate_k(
-    sensitive_gdf: GeoDataFrame, candidate_gdf: GeoDataFrame, address_gdf: GeoDataFrame
-) -> GeoDataFrame:
-    candidate_gdf = candidate_gdf.copy()
-    candidate_gdf_tmp = displacement(sensitive_gdf, candidate_gdf).assign(
-        geometry=lambda x: x.buffer(x["_distance"])
-    )
-    candidate_gdf["k_anonymity"] = (
-        sjoin(address_gdf, candidate_gdf_tmp, how="left", rsuffix="candidate")
-        .groupby("index_candidate")
-        .size()
-    )
-    candidate_gdf.fillna({"k_anonymity": 0}, inplace=True)
-    return candidate_gdf
-
-
 def k_satisfaction(gdf: GeoDataFrame, min_k: int, col: str = "k_anonymity") -> float:
     return gdf.loc[gdf[col] >= min_k, col].count() / gdf[col].count()
 
@@ -296,3 +261,38 @@ def _legend_deduped_labels(ax: Axis) -> None:
     handles, labels = ax.get_legend_handles_labels()
     unique = [(h, l) for i, (h, l) in enumerate(zip(handles, labels)) if l not in labels[:i]]
     ax.legend(*zip(*unique))
+
+
+def _estimate_k(
+    sensitive_gdf: GeoDataFrame,
+    candidate_gdf: GeoDataFrame,
+    population_gdf: GeoDataFrame,
+    pop_col: str = "pop",
+) -> GeoDataFrame:
+    candidate_gdf = candidate_gdf.copy()
+    pop_col_adjusted = "_".join([pop_col, "adjusted"])
+    candidate_gdf["k_anonymity"] = (
+        displacement(sensitive_gdf, candidate_gdf)
+        .assign(geometry=lambda x: x.geometry.buffer(x["_distance"]), axis=1)
+        .pipe(_disaggregate, gdf_b=population_gdf, gdf_b_col=pop_col)
+        .groupby("_index_2")[pop_col_adjusted]
+        .sum()
+        .round()
+    )
+    return candidate_gdf
+
+
+def _calculate_k(
+    sensitive_gdf: GeoDataFrame, candidate_gdf: GeoDataFrame, address_gdf: GeoDataFrame
+) -> GeoDataFrame:
+    candidate_gdf = candidate_gdf.copy()
+    candidate_gdf_tmp = displacement(sensitive_gdf, candidate_gdf).assign(
+        geometry=lambda x: x.buffer(x["_distance"])
+    )
+    candidate_gdf["k_anonymity"] = (
+        sjoin(address_gdf, candidate_gdf_tmp, how="left", rsuffix="candidate")
+        .groupby("index_candidate")
+        .size()
+    )
+    candidate_gdf.fillna({"k_anonymity": 0}, inplace=True)
+    return candidate_gdf

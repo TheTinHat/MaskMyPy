@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+
 from . import analysis
 from .atlas import Atlas
 
