@@ -71,10 +71,12 @@ def _validate_geom_type(gdf: GeoDataFrame, *type_as_string: str) -> bool:
     return True
 
 
-def _validate_crs(a: CRS, b: CRS, custom_message: str = None) -> bool:
-    default_message = "CRS do not match. Ensure all CRS match that of sensitive GeoDataFrame."
+def _validate_crs(*crs: CRS, custom_message: str = None) -> bool:
+    default_message = (
+        "CRS mismatch. Ensure the coordinate reference systems of all input layers match."
+    )
     message = default_message if not custom_message else custom_message
-    if a != b:
+    if len(set(crs)) != 1:
         raise ValueError(message)
     else:
         return True

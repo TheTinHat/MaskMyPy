@@ -106,6 +106,7 @@ def test_ripley(points):
 
     assert (statistics.mean(lows)) < (statistics.mean(highs))
 
+
 def test_atlas_prune(points, address):
     atlas = Atlas(points, population=address)
     atlas.mask(donut, low=300, high=399)
@@ -117,15 +118,9 @@ def test_atlas_prune(points, address):
 
     atlas.prune(by="low", min=0, max=299)
     assert len(atlas.candidates) == 1
-        
 
 
-
-
-
-
-
-
-
-
-
+def test_atlas_crs_mismatch(points, address):
+    address = address.to_crs(epsg=4326)
+    with pytest.raises(ValueError):
+        atlas = Atlas(points, population=address)

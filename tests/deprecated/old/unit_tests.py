@@ -1,10 +1,11 @@
 import geopandas as gpd
 import pytest
-from maskmypy import *
-from maskmypy.tools import *
 from numpy import random
 from scipy.stats import normaltest
 from shapely.geometry import Point
+
+from maskmypy import *
+from maskmypy.tools import *
 
 """   INITIALIZATION   """
 

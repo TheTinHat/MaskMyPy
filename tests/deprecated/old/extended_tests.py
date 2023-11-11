@@ -1,7 +1,8 @@
 import geopandas as gpd
 import pytest
-from maskmypy import Donut, Donut_K, Donut_Multiply, Street
 from numpy import random
+
+from maskmypy import Donut, Donut_K, Donut_Multiply, Street
 
 # Load base data
 points = gpd.read_file("tests/data/100_test_points.shp")

@@ -2,19 +2,8 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from geopandas import GeoDataFrame, read_file
-from sqlalchemy import (
-    Boolean,
-    Column,
-    Float,
-    ForeignKey,
-    Integer,
-    MetaData,
-    PickleType,
-    String,
-    Table,
-    Text,
-    create_engine,
-)
+from sqlalchemy import (Boolean, Column, Float, ForeignKey, Integer, MetaData,
+                        PickleType, String, Table, Text, create_engine)
 from sqlalchemy.orm import DeclarativeBase, Session
 
 metadata_obj = MetaData()

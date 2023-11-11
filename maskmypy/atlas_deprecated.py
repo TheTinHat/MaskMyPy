@@ -9,7 +9,8 @@ from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session
 
 from . import analysis, tools
-from .db import CANDIDATE_STATS_FIELDS, Address, Base, Candidate, Census, Container, Sensitive
+from .db import (CANDIDATE_STATS_FIELDS, Address, Base, Candidate, Census,
+                 Container, Sensitive)
 from .masks import Donut, LocationSwap, Street, Voronoi
 
 

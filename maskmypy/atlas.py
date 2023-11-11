@@ -19,6 +19,8 @@ class Atlas:
 
     def __post_init__(self):
         self.layers = {}
+        if isinstance(self.population, GeoDataFrame):
+            tools._validate_crs(self.sensitive.crs, self.population.crs)
 
     def __getitem__(self, idx):
         return self.candidates[idx]

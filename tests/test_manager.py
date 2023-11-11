@@ -1,8 +1,10 @@
-import pytest
 import os
-from maskmypy import Atlas, Sensitive, Candidate, Donut
+
+import pytest
 from geopandas import GeoDataFrame
 from pandas.testing import assert_frame_equal
+
+from maskmypy import Atlas, Candidate, Donut, Sensitive
 
 
 def test_filename_appends_db_suffix(tmpdir):
