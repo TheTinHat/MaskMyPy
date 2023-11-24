@@ -99,3 +99,16 @@ def test_map_displacement(points, tmpdir, address):
         points, masked_points, filename="MapDisplacement.png", context_gdf=address
     )
     assert os.path.exists("MapDisplacement.png")
+
+
+def test_evaluate(points, address):
+    masked_points = points.copy(deep=True)
+    masked_points["geometry"] = masked_points.geometry.translate(50, 0, 0)
+    stats = analysis.evaluate(points, masked_points, address, skip_slow=False)
+
+    assert stats["central_drift"] == 50
+    assert stats["displacement_min"] == 50
+    assert stats["k_max"] > stats["k_min"]
+    assert stats["k_satisfaction_50"] == 0.0
+    assert stats["nnd_min_delta"] == 0.0
+    assert stats["ripley_rmse"] == 0.0
