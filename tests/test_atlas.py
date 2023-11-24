@@ -1,4 +1,3 @@
-import json
 import statistics
 
 import pytest
