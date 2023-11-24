@@ -1,8 +1,5 @@
 import os
 
-import geopandas as gpd
-import pytest
-
 from maskmypy import analysis, donut
 
 
