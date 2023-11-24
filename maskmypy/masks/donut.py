@@ -19,7 +19,11 @@ def donut(
     distribution: str = "uniform",
     seed: int = None,
 ) -> GeoDataFrame:
-    _validate_donut(gdf=gdf, low=low, high=high, container=container)
+    # Initialize random number generator
+    # seed = int(SystemRandom().random() * (10**10)) if not seed else seed
+    # _rng = random.default_rng(seed=seed)
+
+    _validate_donut(gdf, low, high, container)
     return Donut(**locals()).run()
 
 
@@ -27,7 +31,7 @@ def _validate_donut(gdf, low, high, container):
     tools._validate_geom_type(gdf, "Point")
 
     if low >= high:
-        raise ValueError("Minimum displacement distance is larger than or equal to maximum.")
+        raise ValueError("Minimum displacement distance is greater than or equal to maximum.")
 
     if container is not None:
         tools._validate_geom_type(container, "Polygon", "MultiPolygon")
