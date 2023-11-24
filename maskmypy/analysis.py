@@ -1,4 +1,3 @@
-from collections import namedtuple
 from math import sqrt
 
 import matplotlib.pyplot as plt
@@ -121,7 +120,11 @@ def central_drift(sensitive_gdf: GeoDataFrame, candidate_gdf: GeoDataFrame) -> f
 
 
 def ripleys_k(
-    gdf: GeoDataFrame, max_dist: float = None, min_dist: float = None, steps: int = 10
+    gdf: GeoDataFrame,
+    max_dist: float = None,
+    min_dist: float = None,
+    steps: int = 10,
+    simulations=99,
 ) -> KtestResult:
     if not max_dist:
         max_dist = _gdf_to_pointpattern(gdf).rot
@@ -133,7 +136,7 @@ def ripleys_k(
         array(list(zip(gdf.geometry.x, gdf.geometry.y))),
         keep_simulations=True,
         support=(min_dist, max_dist, steps),
-        n_simulations=999,
+        n_simulations=simulations,
     )
     return k_results
 
@@ -171,16 +174,33 @@ def graph_ripleyresults(
     fig = plt.figure()
     ax = fig.add_subplot(111)
     ax.plot(
-        sensitive_result.support, bounds, color="#303030", label="Upper/Lower Bounds", alpha=0.25
+        sensitive_result.support,
+        bounds,
+        color="#ff7f0e",
+        label="Sensitive Upper/Lower Bounds",
+        alpha=0.35,
     )
     ax.plot(
-        sensitive_result.support, candidate_result.statistic, color="#1f77b4", label="Candidate"
+        candidate_result.support,
+        bounds,
+        color="#1f77b4",
+        label="Candidate Upper/Lower Bounds",
+        alpha=0.35,
     )
     ax.plot(
-        sensitive_result.support, sensitive_result.statistic, color="#ff7f0e", label="Sensitive"
+        sensitive_result.support,
+        sensitive_result.statistic,
+        color="#ff7f0e",
+        label="Sensitive Statistic",
     )
-    ax.scatter(candidate_result.support, candidate_result.statistic, zorder=5, c="#1f77b4")
+    ax.plot(
+        candidate_result.support,
+        candidate_result.statistic,
+        color="#1f77b4",
+        label="Candidate Statistic",
+    )
     ax.scatter(sensitive_result.support, sensitive_result.statistic, zorder=6, c="#ff7f0e")
+    ax.scatter(candidate_result.support, candidate_result.statistic, zorder=5, c="#1f77b4")
     ax.set_title(subtitle)
     ax.set_xlabel("Distance")
     ax.set_ylabel("K Function")
