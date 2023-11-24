@@ -66,6 +66,20 @@ def test_ripleys_k(points, tmpdir):
     assert os.path.exists("ComparisonResult.png")
 
 
+def test_ripleys_rmse(points):
+    masked = donut(points, 1, 5)
+    kresult_sensitive = analysis.ripleys_k(points)
+    kresult_masked = analysis.ripleys_k(masked)
+    rmse_1 = analysis.ripley_rmse(kresult_sensitive, kresult_masked)
+
+    masked = donut(points, 1000, 5000)
+    kresult_sensitive = analysis.ripleys_k(points)
+    kresult_masked = analysis.ripleys_k(masked)
+    rmse_2 = analysis.ripley_rmse(kresult_sensitive, kresult_masked)
+
+    assert rmse_1 < rmse_2
+
+
 def test_nearest_neighbor_stats(points):
     masked_points = points.copy()
     masked_points["geometry"] = masked_points.geometry.translate(50, 0, 0)
@@ -79,3 +93,12 @@ def test_nearest_neighbor_stats(points):
     assert isinstance(nnd["nnd_min_delta"], float)
     assert isinstance(nnd["nnd_max_delta"], float)
     assert isinstance(nnd["nnd_mean_delta"], float)
+
+
+def test_map_displacement(points, tmpdir, address):
+    masked_points = points.copy()
+    masked_points["geometry"] = masked_points.geometry.translate(500, 0, 0)
+    analysis.map_displacement(
+        points, masked_points, filename="MapDisplacement.png", context_gdf=address
+    )
+    assert os.path.exists("MapDisplacement.png")
