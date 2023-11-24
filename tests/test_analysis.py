@@ -17,6 +17,13 @@ def test_k_satisfaction(points, address):
     assert k_sat_999 < 0.1
 
 
+def test_k_summary(points, address):
+    masked = donut(points, 100, 500)
+    masked_k = analysis.k_anonymity(points, masked, address)
+    k_sum = analysis.summarize_k(masked_k)
+    assert k_sum["k_min"] < k_sum["k_mean"] < k_sum["k_max"]
+
+
 def test_displacement(points):
     masked_points = points.copy()
     masked_points["geometry"] = masked_points.geometry.translate(50, 0, 0)
