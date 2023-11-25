@@ -20,11 +20,13 @@ def test_atlas_as_df(points):
     assert df.iloc[0]["mask"] == "donut"
 
 
-def test_atlas_restore_from_json(points):
+def test_atlas_restore_from_json(points_small):
+    points = points_small
     atlas = Atlas(points)
 
     atlas.mask(donut, low=10, high=100)
-    atlas.mask(donut, low=50, high=500)
+    atlas.mask(donut, low=50, high=500, snap_to_streets=True)
+
     check_1a = atlas[0]["checksum"]
     check_2a = atlas[1]["checksum"]
 

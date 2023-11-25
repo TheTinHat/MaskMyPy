@@ -18,13 +18,20 @@ def donut(
     container: GeoDataFrame = None,
     distribution: str = "uniform",
     seed: int = None,
+    snap_to_streets: bool = False,
 ) -> GeoDataFrame:
     # Initialize random number generator
     # seed = int(SystemRandom().random() * (10**10)) if not seed else seed
     # _rng = random.default_rng(seed=seed)
+    args = locals()
+    del args["snap_to_streets"]
 
     _validate_donut(gdf, low, high, container)
-    return Donut(**locals()).run()
+    masked_gdf = Donut(**args).run()
+
+    if snap_to_streets:
+        masked_gdf = tools.snap_to_streets(masked_gdf)
+    return masked_gdf
 
 
 def _validate_donut(gdf, low, high, container):

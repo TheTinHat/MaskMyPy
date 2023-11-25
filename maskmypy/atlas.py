@@ -44,7 +44,6 @@ class Atlas:
         keep_gdf: bool = False,
         keep_candidate: bool = True,
         skip_slow_evaluators: bool = True,
-        snap_to_streets: bool = False,
         **kwargs,
     ):
         candidate = {
@@ -55,9 +54,6 @@ class Atlas:
         candidate["kwargs"]["seed"] = candidate["kwargs"].get("seed") or tools.gen_seed()
 
         gdf = mask_func(self.sensitive, **candidate["kwargs"])
-
-        if snap_to_streets:
-            gdf = tools.snap_to_streets(gdf)
 
         candidate["checksum"] = tools.checksum(gdf)
         candidate["kwargs"] = self._dehydrate_mask_kwargs(**candidate["kwargs"])
