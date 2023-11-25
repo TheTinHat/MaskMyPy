@@ -19,7 +19,7 @@ setup(
         "Topic :: Scientific/Engineering :: GIS",
     ],
     install_requires=[
-        "osmnx>=1.3.0",
+        "osmnx>=1.7.0",
         "scikit-learn>=1.1.1",
         "SQLAlchemy>=2.0.0",
         "pointpats==2.3.0",
