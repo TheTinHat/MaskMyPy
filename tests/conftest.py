@@ -39,6 +39,12 @@ def points():
 
 
 @pytest.fixture
+def points_small():
+    points = POINTS.copy()
+    return points.clip(points.iloc[0].geometry.buffer(1500))
+
+
+@pytest.fixture
 def address():
     return ADDRESS.copy()
 
