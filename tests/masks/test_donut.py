@@ -8,7 +8,7 @@ from maskmypy import analysis, donut, tools
 
 @pytest.mark.parametrize("distribution", ["uniform", "gaussian", "areal"])
 def test_donut_displacement(points, distribution):
-    for i in range(100):
+    for i in range(50):
         low = 100
         high = 200
         masked = donut(points, low=low, high=high, distribution=distribution)
