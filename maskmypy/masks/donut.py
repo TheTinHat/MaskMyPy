@@ -1,14 +1,11 @@
 from dataclasses import dataclass
 from math import sqrt
-from random import SystemRandom
 
 from geopandas import GeoDataFrame
-from numpy import random
 from shapely import Point
 from shapely.affinity import translate
 
 from .. import tools
-from .abstract_mask import AbstractMask
 
 
 def donut(
@@ -20,17 +17,20 @@ def donut(
     seed: int = None,
     snap_to_streets: bool = False,
 ) -> GeoDataFrame:
+    gdf = gdf.copy()
+    _validate_donut(gdf, low, high, container)
+
     # Initialize random number generator
-    # seed = int(SystemRandom().random() * (10**10)) if not seed else seed
-    # _rng = random.default_rng(seed=seed)
+    seed = tools.gen_seed() if not seed else seed
+
     args = locals()
     del args["snap_to_streets"]
 
-    _validate_donut(gdf, low, high, container)
-    masked_gdf = Donut(**args).run()
+    masked_gdf = _Donut(**args).run()
 
     if snap_to_streets:
         masked_gdf = tools.snap_to_streets(masked_gdf)
+
     return masked_gdf
 
 
@@ -41,12 +41,14 @@ def _validate_donut(gdf, low, high, container):
         raise ValueError("Minimum displacement distance is greater than or equal to maximum.")
 
     if container is not None:
+        if not isinstance(container, GeoDataFrame):
+            raise ValueError("Container is not a valid GeoDataFrame")
         tools._validate_geom_type(container, "Polygon", "MultiPolygon")
         tools._validate_crs(gdf.crs, container.crs)
 
 
 @dataclass
-class Donut(AbstractMask):
+class _Donut:
     gdf: GeoDataFrame
     low: float
     high: float
@@ -55,18 +57,7 @@ class Donut(AbstractMask):
     seed: int = None
 
     def __post_init__(self) -> None:
-        # Initialize random number generator
-        self.seed = int(SystemRandom().random() * (10**10)) if not self.seed else self.seed
-        self._rng = random.default_rng(seed=self.seed)
-
-        # Validate and initialize input parameters
-        tools._validate_geom_type(self.gdf, "Point")
-        self.mdf = self.gdf.copy()
-
-        if self.low >= self.high:
-            raise ValueError("Minimum displacement distance is larger than or equal to maximum.")
-
-            tools._validate_crs(self.gdf.crs, self.container.crs)
+        self._rng = tools.gen_rng(seed=self.seed)
 
     def _generate_random_offset(self) -> tuple[float, float]:
         if self.distribution == "uniform":
@@ -127,23 +118,12 @@ class Donut(AbstractMask):
 
     def run(self) -> GeoDataFrame:
         if isinstance(self.container, GeoDataFrame):
-            self.mdf[self.mdf.geometry.name] = self.mdf[self.mdf.geometry.name].apply(
+            self.gdf[self.gdf.geometry.name] = self.gdf[self.gdf.geometry.name].apply(
                 self._mask_contained_point
             )
         else:
-            self.mdf[self.mdf.geometry.name] = self.mdf[self.mdf.geometry.name].apply(
+            self.gdf[self.gdf.geometry.name] = self.gdf[self.gdf.geometry.name].apply(
                 self._mask_point
             )
 
-        return self.mdf
-
-    @property
-    def params(self) -> dict:
-        return {
-            "mask": "donut",
-            "low": self.low,
-            "high": self.high,
-            "container": True if isinstance(self.container, GeoDataFrame) else False,
-            "distribution": self.distribution,
-            "seed": self.seed,
-        }
+        return self.gdf

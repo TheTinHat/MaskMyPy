@@ -11,8 +11,3 @@ class AbstractMask(ABC):
     @abstractmethod
     def run(self) -> GeoDataFrame:
         pass
-
-    @property
-    @abstractmethod
-    def params(self) -> dict:
-        pass
