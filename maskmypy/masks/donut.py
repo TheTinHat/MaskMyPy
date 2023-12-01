@@ -20,7 +20,6 @@ def donut(
     gdf = gdf.copy()
     _validate_donut(gdf, low, high, container)
 
-    # Initialize random number generator
     seed = tools.gen_seed() if not seed else seed
 
     args = locals()
