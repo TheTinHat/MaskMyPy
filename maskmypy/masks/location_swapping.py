@@ -1,16 +1,47 @@
 from dataclasses import dataclass
-from random import SystemRandom
 
 from geopandas import GeoDataFrame
 from numpy import random
 from shapely import Point
 
 from .. import tools
-from .abstract_mask import AbstractMask
+
+
+def locationswap(
+    gdf: GeoDataFrame,
+    low: float,
+    high: float,
+    address: GeoDataFrame,
+    seed: int = None,
+    snap_to_streets: bool = False,
+):
+    gdf = gdf.copy()
+    _validate_locationswap(gdf, low, high, address)
+
+    seed = tools.gen_seed() if not seed else seed
+
+    args = locals()
+    del args["snap_to_streets"]
+
+    masked_gdf = _LocationSwap(**args).run()
+
+    if snap_to_streets:
+        masked_gdf = tools.snap_to_streets(masked_gdf)
+
+    return masked_gdf
+
+
+def _validate_locationswap(gdf, low, high, address):
+    tools._validate_geom_type(gdf, "Point")
+    tools._validate_geom_type(address, "Point")
+    tools._validate_crs(gdf.crs, address.crs)
+
+    if low >= high:
+        raise ValueError("Minimum displacement distance is larger than or equal to maximum.")
 
 
 @dataclass
-class LocationSwap(AbstractMask):
+class _LocationSwap:
     gdf: GeoDataFrame
     low: float
     high: float
@@ -19,18 +50,7 @@ class LocationSwap(AbstractMask):
 
     def __post_init__(self) -> None:
         # Initialize random number generator
-        self.seed = int(SystemRandom().random() * (10**10)) if not self.seed else self.seed
         self._rng = random.default_rng(seed=self.seed)
-
-        # Validate and initialize input parameters
-        tools._validate_geom_type(self.gdf, "Point")
-        self.mdf = self.gdf.copy(deep=True)
-
-        if self.low >= self.high:
-            raise ValueError("Minimum displacement distance is larger than or equal to maximum.")
-
-        tools._validate_geom_type(self.address, "Point")
-        tools._validate_crs(self.gdf.crs, self.address.crs)
 
     def _mask_point(self, point: Point) -> Point:
         min_buffer = point.buffer(self.low)
@@ -49,14 +69,5 @@ class LocationSwap(AbstractMask):
             return Point(0, 0)
 
     def run(self) -> GeoDataFrame:
-        self.mdf[self.mdf.geometry.name] = self.mdf[self.mdf.geometry.name].apply(self._mask_point)
-        return self.mdf
-
-    @property
-    def params(self) -> dict:
-        return {
-            "mask": "location_swapping",
-            "low": self.low,
-            "high": self.high,
-            "seed": self.seed,
-        }
+        self.gdf[self.gdf.geometry.name] = self.gdf[self.gdf.geometry.name].apply(self._mask_point)
+        return self.gdf
