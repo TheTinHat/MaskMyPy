@@ -1,6 +1,5 @@
 from copy import deepcopy
 from dataclasses import dataclass
-from random import SystemRandom
 
 from geopandas import GeoDataFrame
 from networkx import single_source_dijkstra_path_length
@@ -12,11 +11,37 @@ from osmnx.utils_graph import remove_isolated_nodes
 from shapely import Point
 
 from .. import tools
-from .abstract_mask import AbstractMask
+
+
+def street(
+    gdf: GeoDataFrame,
+    low: int,
+    high: int,
+    max_length: float = 1000,
+    seed: int = None,
+    padding: float = 0.2,
+) -> GeoDataFrame:
+    gdf = gdf.copy()
+    _validate_street(gdf, low, high)
+
+    seed = tools.gen_seed() if not seed else seed
+
+    args = locals()
+
+    masked_gdf = _Street(**args).run()
+
+    return masked_gdf
+
+
+def _validate_street(gdf, low, high):
+    tools._validate_geom_type(gdf, "Point")
+
+    if low >= high:
+        raise ValueError("Low value must be less than high value.")
 
 
 @dataclass
-class Street(AbstractMask):
+class _Street:
     gdf: GeoDataFrame
     low: int
     high: int
@@ -25,22 +50,13 @@ class Street(AbstractMask):
     padding: float = 0.2
 
     def __post_init__(self) -> None:
-        # Initialize random number generator
-        self.seed = int(SystemRandom().random() * (10**10)) if not self.seed else self.seed
         self._rng = random.default_rng(seed=self.seed)
-
-        # Validate and initialize input parameters
-        tools._validate_geom_type(self.gdf, "Point")
         self.crs = self.gdf.crs
-        self.mdf = self.gdf.copy().to_crs(epsg=4326)
-
-        if self.low >= self.high:
-            raise ValueError("Minimum is larger than or equal to maximum.")
-
+        self.gdf = self.gdf.to_crs(epsg=4326)
         self._get_osm()
 
     def _get_osm(self) -> None:
-        bbox = tools._pad(self.mdf.total_bounds, self.padding)
+        bbox = tools._pad(self.gdf.total_bounds, self.padding)
         self.graph = add_edge_lengths(
             remove_isolated_nodes(
                 graph_from_bbox(
@@ -112,17 +128,6 @@ class Street(AbstractMask):
         return self.graph_gdf[0].at[target_node, self.graph_gdf[0].geometry.name]
 
     def run(self) -> GeoDataFrame:
-        self.mdf[self.mdf.geometry.name] = self.mdf[self.mdf.geometry.name].apply(self._mask_point)
-        self.mdf = self.mdf.to_crs(self.crs)
-        return self.mdf
-
-    @property
-    def params(self) -> dict:
-        return {
-            "mask": "street",
-            "low": self.low,
-            "high": self.high,
-            "max_length": self.max_length,
-            "seed": self.seed,
-            "padding": self.padding,
-        }
+        self.gdf[self.gdf.geometry.name] = self.gdf[self.gdf.geometry.name].apply(self._mask_point)
+        self.gdf = self.gdf.to_crs(self.crs)
+        return self.gdf
