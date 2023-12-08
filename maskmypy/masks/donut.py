@@ -17,6 +17,45 @@ def donut(
     seed: int = None,
     snap_to_streets: bool = False,
 ) -> GeoDataFrame:
+    """
+    Apply donut masking to a GeoDataFrame, randomly displacing points between a minimum and
+    maximum distance.
+
+    Parameters
+    ----------
+    gdf : GeoDataFrame
+        GeoDataFrame containing sensitive points.
+    low : float
+        Minimum distance to displace points. Unit must match that of the `gdf` CRS.
+    high : float
+        Maximum displacement to displace points. Unit must match that of the `gdf` CRS.
+    container : GeoDataFrame
+        A  GeoDataFrame containing polygons within which intersecting sensitive points should
+        remain after masking. This works by masking a point, checking if it intersects
+        the same polygon prior to masking, and retrying until it does. Useful for preserving
+        statistical relationships, such as census tract, or to ensure that points are not
+        displaced into impossible locations, such as the ocean. CRS must match that of `gdf`.
+        Default: `None`.
+    distribution : str
+        The distribution used to determine masking distances. `uniform` provides
+        a flat distribution where any value between the minimum and maximum distance is
+        equally likely to be selected. `areal` is more likely to select distances that are
+        further away. The `gaussian` distribution uses a normal distribution, where values
+        towards the middle of the range are most likely to be selected. Note that gaussian
+        distribution has a small chance of selecting values beyond the defined minimum and
+        maximum. Default: `uniform`.
+    seed : int
+        Used to seed the random number generator so that masks are reproducible. Randomly
+        generated if left undefined. Default: `None`.
+    snap_to_streets : bool
+        If True, points are snapped to the nearest node on the OSM street network after masking.
+        This can reduce the chance of false-attribution.
+
+    Returns
+    -------
+    GeoDataFrame
+        A GeoDataFrame containing masked points.
+    """
     gdf = gdf.copy()
     _validate_donut(gdf, low, high, container)
 
