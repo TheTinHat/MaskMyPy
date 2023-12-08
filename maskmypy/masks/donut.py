@@ -45,8 +45,8 @@ def donut(
         distribution has a small chance of selecting values beyond the defined minimum and
         maximum. Default: `uniform`.
     seed : int
-        Used to seed the random number generator so that masks are reproducible. Randomly
-        generated if left undefined. Default: `None`.
+        Used to seed the random number generator so that masked datasets are reproducible.
+        Randomly generated if left undefined. Default: `None`.
     snap_to_streets : bool
         If True, points are snapped to the nearest node on the OSM street network after masking.
         This can reduce the chance of false-attribution.
