@@ -21,6 +21,39 @@ def street(
     seed: int = None,
     padding: float = 0.2,
 ) -> GeoDataFrame:
+    """
+    Apply street masking to a GeoDataFrame, displacing points along the OpenStreetMap street
+    network. This helps account for variations in population density, and reduces the likelihood
+    of false attribution as points are always displaced to the street network. Each point is
+    snapped to the nearest node on the network, then displaced along the surround network between
+    `low` and `high` nodes away.
+
+    Parameters
+    ----------
+    gdf : GeoDataFrame
+        GeoDataFrame containing sensitive points.
+    low : int
+        Minimum number of nodes along the OSM street network to traverse.
+    high : int
+        Maximum number of nodes along the OSM street network to traverse.
+    max_length : float
+        Maximum distance in meters between any two nodes along the street network.
+        When traversing each node on the street network, MaskMyPy verifies that its immediate
+        neighbours are no more than `max_length` away. This prevents extremely large masking
+        distances, such as those caused by long highways. Default: `1000`.
+    seed : int
+        Used to seed the random number generator so that masked datasets are reproducible.
+        Randomly generated if left undefined. Default: `None`.
+    padding : float
+        OSM network data is retrieved based on the bounding box of the sensitive GeoDataFrame.
+        Padding is used to expand this bounding box slightly to reduce unwanted edge-effects.
+        A value of `0.2` would add 20% of the x and y extent to *each side* of the bounding box.
+
+    Returns
+    -------
+    GeoDataFrame
+        A GeoDataFrame containing masked points.
+    """
     gdf = gdf.copy()
     _validate_street(gdf, low, high)
 
@@ -94,12 +127,11 @@ class _Street:
     def _mask_point_from_node_id(self, node_id: int) -> Point:
         node_count = 0
         target_node_count = self._rng.integers(self.low, self.high, endpoint=False)
-        distance = 1000
 
         # Search for surrounding nodes until number of nodes found equals or exceeds target_node_count
         while node_count < target_node_count:
             paths = single_source_dijkstra_path_length(
-                G=self.graph, source=node_id, cutoff=distance, weight="length"
+                G=self.graph, source=node_id, cutoff=self.max_length, weight="length"
             )
             node_count = len(paths)
 
