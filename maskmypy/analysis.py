@@ -293,6 +293,29 @@ def ripleys_k(
     steps: int = 10,
     simulations: int = 99,
 ) -> KtestResult:
+    """
+    [TODO:summary]
+
+    [TODO:description]
+
+    Parameters
+    ----------
+    gdf
+        [TODO:description]
+    max_dist
+        [TODO:description]
+    min_dist
+        [TODO:description]
+    steps
+        [TODO:description]
+    simulations
+        [TODO:description]
+
+    Returns
+    -------
+    KtestResult
+        [TODO:description]
+    """
     if not max_dist:
         max_dist = _gdf_to_pointpattern(gdf).rot
 
@@ -309,6 +332,23 @@ def ripleys_k(
 
 
 def ripley_rmse(sensitive_result: KtestResult, candidate_result: KtestResult) -> float:
+    """
+    [TODO:summary]
+
+    [TODO:description]
+
+    Parameters
+    ----------
+    sensitive_result
+        [TODO:description]
+    candidate_result
+        [TODO:description]
+
+    Returns
+    -------
+    float
+        [TODO:description]
+    """
     step_count = len(candidate_result.statistic)
     residuals = []
     for i in range(step_count):
@@ -318,6 +358,23 @@ def ripley_rmse(sensitive_result: KtestResult, candidate_result: KtestResult) ->
 
 
 def graph_ripleyresult(result: KtestResult, subtitle: str = None) -> Figure:
+    """
+    [TODO:summary]
+
+    [TODO:description]
+
+    Parameters
+    ----------
+    result
+        [TODO:description]
+    subtitle
+        [TODO:description]
+
+    Returns
+    -------
+    Figure
+        [TODO:description]
+    """
     bounds = _bounds_from_ripleyresult(result)
     fig = plt.figure()
     ax = fig.add_subplot(111)
@@ -337,6 +394,25 @@ def graph_ripleyresults(
     candidate_result: KtestResult,
     subtitle: str = None,
 ) -> Figure:
+    """
+    [TODO:summary]
+
+    [TODO:description]
+
+    Parameters
+    ----------
+    sensitive_result
+        [TODO:description]
+    candidate_result
+        [TODO:description]
+    subtitle
+        [TODO:description]
+
+    Returns
+    -------
+    Figure
+        [TODO:description]
+    """
     bounds = _bounds_from_ripleyresult(sensitive_result)
     fig = plt.figure()
     ax = fig.add_subplot(111)
@@ -382,6 +458,27 @@ def map_displacement(
     filename: str = None,
     context_gdf: GeoDataFrame = None,
 ) -> plt:
+    """
+    [TODO:summary]
+
+    [TODO:description]
+
+    Parameters
+    ----------
+    sensitive_gdf
+        [TODO:description]
+    candidate_gdf
+        [TODO:description]
+    filename
+        [TODO:description]
+    context_gdf
+        [TODO:description]
+
+    Returns
+    -------
+    plt
+        [TODO:description]
+    """
     import contextily as ctx
 
     lines = sensitive_gdf.copy()
