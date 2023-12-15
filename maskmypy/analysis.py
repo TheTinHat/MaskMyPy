@@ -28,7 +28,7 @@ def evaluate(
     Parameters
     ----------
     sensitive_gdf : GeoDataFrame
-        A GeoDataFrame containing sensitive point prior to masking.
+        A GeoDataFrame containing sensitive points prior to masking.
     candidate_gdf : GeoDataFrame
         A GeoDataFrame containing masked points to be evaluated.
     population_gdf : GeoDataFrame
@@ -83,6 +83,25 @@ def evaluate(
 def displacement(
     sensitive_gdf: GeoDataFrame, candidate_gdf: GeoDataFrame, col: str = "_distance"
 ) -> GeoDataFrame:
+    """
+    Adds a column to the `candidate_gdf` containing the distance between each masked point
+    and its original, unmasked location (`sensitive_gdf`).
+
+    Parameters
+    ----------
+    sensitive_gdf : GeoDataFrame
+        A GeoDataFrame containing sensitive points prior to masking.
+    candidate_gdf : GeoDataFrame
+        A GeoDataFrame containing masked points.
+    col : str
+        Name of the displacement distance column to add to `candidate_gdf`.
+        Default: `"_distance"`.
+
+    Returns
+    -------
+    GeoDataFrame
+        The `candidate_gdf` with an additional column describing displacement distance.
+    """
     candidate_gdf = candidate_gdf.copy()
     candidate_gdf[col] = candidate_gdf.geometry.distance(sensitive_gdf.geometry)
     return candidate_gdf
