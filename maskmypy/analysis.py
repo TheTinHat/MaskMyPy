@@ -112,7 +112,7 @@ def k_anonymity(
     candidate_gdf: GeoDataFrame,
     population_gdf: GeoDataFrame,
     pop_col: str = "pop",
-):
+) -> GeoDataFrame:
     if tools._validate_geom_type(population_gdf, "Point"):
         k_gdf = _calculate_k(sensitive_gdf, candidate_gdf, population_gdf)
     elif tools._validate_geom_type(population_gdf, "Polygon", "MultiPolygon"):
@@ -128,7 +128,7 @@ def k_satisfaction(gdf: GeoDataFrame, min_k: int, col: str = "k_anonymity") -> f
     return gdf.loc[gdf[col] >= min_k, col].count() / gdf[col].count()
 
 
-def summarize_displacement(gdf: GeoDataFrame, col="_distance") -> dict:
+def summarize_displacement(gdf: GeoDataFrame, col: str = "_distance") -> dict:
     return {
         "displacement_min": float(gdf.loc[:, col].min()),
         "displacement_max": float(gdf.loc[:, col].max()),
@@ -137,7 +137,7 @@ def summarize_displacement(gdf: GeoDataFrame, col="_distance") -> dict:
     }
 
 
-def summarize_k(gdf: GeoDataFrame, col="k_anonymity") -> dict:
+def summarize_k(gdf: GeoDataFrame, col: str = "k_anonymity") -> dict:
     return {
         "k_min": int(gdf.loc[:, col].min()),
         "k_max": int(gdf.loc[:, col].max()),
@@ -171,7 +171,7 @@ def ripleys_k(
     max_dist: float = None,
     min_dist: float = None,
     steps: int = 10,
-    simulations=99,
+    simulations: int = 99,
 ) -> KtestResult:
     if not max_dist:
         max_dist = _gdf_to_pointpattern(gdf).rot
