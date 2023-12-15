@@ -19,6 +19,34 @@ def evaluate(
     population_column: str = "pop",
     skip_slow: bool = True,
 ) -> dict:
+    """
+    Evaluate the privacy protection and information loss of a masked dataset (`candidate_gdf`)
+    compared to the unmasked sensitive dataset (`sensitive_gdf`). This is a convenience function
+    that automatically runs many of the analysis tools that MaskMyPy offers, returning a simple
+    dictionary of results. Note that privacy metrics require a `population_gdf` to be provided.
+
+    Parameters
+    ----------
+    sensitive_gdf : GeoDataFrame
+        A GeoDataFrame containing sensitive point prior to masking.
+    candidate_gdf : GeoDataFrame
+        A GeoDataFrame containing masked points to be evaluated.
+    population_gdf : GeoDataFrame
+        A GeoDataFrame containing either address points or polygons with a population column
+        (see `population_column`). Used to calculate k-anonymity metrics. Default: `None`
+    population_column : str
+        If a polygon-based `population_gdf` is provided, the name of the column containing
+        population counts. Default: `"pop"`.
+    skip_slow : bool
+        If True, skips analyses that are known to be slow. Currently, this only includes the
+        root-mean-square error of Ripley's K results between the masked and unmasked data.
+        Default: `True`.
+
+    Returns
+    -------
+    dict
+        A dictionary containing evaluation results.
+    """
     stats = {}
 
     # Information Loss
