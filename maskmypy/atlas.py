@@ -33,7 +33,15 @@ class Atlas:
 
     def add_layers(self, *gdf: GeoDataFrame):
         """
+        [TODO:summary]
         Add GeoDataFrames to the layer store.
+
+        [TODO:description]
+
+        Parameters
+        ----------
+        gdf
+            [TODO:description]
         """
         for x in gdf:
             self.layers[tools.checksum(x)] = x
@@ -46,6 +54,22 @@ class Atlas:
         skip_slow_evaluators: bool = True,
         **kwargs,
     ):
+        """
+        [TODO:summary]
+
+        [TODO:description]
+
+        Parameters
+        ----------
+        mask_func
+            [TODO:description]
+        keep_gdf
+            [TODO:description]
+        keep_candidate
+            [TODO:description]
+        skip_slow_evaluators
+            [TODO:description]
+        """
         candidate = {
             "mask": mask_func.__name__,
             "kwargs": self._hydrate_mask_kwargs(**kwargs),
@@ -73,9 +97,27 @@ class Atlas:
 
     def gen_gdf(self, idx, keep=False, custom_mask: Callable = None):
         """
+        [TODO:summary]
+
         Regenerates the GeoDataFrame for a given candidate.
         If the candidate was originally generated using a custom masking function,
         specify it using the `custom_mask` parameter.
+
+        [TODO:description]
+
+        Parameters
+        ----------
+        idx : [TODO:type]
+            [TODO:description]
+        keep : [TODO:type]
+            [TODO:description]
+        custom_mask
+            [TODO:description]
+
+        Raises
+        ------
+        ValueError:
+            [TODO:description]
         """
         checksum_before = self.candidates[idx]["checksum"]
         if isinstance(self.layers.get(checksum_before, None), GeoDataFrame):
@@ -101,6 +143,21 @@ class Atlas:
         return gdf
 
     def sort(self, by: str):
+        """
+        [TODO:summary]
+
+        [TODO:description]
+
+        Parameters
+        ----------
+        by
+            [TODO:description]
+
+        Raises
+        ------
+        ValueError:
+            [TODO:description]
+        """
         if by in self.candidates[0].keys():
             self.candidates.sort(key=lambda x: x[by])
         elif by in self.candidates[0]["stats"].keys():
@@ -112,9 +169,27 @@ class Atlas:
 
     def prune(self, by: str, min: float, max: float):
         """
+        [TODO:summary]
+
         Prune candidates based on a given attribute (e.g. `k_min`).
         If the value for that attribute is less than `min` or greater than `max`,
         drop the candidate.
+
+        [TODO:description]
+
+        Parameters
+        ----------
+        by
+            [TODO:description]
+        min
+            [TODO:description]
+        max
+            [TODO:description]
+
+        Raises
+        ------
+        ValueError:
+            [TODO:description]
         """
         if by in self.candidates[0].keys():
             self.candidates = [c for c in self.candidates if c[by] >= min and c[by] <= max]
@@ -131,9 +206,18 @@ class Atlas:
 
     def to_json(self, file: Path):
         """
+        [TODO:summary]
+
         Saves candidates to a JSON file. As long as the input GeoDataFrames are
         also preserved by the user, this JSON file can be used to later reconstruct
         the atlas, including all resulting candidate GeoDataFrames.
+
+        [TODO:description]
+
+        Parameters
+        ----------
+        file
+            [TODO:description]
         """
         with open(file, "w") as f:
             json.dump(self.candidates, f)
@@ -142,6 +226,24 @@ class Atlas:
     def from_json(
         cls, sensitive, candidate_json, population: GeoDataFrame = None, layers: list = None
     ):
+        """
+        [TODO:summary]
+
+        [TODO:description]
+
+        Parameters
+        ----------
+        cls : [TODO:type]
+            [TODO:description]
+        sensitive : [TODO:type]
+            [TODO:description]
+        candidate_json : [TODO:type]
+            [TODO:description]
+        population
+            [TODO:description]
+        layers
+            [TODO:description]
+        """
         with open("/tmp/tmp_test.json") as f:
             candidates = json.load(f)
 
@@ -151,6 +253,11 @@ class Atlas:
         return atlas
 
     def as_df(self):
+        """
+        [TODO:summary]
+
+        [TODO:description]
+        """
         df = DataFrame(data=self.candidates)
         df = concat([df.drop(["kwargs"], axis=1), df["kwargs"].apply(Series)], axis=1)
         df = concat([df.drop(["stats"], axis=1), df["stats"].apply(Series)], axis=1)
