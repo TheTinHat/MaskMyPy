@@ -13,20 +13,75 @@ from pyproj.crs.crs import CRS
 
 
 def checksum(gdf: GeoDataFrame) -> str:
+    """
+    Calculate SHA256 checksum of a GeoDataFrame and return the first 12 characters.
+    Two completely identical GeoDataFrames will always return the exact same value,
+    whereas two similar, but not completely identical GeoDataFrames will return
+    entirely different values.
+
+    Parameters
+    ----------
+    gdf : GeoDataFrame
+        Any valid GeoDataFrame.
+
+    Returns
+    -------
+    str
+        The first 12 characters of the SHA256 checksum of the input GeoDataFrame.
+    """
     return sha256(bytearray(hash_pandas_object(gdf).values)).hexdigest()[0:12]
 
 
-def gen_rng(seed: int = None):
+def gen_rng(seed: int = None) -> object:
+    """
+    Create a seeded numpy default_rng() object.
+
+    Parameters
+    ----------
+    seed : int
+        An integer used to seed the random number generator. A seed is randomly
+        generated using gen_seed() if one is not provided. Default: `None`
+    Returns
+    -------
+    object
+        numpy.default_rng()
+    """
     if not seed:
         seed = gen_seed()
     return random.default_rng(seed=seed)
 
 
 def gen_seed() -> int:
+    """
+    Generate a 32-digit random integer to seed random number generators.
+
+    Returns
+    -------
+    int
+        A 32 digit random integer.
+    """
+
     return int(SystemRandom().random() * (10**32))
 
 
 def snap_to_streets(gdf: GeoDataFrame) -> GeoDataFrame:
+    """
+    Relocates each point of a GeoDataFrame to the nearest node on the OpenStreetMap driving
+    network. Performing this on masked datasets may reduce the chances of false attribution,
+    and may provide an additional layer of obfuscation.
+
+    This is *not* an alternative to masking.
+
+    Parameters
+    ----------
+    gdf : GeoDataFrame
+        A GeoDataFrame containing point data.
+
+    Returns
+    -------
+    GeoDataFrame
+        A GeoDataFrame containing points that have been snapped to street nodes.
+    """
     snapped_gdf = gdf.copy()
     bbox = gdf.to_crs(epsg=4326).total_bounds
     graph = remove_isolated_nodes(
