@@ -48,6 +48,7 @@ def street(
         OSM network data is retrieved based on the bounding box of the sensitive GeoDataFrame.
         Padding is used to expand this bounding box slightly to reduce unwanted edge-effects.
         A value of `0.2` would add 20% of the x and y extent to *each side* of the bounding box.
+        Default: `0.2`.
 
     Returns
     -------
