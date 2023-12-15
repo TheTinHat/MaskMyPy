@@ -15,6 +15,30 @@ def locationswap(
     seed: int = None,
     snap_to_streets: bool = False,
 ):
+    """
+    Applies location swapping to a GeoDataFrame, displacing points to a randomly selected address
+    that is between a minimum and maximum distance away from the original point. While address
+    data is the most common data type used to provide eligible swap locations, other point-based
+    datasets may be used.
+
+    Parameters
+    ----------
+    gdf : GeoDataFrame
+        GeoDataFrame containing sensitive points.
+    low : float
+        Minimum distance to displace points. Unit must match that of the `gdf` CRS.
+    high : float
+        Maximum displacement to displace points. Unit must match that of the `gdf` CRS.
+    address : GeoDataFrame
+        GeoDataFrame containing points that sensitive locations may be swapped to.
+        While addresses are most common, other point-based data may be used as well.
+    seed : int
+        Used to seed the random number generator so that masked datasets are reproducible.
+        Randomly generated if left undefined. Default: `None`.
+    snap_to_streets : bool
+        If True, points are snapped to the nearest node on the OSM street network after masking.
+        This can reduce the chance of false-attribution.
+    """
     gdf = gdf.copy()
     _validate_locationswap(gdf, low, high, address)
 
