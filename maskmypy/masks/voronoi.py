@@ -8,6 +8,24 @@ from .. import tools
 
 
 def voronoi(gdf: GeoDataFrame, snap_to_streets: bool = False) -> GeoDataFrame:
+    """
+    Apply voronoi masking to a GeoDataFrame, displacing points to the nearest edges of a vornoi
+    diagram. Note: because voronoi masking lacks any level of randomization, snapping to streets
+    is recommended for this mask to provide another level of obfuscation.
+
+    Parameters
+    ----------
+    gdf : GeoDataFrame
+        GeoDataFrame containing sensitive points.
+    snap_to_streets : bool
+        If True, points are snapped to the nearest node on the OSM street network after masking.
+        This can reduce the chance of false-attribution.
+
+    Returns
+    -------
+    GeoDataFrame
+        A GeoDataFrame containing masked points.
+    """
     gdf = gdf.copy()
     _validate_voronoi(gdf)
 
