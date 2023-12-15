@@ -71,7 +71,7 @@ def evaluate(
             sensitive_gdf=sensitive_gdf,
             candidate_gdf=candidate_gdf,
             population_gdf=population_gdf,
-            pop_col=population_column,
+            population_column=population_column,
         )
         stats.update(summarize_k(k_gdf))
         stats["k_satisfaction_5"] = k_satisfaction(k_gdf, 5)
@@ -111,33 +111,82 @@ def k_anonymity(
     sensitive_gdf: GeoDataFrame,
     candidate_gdf: GeoDataFrame,
     population_gdf: GeoDataFrame,
-    pop_col: str = "pop",
+    population_column: str = "pop",
 ) -> GeoDataFrame:
+    """
+    Adds a column to the `candidate_gdf` containing the spatial k-anonymity value of each
+    masked point.
+
+    Parameters
+    ----------
+    sensitive_gdf : GeoDataFrame
+        A GeoDataFrame containing sensitive points prior to masking.
+    candidate_gdf : GeoDataFrame
+        A GeoDataFrame containing masked points.
+    population_gdf : GeoDataFrame
+        A GeoDataFrame containing either address points or polygons with a population column
+        (see `population_column`). Used to calculate k-anonymity metrics. Default: `None`
+    population_column : str
+        If a polygon-based `population_gdf` is provided, the name of the column containing
+        population counts. Default: `"pop"`.
+
+    Returns
+    -------
+    GeoDataFrame
+        The `candidate_gdf` with an additional column describing k-anonymity.
+    """
     if tools._validate_geom_type(population_gdf, "Point"):
         k_gdf = _calculate_k(sensitive_gdf, candidate_gdf, population_gdf)
     elif tools._validate_geom_type(population_gdf, "Polygon", "MultiPolygon"):
-        if pop_col not in population_gdf:
-            raise ValueError(f"Cannot find population column {pop_col} in population_gdf")
-        k_gdf = _estimate_k(sensitive_gdf, candidate_gdf, population_gdf, pop_col)
+        if population_column not in population_gdf:
+            raise ValueError(
+                f"Cannot find population column {population_column} in population_gdf"
+            )
+        k_gdf = _estimate_k(sensitive_gdf, candidate_gdf, population_gdf, population_column)
     else:
         raise ValueError("population_gdf must include either Points or Polygons/MultiPolygons.")
     return k_gdf
 
 
 def k_satisfaction(gdf: GeoDataFrame, min_k: int, col: str = "k_anonymity") -> float:
+    """
+    For a masked GeoDataFrame containing k-anonymity values, calculate the percentage of
+    points that are equal to or greater than (i.e. satisfy) a given k-anonymity threshold (`min_k`).
+
+    Parameters
+    ----------
+    gdf : GeoDataFrame
+        A GeoDataFrame containing k-anonymity values.
+    min_k : int
+        The minimum k-anonymity that must be satisfied.
+    col : str
+        Name of the column containing k-anonymity values. Default: `"k_anonymity"`"
+
+    Returns
+    -------
+    float
+        A percentage of points in the GeoDataFrame that satisfy `min_k`.
+    """
     return gdf.loc[gdf[col] >= min_k, col].count() / gdf[col].count()
 
 
-def summarize_displacement(gdf: GeoDataFrame, col: str = "_distance") -> dict:
-    return {
-        "displacement_min": float(gdf.loc[:, col].min()),
-        "displacement_max": float(gdf.loc[:, col].max()),
-        "displacement_med": float(gdf.loc[:, col].median()),
-        "displacement_mean": float(gdf.loc[:, col].mean()),
-    }
-
-
 def summarize_k(gdf: GeoDataFrame, col: str = "k_anonymity") -> dict:
+    """
+    For a masked GeoDataFrame containing k-anonymity values, calculate the minimum, maximum,
+    median, and mean k-anonymity.
+
+    Parameters
+    ----------
+    gdf : GeoDataFrame
+        A GeoDataFrame containing k-anonymity values.
+    col : str
+        Name of the column containing k-anonymity values. Default: `"k_anonymity"`
+
+    Returns
+    -------
+    dict
+        A dictionary containing summary k-anonymity statistics.
+    """
     return {
         "k_min": int(gdf.loc[:, col].min()),
         "k_max": int(gdf.loc[:, col].max()),
@@ -146,12 +195,67 @@ def summarize_k(gdf: GeoDataFrame, col: str = "k_anonymity") -> dict:
     }
 
 
+def summarize_displacement(gdf: GeoDataFrame, col: str = "_distance") -> dict:
+    """
+    For a masked GeoDataFrame containing displacement distances, calculate the minimum, maximum,
+    median, and mean displacement distance.
+
+    Parameters
+    ----------
+    gdf : GeoDataFrame
+        A GeoDataFrame containing displacement distance values.
+    col : str
+        Name of the column containing displacement distance values. Default: `"_distance"`
+
+    Returns
+    -------
+    dict
+        A dictionary containing summary displacement distance statistics.
+    """
+    return {
+        "displacement_min": float(gdf.loc[:, col].min()),
+        "displacement_max": float(gdf.loc[:, col].max()),
+        "displacement_med": float(gdf.loc[:, col].median()),
+        "displacement_mean": float(gdf.loc[:, col].mean()),
+    }
+
+
 def nnd(gdf: GeoDataFrame) -> dict:
+    """
+    Calculate the minimum, maximum, and mean nearest neighbor distance for a given GeoDataFrame.
+
+    Parameters
+    ----------
+    gdf : GeoDataFrame
+        A GeoDataFrame containing points.
+
+    Returns
+    -------
+    dict
+        A dictionary containing the minimum, maximum, and mean nearest neighbor distance.
+    """
     pp = _gdf_to_pointpattern(gdf)
     return {"nnd_min": pp.min_nnd, "nnd_max": pp.max_nnd, "nnd_mean": pp.mean_nnd}
 
 
 def nnd_delta(sensitive_gdf: GeoDataFrame, candidate_gdf: GeoDataFrame) -> dict:
+    """
+    Calculate the *difference* between minimum, maximum, and mean nearest neighbor distances
+    before (`sensitive_gdf`) and after (`candidate_gdf`) masking. Higher values indicate
+    greater information loss due to masking.
+
+    Parameters
+    ----------
+    sensitive_gdf : GeoDataFrame
+        A GeoDataFrame containing sensitive points prior to masking.
+    candidate_gdf : GeoDataFrame
+        A GeoDataFrame containing masked points.
+
+    Returns
+    -------
+    dict
+        A dictionary describing deltas in nearest neighbor distance before and after masking.
+    """
     before = nnd(sensitive_gdf)
     after = nnd(candidate_gdf)
     delta = {}
@@ -161,6 +265,22 @@ def nnd_delta(sensitive_gdf: GeoDataFrame, candidate_gdf: GeoDataFrame) -> dict:
 
 
 def central_drift(sensitive_gdf: GeoDataFrame, candidate_gdf: GeoDataFrame) -> float:
+    """
+    Calculates how far the centroid of the point pattern has been displaced due to masking.
+    Higher central drift indicates more information loss.
+
+    Parameters
+    ----------
+    sensitive_gdf : GeoDataFrame
+        A GeoDataFrame containing sensitive points prior to masking.
+    candidate_gdf : GeoDataFrame
+        A GeoDataFrame containing masked points.
+
+    Returns
+    -------
+    float
+        The central drift, with units equal to the CRS of the `sensitive_gdf`.
+    """
     centroid_a = sensitive_gdf.dissolve().centroid
     centroid_b = candidate_gdf.dissolve().centroid
     return float(centroid_a.distance(centroid_b).iloc[0])
@@ -334,14 +454,14 @@ def _estimate_k(
     sensitive_gdf: GeoDataFrame,
     candidate_gdf: GeoDataFrame,
     population_gdf: GeoDataFrame,
-    pop_col: str = "pop",
+    population_column: str = "pop",
 ) -> GeoDataFrame:
     candidate_gdf = candidate_gdf.copy()
-    pop_col_adjusted = "_".join([pop_col, "adjusted"])
+    pop_col_adjusted = "_".join([population_column, "adjusted"])
     candidate_gdf["k_anonymity"] = (
         displacement(sensitive_gdf, candidate_gdf)
         .assign(geometry=lambda x: x.geometry.buffer(x["_distance"]), axis=1)
-        .pipe(_disaggregate, gdf_b=population_gdf, gdf_b_col=pop_col)
+        .pipe(_disaggregate, gdf_b=population_gdf, gdf_b_col=population_column)
         .groupby("_index_2")[pop_col_adjusted]
         .sum()
         .round()
