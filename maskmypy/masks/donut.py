@@ -50,7 +50,7 @@ def donut(
         Randomly generated if left undefined. Default: `None`.
     snap_to_streets : bool
         If True, points are snapped to the nearest node on the OSM street network after masking.
-        This can reduce the chance of false-attribution.
+        This can reduce the chance of false-attribution. Default: `False`.
 
     Returns
     -------
