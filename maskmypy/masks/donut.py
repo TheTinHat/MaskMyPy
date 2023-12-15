@@ -19,7 +19,8 @@ def donut(
 ) -> GeoDataFrame:
     """
     Apply donut masking to a GeoDataFrame, randomly displacing points between a minimum and
-    maximum distance.
+    maximum distance. Advantages of this mask is speed and simplicity, though it does not
+    handle highly varied population densities well.
 
     Parameters
     ----------
