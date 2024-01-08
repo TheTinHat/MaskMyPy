@@ -459,25 +459,25 @@ def map_displacement(
     context_gdf: GeoDataFrame = None,
 ) -> plt:
     """
-    [TODO:summary]
-
-    [TODO:description]
+    Generate a map showing the displacement of each masked point from its original location.
+    Requires the `contextily` package.
 
     Parameters
     ----------
-    sensitive_gdf
-        [TODO:description]
-    candidate_gdf
-        [TODO:description]
-    filename
-        [TODO:description]
+    sensitive_gdf : GeoDataFrame
+        A GeoDataFrame containing sensitive points prior to masking.
+    candidate_gdf : GeoDataFrame
+        A GeoDataFrame containing masked points.
+    filename : str
+        If specified, saves the map to the filesystem.
     context_gdf
-        [TODO:description]
+        A GeoDataFrame containing contextual data to be added to the map, such as address points,
+        administrative boundaries, etc.
 
     Returns
     -------
-    plt
-        [TODO:description]
+    matplotlib.pyplot
+        A pyplot object containing the mapped data.
     """
     import contextily as ctx
 
