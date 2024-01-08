@@ -469,10 +469,10 @@ def map_displacement(
     candidate_gdf : GeoDataFrame
         A GeoDataFrame containing masked points.
     filename : str
-        If specified, saves the map to the filesystem.
-    context_gdf
+        If specified, saves the map to the filesystem. Default: `None`.
+    context_gdf : GeoDataFrame
         A GeoDataFrame containing contextual data to be added to the map, such as address points,
-        administrative boundaries, etc.
+        administrative boundaries, etc. Default: `None`.
 
     Returns
     -------
