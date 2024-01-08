@@ -12,15 +12,52 @@
 ## Key Features
 
 - Python tools for anonymizing geographic point data held in GeoDataFrames.
-- Includes three approaches towards donut masking.
-- Includes a new OpenStreetMap-based approach called street masking.
-- Evaluation tools for assessing displacement distance & spatial k-anonymity.
-- A command line interface (CLI) for quick masking jobs.
+- Includes four masks: donut, street, location swap, and voronoi.
+- Evaluation tools for assessing information loss and privacy protection.
+- An `Atlas` tool that allows for rapid experimentation of mask types and parameters. 
+
 ## Introduction
 
-MaskMyPy ([GitHub](https://github.com/TheTinHat/MaskMyPy) | [Docs](https://thetinhat.github.io/MaskMyPy/)) is a Python package that performs geographic masking on [GeoDataFrames](http://geopandas.org/data_structures.html). In other words, it helps with anonymizing point data, such as confidential home addresses. It currently offers two main approaches towards anonymization: [donut masking](donut.md) and [street masking](street.md).
+MaskMyPy ([GitHub](https://github.com/TheTinHat/MaskMyPy) | [Docs](https://thetinhat.github.io/MaskMyPy/)) is a Python package that performs geographic masking on [GeoDataFrames](http://geopandas.org/data_structures.html). In other words, it helps with anonymizing point data, such as confidential home addresses. It currently offers four main approaches towards anonymization: [donut masking](donut.md), [street masking](street.md), [location swapping](location_swap.md), and [voronoi masking](voronoi.md)
 
-MaskMyPy also [includes evaluation tools](tools.md) to help optimize and validate masking parameters. These include k-anonymity estimation using population data, k-anonymity calculation using address data, and displacement distance calculation between secret and masked points.
+MaskMyPy also a range of [analysis tools](analysis.md) to help asses mask performance. These include functions for calculating:
+- k-anonymity using either address points or population polygons (e.g. census data)
+- displacement distance 
+- clustering based on Ripley's K-function
+- nearest neighbor distances
+- and more!
+
+## The Atlas 
+The `Atlas()` makes it easy to both mask datasets and evaluate new masks. It acts as a type of manager that allows you to quickly test any number of combinations of masks and their associated parameters, automatically performing the evaluation for you and keeping track of the results. 
+
+```python
+import geopandas as gpd
+from maskmypy import Atlas, donut, street, locationswap
+
+# Load some data
+points = gpd.read_file('sensitive_points.shp')
+addresses = gpd.read_file('address_points.shp')
+
+# Instantiate the Atlas
+atlas = Atlas(points, population=addresses)
+
+atlas.mask(donut, low=10, high=100) # Donut mask with small distances.
+atlas.mask(donut, low=50, high=500) # Donut mask with larger distances.
+
+atlas.mask(street, low=5, high=15) # Street masking.
+atlas.mask(locationswap, low=50, high=500, address=addresses) # Location swapping.
+
+atlas.as_df() # Return a dataframe detailing the results of each mask.
+
+atlas.sort("k_min") # Sort the list of results by minimum k_anonymity.
+
+# The Atlas doesn't keep each masked gdf after it's done evaluating it. This is done to save memory.
+# But we can reproduce an *exact copy* using the `gen_gdf()` method! 
+# The number represents the index of the list. We sorted it (ascending) by minimum k_anonymity, so 
+# this will return the masked gdf with the highest minimum k-anonymity. 
+masked_gdf = atlas.gen_gdf(-1) 
+
+```
 
 ### Use Cases: Why Geographic Masks?
 Geographic masks are techniques that protect confidential point data while still maintaining important spatial patterns within the dataset. While aggregation is often employed for privacy protection (as done by many censuses), aggregation reduces the usefulness of the data for statistical analysis.  Example use cases for geographic masks include:
