@@ -125,7 +125,8 @@ def k_anonymity(
         A GeoDataFrame containing masked points.
     population_gdf : GeoDataFrame
         A GeoDataFrame containing either address points or polygons with a population column
-        (see `population_column`). Used to calculate k-anonymity metrics. Default: `None`
+        (see `population_column`). Used to calculate k-anonymity metrics. Note that
+        address points tend to provide more accurate results. Default: `None`
     population_column : str
         If a polygon-based `population_gdf` is provided, the name of the column containing
         population counts. Default: `"pop"`.
