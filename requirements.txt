@@ -6,7 +6,7 @@ click-plugins==1.1.1
 cligj==0.7.2
 cycler==0.11.0
 Fiona==1.8.21
-fonttools==4.34.4
+fonttools==4.43.0
 geopandas==0.11.1
 idna==3.3
 iniconfig==1.1.1
