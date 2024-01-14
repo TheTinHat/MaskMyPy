@@ -38,6 +38,7 @@ class Atlas:
 
         [TODO:description]
 
+
         Parameters
         ----------
         gdf
@@ -55,20 +56,25 @@ class Atlas:
         **kwargs,
     ):
         """
-        [TODO:summary]
+        Execute a given mask, analyze the result, and add it to the Atlas.
 
-        [TODO:description]
+        NEED MORE DESCRIPTION HERE.
 
         Parameters
         ----------
-        mask_func
-            [TODO:description]
-        keep_gdf
-            [TODO:description]
-        keep_candidate
-            [TODO:description]
-        skip_slow_evaluators
-            [TODO:description]
+        mask_func : GeoDataFrame
+            A masking function to apply to the sensitive point dataset. If using a custom mask,
+            it must take the sensitive GeoDataFrame as its first argument, all other arguments as
+            keyword arguments, and must return a GeoDataFrame containing the results.
+        keep_gdf : bool
+            If `False`, the resulting GeoDataFrame will be analyzed and then dropped to save memory.
+            Use `gen_gdf` to regenerate the GeoDataFrame. Default: `False`.
+        keep_candidate : bool
+            If `True`, a dictionary containing mask parameters and analysis results are added to
+            the candidate list (`Atlas.candidates`, or `Atlas[index]`). Default: `True`.
+        skip_slow_evaluators : bool
+            If `True`, skips any analyses that are known to be slow during mask result
+            evaluation. See maskmypy.analysis.evaluate() for more information. Default: `True`.
         """
         candidate = {
             "mask": mask_func.__name__,
@@ -95,41 +101,52 @@ class Atlas:
             self.candidates.append(candidate)
         return candidate
 
-    def gen_gdf(self, idx, keep=False, custom_mask: Callable = None):
+    def gen_gdf(
+        self,
+        idx: int = None,
+        checksum: str = None,
+        keep: bool = False,
+        custom_mask: Callable = None,
+    ):
         """
-        [TODO:summary]
-
-        Regenerates the GeoDataFrame for a given candidate.
-        If the candidate was originally generated using a custom masking function,
-        specify it using the `custom_mask` parameter.
-
-        [TODO:description]
+        Regenerates the GeoDataFrame for a given candidate based on either its position in the
+        `Atlas.candidates` list or its checksum.
 
         Parameters
         ----------
-        idx : [TODO:type]
-            [TODO:description]
-        keep : [TODO:type]
-            [TODO:description]
-        custom_mask
-            [TODO:description]
+        idx : int
+            Index of the candidate in `Atlas.candidates` to regenerate a GeoDataFrame for. Default: `None`.
+        checksum : str
+            Checksum of the candidate in `Atlas.candidates` to regenerate a GeoDataFrame for. Default: `None`.
+        keep : bool
+            If `True`, return the masked GeoDataFrame and cache it in `Atlas.layers` for future
+            use so it does not need to be regenerated. Default: `False`.
+        custom_mask : Callable
+            If the candidate was generated using a custom masking function from outside MaskMyPy,
+            provide the function here. Default: `None`.
 
-        Raises
-        ------
-        ValueError:
-            [TODO:description]
         """
-        checksum_before = self.candidates[idx]["checksum"]
+        if (idx is None and checksum is None) or (idx is not None and checksum is not None):
+            raise ValueError(f"Must specify either idx or checksum.")
+
+        checksum_before = checksum if checksum else self.candidates[idx]["checksum"]
+
+        # Check if layer is already in the cache.
         if isinstance(self.layers.get(checksum_before, None), GeoDataFrame):
             return self.layers[checksum_before]
 
-        mask_func = custom_mask or getattr(masks, self.candidates[idx]["mask"])
+        try:
+            candidate = next(cand for cand in self.candidates if cand["checksum"] == checksum_before)
+        except:
+            raise ValueError(f"Could not locate candidate with checksum '{checksum_before}'")
 
-        candidate = self.mask(
-            mask_func, keep_candidate=False, keep_gdf=True, **self.candidates[idx]["kwargs"]
+        mask_func = custom_mask or getattr(masks, candidate["mask"])
+
+        candidate_after = self.mask(
+            mask_func, keep_candidate=False, keep_gdf=True, **candidate["kwargs"]
         )
-        checksum_after = candidate.get("checksum")
 
+        checksum_after = candidate_after.get("checksum")
         if checksum_before != checksum_after:
             raise ValueError(
                 f"Checksum of masked GeoDataFrame ({checksum_after}) does not match that which is on record for this candidate ({checksum_before}). Did any input layers get modified?"

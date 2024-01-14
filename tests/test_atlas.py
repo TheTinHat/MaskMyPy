@@ -19,7 +19,6 @@ def test_atlas_as_df(points):
     assert df.iloc[0]["high"] == 500
     assert df.iloc[0]["mask"] == "donut"
 
-
 def test_atlas_restore_from_json(points_small):
     points = points_small
     atlas = Atlas(points)
@@ -33,6 +32,7 @@ def test_atlas_restore_from_json(points_small):
     atlas.to_json("/tmp/tmp_test.json")
     del atlas
 
+    # Test by index value
     atlas2 = Atlas.from_json(points, "/tmp/tmp_test.json")
 
     gdf_0 = atlas2.gen_gdf(0)
@@ -43,6 +43,19 @@ def test_atlas_restore_from_json(points_small):
     check_2b = tools.checksum(gdf_1)
     assert check_2a == check_2b
 
+    # Test by checksum value
+    atlas3 = Atlas.from_json(points, "/tmp/tmp_test.json")
+
+    gdf_0 = atlas3.gen_gdf(checksum=check_1a)
+    check_1c = tools.checksum(gdf_0)
+    assert check_1a == check_1c
+
+    gdf_1 = atlas3.gen_gdf(checksum=check_2a)
+    check_2c = tools.checksum(gdf_1)
+    assert check_2a == check_2c
+    
+    with pytest.raises(ValueError):
+        atlas3.gen_gdf(checksum="aaaaaa")
 
 def test_atlas_context_hydration(points, container):
     atlas = Atlas(points)
