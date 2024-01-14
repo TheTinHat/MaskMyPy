@@ -49,7 +49,7 @@ class Atlas:
             GeoDataFrames to be added to the layer store. 
         """
         for x in gdf:
-            tools._validate_crs(self.sensitive, x)
+            tools._validate_crs(self.sensitive.crs, x.crs)
             self.layers[tools.checksum(x)] = x
 
     def mask(
