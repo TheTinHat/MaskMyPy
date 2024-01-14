@@ -33,18 +33,23 @@ class Atlas:
 
     def add_layers(self, *gdf: GeoDataFrame):
         """
-        [TODO:summary]
-        Add GeoDataFrames to the layer store.
+        Add GeoDataFrames to the layer store (`Atlas.layers`).
 
-        [TODO:description]
+        When regenerating masked GeoDataFrames using `Atlas.gen_gdf()`, any context layers 
+        that were used in creating the associated candidate must be present in the layer store.
+        If they are, they will be automatically found and used as needed. 
 
+        Note that layers are stored according to their checksum value (see 
+        `maskmypy.tools.checksum()`) to provide both deduplication and integrity 
+        checking.
 
         Parameters
         ----------
-        gdf
-            [TODO:description]
+        gdf : GeoDataFrame
+            GeoDataFrames to be added to the layer store. 
         """
         for x in gdf:
+            tools._validate_crs(self.sensitive, x)
             self.layers[tools.checksum(x)] = x
 
     def mask(
@@ -119,7 +124,7 @@ class Atlas:
         checksum : str
             Checksum of the candidate in `Atlas.candidates` to regenerate a GeoDataFrame for. Default: `None`.
         keep : bool
-            If `True`, return the masked GeoDataFrame and cache it in `Atlas.layers` for future
+            If `True`, return the masked GeoDataFrame and store it in `Atlas.layers` for future
             use so it does not need to be regenerated. Default: `False`.
         custom_mask : Callable
             If the candidate was generated using a custom masking function from outside MaskMyPy,
@@ -131,12 +136,14 @@ class Atlas:
 
         checksum_before = checksum if checksum else self.candidates[idx]["checksum"]
 
-        # Check if layer is already in the cache.
+        # Check if layer is already in the store.
         if isinstance(self.layers.get(checksum_before, None), GeoDataFrame):
             return self.layers[checksum_before]
 
         try:
-            candidate = next(cand for cand in self.candidates if cand["checksum"] == checksum_before)
+            candidate = next(
+                cand for cand in self.candidates if cand["checksum"] == checksum_before
+            )
         except:
             raise ValueError(f"Could not locate candidate with checksum '{checksum_before}'")
 
@@ -159,121 +166,127 @@ class Atlas:
 
         return gdf
 
-    def sort(self, by: str):
+    def sort(self, by: str, desc: bool = False):
         """
-        [TODO:summary]
+        Sorts the list of candidates (`Atlas.candidates`) based on a given statistic.
 
-        [TODO:description]
+        Example:
+        ```
+        # Sort candidate list in ascending order based on maximum displacement distance.
+        atlas.sort(by="displacement_max")
+
+        # Sort candidate list in descending order based on minimum k-anonymity.
+        atlas.sort(by="k_min", desc=True)
+        ```
 
         Parameters
         ----------
-        by
-            [TODO:description]
+        by : str
+            Name of the statistic to sort by.
+        desc : bool
+            If `True`, sort in descending order. Default: `False`.
 
-        Raises
-        ------
-        ValueError:
-            [TODO:description]
         """
-        if by in self.candidates[0].keys():
-            self.candidates.sort(key=lambda x: x[by])
-        elif by in self.candidates[0]["stats"].keys():
-            self.candidates.sort(key=lambda x: x["stats"][by])
-        elif by in self.candidates[0]["kwargs"].keys():
-            self.candidates.sort(key=lambda x: x["kwargs"][by])
+        if by in self.candidates[0]["stats"].keys():
+            self.candidates.sort(key=lambda x: x["stats"][by], reverse=desc)
         else:
-            raise ValueError(f"Could not find {by} in candidate.")
+            raise ValueError(f"Could not find '{by}' in candidate statistics.")
 
     def prune(self, by: str, min: float, max: float):
         """
-        [TODO:summary]
+        Prune candidates based on a given statistic. If the value for that attribute is less than
+        `min` or greater than `max` (both inclusive), drop the candidate.
 
-        Prune candidates based on a given attribute (e.g. `k_min`).
-        If the value for that attribute is less than `min` or greater than `max`,
-        drop the candidate.
+        Example:
+        ```
+        # Prune any candidates with a minimum displacement distance below 50 and above 500.
+        atlas.prune(by="displacement_min", min=50, max=500)
 
-        [TODO:description]
+        # Prune any candidates with minimum k-anonymity values below 10 and above 50.
+        atlas.prune(by="k_min", min=10, max=50)
+        ```
 
         Parameters
         ----------
-        by
-            [TODO:description]
-        min
-            [TODO:description]
-        max
-            [TODO:description]
-
-        Raises
-        ------
-        ValueError:
-            [TODO:description]
+        by : str
+            Name of the candidate statistic to prune by.
+        min : float
+            Minimum value of the statistic. If below `min`, the candidate is pruned from the
+            candidates list. If the statistic is equal to or greater than `min` but not
+            greater than `max` it is kept in the list.
+        max : float
+            Maximum value of the statistic. If above `max`, the candidate is pruned from the
+            candidates list. If the statistic is equal to or less than `max` but not less
+            than `min` it is kept in the list.
         """
-        if by in self.candidates[0].keys():
-            self.candidates = [c for c in self.candidates if c[by] >= min and c[by] <= max]
-        elif by in self.candidates[0]["stats"].keys():
+        if by in self.candidates[0]["stats"].keys():
             self.candidates = [
                 c for c in self.candidates if c["stats"][by] >= min and c["stats"][by] <= max
             ]
-        elif by in self.candidates[0]["kwargs"].keys():
-            self.candidates = [
-                c for c in self.candidates if c["kwargs"][by] >= min and c["kwargs"][by] <= max
-            ]
         else:
-            raise ValueError(f"Could not find {by}.")
+            raise ValueError(f"Could not find '{by}' in candidate statistics.")
 
     def to_json(self, file: Path):
         """
-        [TODO:summary]
-
         Saves candidates to a JSON file. As long as the input GeoDataFrames are
-        also preserved by the user, this JSON file can be used to later reconstruct
-        the atlas, including all resulting candidate GeoDataFrames.
+        also preserved by the user*, this JSON file can be used to later reconstruct
+        the atlas using `Atlas.from_json()`, including all resulting candidate GeoDataFrames.
 
-        [TODO:description]
+        * Warning: if Street masking is used, there is a chance that a candidate will not be able
+        to be regenerated if OpenStreetMap data changes. This will be addressed in a future version
+        of MaskMyPy.
 
         Parameters
         ----------
-        file
-            [TODO:description]
+        file : Path
+            File path indicating where the JSON file should be saved.
         """
         with open(file, "w") as f:
             json.dump(self.candidates, f)
 
     @classmethod
     def from_json(
-        cls, sensitive, candidate_json, population: GeoDataFrame = None, layers: list = None
+        cls,
+        sensitive: GeoDataFrame,
+        candidate_json: Path,
+        population: GeoDataFrame = None,
+        population_column: str = "pop",
+        layers: list = None,
     ):
         """
-        [TODO:summary]
+        Recreate an Atlas from a candidate JSON file previously generated using `Atlas.to_json()`
+        as well as the original GeoDataFrames. Masked GeoDataFrames can then be regenerated using
+        `Atlas.gen_gdf()`.
 
-        [TODO:description]
+        * Warning: if Street masking is used, there is a chance that a candidate will not be able
+        to be regenerated if OpenStreetMap data changes. This will be addressed in a future version
+        of MaskMyPy.
 
         Parameters
         ----------
-        cls : [TODO:type]
-            [TODO:description]
-        sensitive : [TODO:type]
-            [TODO:description]
-        candidate_json : [TODO:type]
-            [TODO:description]
-        population
-            [TODO:description]
-        layers
-            [TODO:description]
+        sensitive : GeoDataFrame
+            The original sensitive point layer.
+        candidate_json : Path
+            Path to a candidate JSON file previously generated using `Atlas.to_json()`.
+        population : GeoDataFrame
+            The original population layer, if one was specified. Default: `None`.
+        population_column : str
+            If a polygon-based population layer was used, the name of the population column. Default: `'pop'`.
+        layers : List[GeoDataFrame]
+            A list of additional GeoDataFrames used in the original Atlas. For instance,
+            any containers used during donut masking. Default: `None`.
         """
-        with open("/tmp/tmp_test.json") as f:
+        with open(candidate_json) as f:
             candidates = json.load(f)
 
-        atlas = cls(sensitive, candidates, population)
+        atlas = cls(sensitive, candidates, population, population_column)
         if layers:
             atlas.add_layers(*layers)
         return atlas
 
     def as_df(self):
         """
-        [TODO:summary]
-
-        [TODO:description]
+        Return a pandas DataFrame describing each candidate. 
         """
         df = DataFrame(data=self.candidates)
         df = concat([df.drop(["kwargs"], axis=1), df["kwargs"].apply(Series)], axis=1)
@@ -283,7 +296,7 @@ class Atlas:
     def _hydrate_mask_kwargs(self, **mask_kwargs: dict) -> dict:
         """
         Find any keyword arguments that contain context layer checksums and
-        attempt to restore the layer from Atlas..
+        attempt to restore the layer from `Atlas.layers`.
         """
         for key, value in mask_kwargs.items():
             if isinstance(value, str) and value.startswith("context_"):
@@ -298,6 +311,9 @@ class Atlas:
         return mask_kwargs
 
     def _dehydrate_mask_kwargs(self, **mask_kwargs: dict) -> dict:
+        """ 
+        Search mask kwargs for any GeoDataFrames and replace them with their checksums. 
+        """
         for key, value in mask_kwargs.items():
             if isinstance(value, GeoDataFrame):
                 mask_kwargs[key] = "_".join(["context", tools.checksum(value)])

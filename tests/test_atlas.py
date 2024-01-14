@@ -81,13 +81,13 @@ def test_atlas_sort(points):
     atlas.mask(donut, low=200, high=299)
     atlas.mask(donut, low=100, high=199)
 
-    assert atlas[0]["kwargs"]["low"] > atlas[1]["kwargs"]["low"] > atlas[2]["kwargs"]["low"]
+    assert atlas[0]["stats"]["displacement_mean"] > atlas[1]["stats"]["displacement_mean"] > atlas[2]["stats"]["displacement_mean"]
 
-    atlas.sort(by="low")
-    assert atlas[0]["kwargs"]["low"] < atlas[1]["kwargs"]["low"] < atlas[2]["kwargs"]["low"]
+    atlas.sort(by="displacement_mean")
+    assert atlas[0]["stats"]["displacement_mean"] < atlas[1]["stats"]["displacement_mean"] < atlas[2]["stats"]["displacement_mean"]
 
-    atlas.sort(by="timestamp")
-    assert atlas[0]["timestamp"] < atlas[1]["timestamp"] < atlas[2]["timestamp"]
+    atlas.sort(by="displacement_mean", desc=True)
+    assert atlas[0]["stats"]["displacement_mean"] > atlas[1]["stats"]["displacement_mean"] > atlas[2]["stats"]["displacement_mean"]
 
 
 def test_displacement(points):
@@ -130,7 +130,7 @@ def test_atlas_prune(points, address):
     atlas.prune(by="displacement_min", min=200, max=9999)
     assert len(atlas.candidates) == 2
 
-    atlas.prune(by="low", min=0, max=299)
+    atlas.prune(by="displacement_min", min=0, max=299)
     assert len(atlas.candidates) == 1
 
 
