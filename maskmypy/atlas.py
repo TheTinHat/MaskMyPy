@@ -12,10 +12,26 @@ from . import analysis, masks, tools
 
 @dataclass
 class Atlas:
+    """
+    A class for quickly performing and evaluating geographic masks. 
+
+    Attributes
+    ----------
+    sensitive : GeoDataFrame
+        A GeoDataFrame containing sensitive points.
+    population : GeoDataFrame
+        A GeoDataFrame containing population information, such as address points or polygon 
+        with population counts.
+    population_column : str 
+        If the population layer is based on polygons, the name of the column containing population 
+        counts. Default: `"pop"`
+    candidates : list[]
+        A list of existing masked candidates, if any. Default: `None`.
+    """
     sensitive: GeoDataFrame
-    candidates: list = field(default_factory=list)
     population: GeoDataFrame = None
     population_column: str = "pop"
+    candidates: list = field(default_factory=list)
 
     def __post_init__(self):
         self.layers = {}
@@ -279,7 +295,7 @@ class Atlas:
         with open(candidate_json) as f:
             candidates = json.load(f)
 
-        atlas = cls(sensitive, candidates, population, population_column)
+        atlas = cls(sensitive=sensitive, candidates=candidates, population=population, population_column=population_column)
         if layers:
             atlas.add_layers(*layers)
         return atlas
