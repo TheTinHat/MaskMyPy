@@ -294,28 +294,35 @@ def ripleys_k(
     steps: int = 10,
     simulations: int = 99,
 ) -> KtestResult:
-    """
-    [TODO:summary]
+    """ 
+    Performs Ripley's K clustering analysis on a GeoDataFrame. This evaluates clustering across a 
+    range of spatial scales.
 
-    [TODO:description]
+    See `maskmypy.analysis.ripley_rmse()`, `maskmypy.analysis.graph_ripleyresult()`, and 
+    `maskmypy.analysis.graph_ripleyresults()` for functions that process/visualize the results 
+    of this function.
 
     Parameters
     ----------
-    gdf
-        [TODO:description]
-    max_dist
-        [TODO:description]
-    min_dist
-        [TODO:description]
-    steps
-        [TODO:description]
-    simulations
-        [TODO:description]
+    gdf : GeoDataFrame
+        GeoDataFrame to analyse. 
+    max_dist : float
+        The largest distance band used for cluster analysis. If `None`, this defaults to one 
+        quarter of the smallest side of the bounding box (i.e. Ripleys Rule of Thumb). 
+        Default: `None`.
+    min_dist : float
+        The smallest distance band used for cluster analysis. If `None`, this is automatically set
+        to  `max_dist / steps`. Default: `None`.
+    steps : int
+        The number of equally spaced intervals between the minimum and maximum distance bands 
+        to analyze clustering on. Default: `10`.
+    simulations : int
+        The number of simulations to perform. Default: `99`
 
     Returns
     -------
     KtestResult
-        [TODO:description]
+        A named tuple that contains `("support", "statistic", "pvalue", "simulations")`. 
     """
     if not max_dist:
         max_dist = _gdf_to_pointpattern(gdf).rot
@@ -334,21 +341,27 @@ def ripleys_k(
 
 def ripley_rmse(sensitive_result: KtestResult, candidate_result: KtestResult) -> float:
     """
-    [TODO:summary]
+    Calculates the root-mean-square error between the Ripley's K-test results of unmasked and 
+    masked data. As the goal of geographic masking is to reduce information loss, the actual 
+    amount of clustering in masked data is unimportant; what matters is that the clustering 
+    or dispersion of the masked data resembles that of the original, sensitive data. By comparing 
+    the RMSE of k-test results, we can reduce this deviation to a single figure, which is useful 
+    for quickly comparing how multiple masks perform. 
 
-    [TODO:description]
+    Lower RMSE values indicate less information loss due to masking, whereas higher values
+    indicate greater information loss due to masking. 
 
     Parameters
     ----------
-    sensitive_result
-        [TODO:description]
-    candidate_result
-        [TODO:description]
+    sensitive_result : KtestResult
+        The KtestResult tuple from applying `maskmypy.analysis.ripleys_k()` on a sensitive layer.
+    candidate_result : KtestResult
+        The KtestResult tuple from applying `maskmypy.analysis.ripleys_k()` on a masked layer.
 
     Returns
     -------
     float
-        [TODO:description]
+        The root-mean-square error between the two k-test results.
     """
     step_count = len(candidate_result.statistic)
     residuals = []
@@ -360,21 +373,20 @@ def ripley_rmse(sensitive_result: KtestResult, candidate_result: KtestResult) ->
 
 def graph_ripleyresult(result: KtestResult, subtitle: str = None) -> Figure:
     """
-    [TODO:summary]
-
-    [TODO:description]
+    Generate a graph depicting a given KtestResult, such as would be generated from using 
+    `maskmypy.analysis.ripleys_k()`.
 
     Parameters
     ----------
-    result
-        [TODO:description]
-    subtitle
-        [TODO:description]
+    result : KtestResult
+        The KtestResult tuple from applying `maskmypy.analysis.ripleys_k()` on a given layer.
+    subtitle : str
+        A subtitle to add to the graph. Default: `None`.
 
     Returns
     -------
     Figure
-        [TODO:description]
+        A matplotlib.figure.Figure object.
     """
     bounds = _bounds_from_ripleyresult(result)
     fig = plt.figure()
@@ -396,23 +408,26 @@ def graph_ripleyresults(
     subtitle: str = None,
 ) -> Figure:
     """
-    [TODO:summary]
+    Generate a graph depicting two KtestResults, such as would be generated from using 
+    `maskmypy.analysis.ripleys_k()`. 
 
-    [TODO:description]
+    Similar to `maskmypy.analysis.graph_ripleyresult()` except this function graphs both
+    the sensitive and candidate results, allowing for visual comparison of clustering and dispersion 
+    between the two.
 
     Parameters
     ----------
-    sensitive_result
-        [TODO:description]
-    candidate_result
-        [TODO:description]
-    subtitle
-        [TODO:description]
+    sensitive_result : KtestResult
+        The KtestResult tuple from applying `maskmypy.analysis.ripleys_k()` on the sensitive layer.
+    candidate_result : KtestResult
+        The KtestResult tuple from applying `maskmypy.analysis.ripleys_k()` on a masked layer.
+    subtitle : str
+        A subtitle to add to the graph. Default: `None`.
 
     Returns
     -------
     Figure
-        [TODO:description]
+        A matplotlib.figure.Figure object.
     """
     bounds = _bounds_from_ripleyresult(sensitive_result)
     fig = plt.figure()
