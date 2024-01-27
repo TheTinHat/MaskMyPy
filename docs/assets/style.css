@@ -1,26 +1,16 @@
 :root > * {
-    --md-primary-fg-color:        #306998;
-    --md-primary-fg-color--light: #306998;
-    --md-primary-fg-color--dark:  #306998;
-    --md-accent-fg-color:           #FFD43B;
-  }
-
-.md-header__title {
-  margin-left: 0 !important;
+  --md-primary-fg-color: #306998;
+  --md-primary-fg-color--light: #306998;
+  --md-primary-fg-color--dark: #306998;
+  --md-accent-fg-color: #ffd43b;
 }
 
-img[alt="MaskMyPy Logo"] { width: 400px;}
-
-.func-heading {
-  font-size: 1.1rem;
-  font-family: 'Roboto Mono', monospace;
-  letter-spacing: -0.05rem;
+img[alt="MaskMyPy Logo"] {
+  width: 400px;
 }
 
 .md-typeset h2 {
-  font-weight: 300;
 }
 
 .md-typeset h3 {
-  font-weight: 200;
 }

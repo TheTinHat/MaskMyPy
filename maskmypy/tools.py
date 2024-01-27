@@ -40,7 +40,7 @@ def gen_rng(seed: int = None) -> object:
     ----------
     seed : int
         An integer used to seed the random number generator. A seed is randomly
-        generated using gen_seed() if one is not provided. Default: `None`
+        generated using gen_seed() if one is not provided. 
     Returns
     -------
     object

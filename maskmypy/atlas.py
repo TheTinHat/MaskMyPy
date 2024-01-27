@@ -1,4 +1,5 @@
 import json
+import pprint
 from dataclasses import dataclass, field
 from pathlib import Path
 from time import time
@@ -24,9 +25,9 @@ class Atlas:
         with population counts.
     population_column : str 
         If the population layer is based on polygons, the name of the column containing population 
-        counts. Default: `"pop"`
+        counts. 
     candidates : list[]
-        A list of existing masked candidates, if any. Default: `None`.
+        A list of existing masked candidates, if any. 
     """
     sensitive: GeoDataFrame
     population: GeoDataFrame = None
@@ -46,7 +47,7 @@ class Atlas:
 
     def __len__(self):
         return len(self.candidates)
-
+     
     def add_layers(self, *gdf: GeoDataFrame):
         """
         Add GeoDataFrames to the layer store (`Atlas.layers`).
@@ -79,8 +80,6 @@ class Atlas:
         """
         Execute a given mask, analyze the result, and add it to the Atlas.
 
-        NEED MORE DESCRIPTION HERE.
-
         Parameters
         ----------
         mask_func : GeoDataFrame
@@ -89,13 +88,13 @@ class Atlas:
             keyword arguments, and must return a GeoDataFrame containing the results.
         keep_gdf : bool
             If `False`, the resulting GeoDataFrame will be analyzed and then dropped to save memory.
-            Use `gen_gdf` to regenerate the GeoDataFrame. Default: `False`.
+            Use `gen_gdf` to regenerate the GeoDataFrame. 
         keep_candidate : bool
             If `True`, a dictionary containing mask parameters and analysis results are added to
-            the candidate list (`Atlas.candidates`, or `Atlas[index]`). Default: `True`.
+            the candidate list (`Atlas.candidates`, or `Atlas[index]`). 
         skip_slow_evaluators : bool
             If `True`, skips any analyses that are known to be slow during mask result
-            evaluation. See maskmypy.analysis.evaluate() for more information. Default: `True`.
+            evaluation. See maskmypy.analysis.evaluate() for more information. 
         """
         candidate = {
             "mask": mask_func.__name__,
@@ -136,15 +135,15 @@ class Atlas:
         Parameters
         ----------
         idx : int
-            Index of the candidate in `Atlas.candidates` to regenerate a GeoDataFrame for. Default: `None`.
+            Index of the candidate in `Atlas.candidates` to regenerate a GeoDataFrame for. 
         checksum : str
-            Checksum of the candidate in `Atlas.candidates` to regenerate a GeoDataFrame for. Default: `None`.
+            Checksum of the candidate in `Atlas.candidates` to regenerate a GeoDataFrame for. 
         keep : bool
             If `True`, return the masked GeoDataFrame and store it in `Atlas.layers` for future
-            use so it does not need to be regenerated. Default: `False`.
+            use so it does not need to be regenerated. 
         custom_mask : Callable
             If the candidate was generated using a custom masking function from outside MaskMyPy,
-            provide the function here. Default: `None`.
+            provide the function here. 
 
         """
         if (idx is None and checksum is None) or (idx is not None and checksum is not None):
@@ -200,7 +199,7 @@ class Atlas:
         by : str
             Name of the statistic to sort by.
         desc : bool
-            If `True`, sort in descending order. Default: `False`.
+            If `True`, sort in descending order. 
 
         """
         if by in self.candidates[0]["stats"].keys():
@@ -285,12 +284,12 @@ class Atlas:
         candidate_json : Path
             Path to a candidate JSON file previously generated using `Atlas.to_json()`.
         population : GeoDataFrame
-            The original population layer, if one was specified. Default: `None`.
+            The original population layer, if one was specified. 
         population_column : str
-            If a polygon-based population layer was used, the name of the population column. Default: `'pop'`.
+            If a polygon-based population layer was used, the name of the population column. 
         layers : List[GeoDataFrame]
             A list of additional GeoDataFrames used in the original Atlas. For instance,
-            any containers used during donut masking. Default: `None`.
+            any containers used during donut masking. 
         """
         with open(candidate_json) as f:
             candidates = json.load(f)

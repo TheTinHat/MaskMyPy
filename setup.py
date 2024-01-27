@@ -21,7 +21,6 @@ setup(
     install_requires=[
         "osmnx>=1.7.0",
         "scikit-learn>=1.1.1",
-        "SQLAlchemy>=2.0.0",
         "pointpats==2.3.0",
     ],
     extras_require={
@@ -29,15 +28,12 @@ setup(
             "pytest",
             "black",
             "psutil",
-            # "mkdocs-material",
-            # "mkdocs-roamlinks-plugin",
-            # "mkdocs-git-revision-date-localized-plugin",
-            # "mkdocstrings-python",
+            "mkdocs-material",
+            "mkdocs-roamlinks-plugin",
+            "mkdocs-git-revision-date-localized-plugin",
+            "mkdocstrings-python",
         ],
         "extra": ["contextily>=1.2.0"],
     },
     python_requires=">=3.10",
-    entry_points={
-        "console_scripts": ["maskmypy=maskmypy.cli:cli"],
-    },
 )

@@ -19,7 +19,7 @@ def voronoi(gdf: GeoDataFrame, snap_to_streets: bool = False) -> GeoDataFrame:
         GeoDataFrame containing sensitive points.
     snap_to_streets : bool
         If True, points are snapped to the nearest node on the OSM street network after masking.
-        This can reduce the chance of false-attribution. Default: `False`.
+        This can reduce the chance of false-attribution. 
 
     Returns
     -------

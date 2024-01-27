@@ -34,7 +34,7 @@ def locationswap(
         While addresses are most common, other point-based data may be used as well.
     seed : int
         Used to seed the random number generator so that masked datasets are reproducible.
-        Randomly generated if left undefined. Default: `None`.
+        Randomly generated if left undefined. 
     snap_to_streets : bool
         If True, points are snapped to the nearest node on the OSM street network after masking.
         This can reduce the chance of false-attribution.

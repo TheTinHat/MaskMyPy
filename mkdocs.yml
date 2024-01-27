@@ -2,9 +2,13 @@ site_name: MaskMyPy Documentation
 site_description: Geographic Masking Python Package
 site_url: https://thetinhat.github.io/MaskMyPy/
 theme:
-  name: 'material'
+  name: "material"
   site_url: https://thetinhat.github.io/MaskMyPy/
   logo: assets/python_logo.png
+watch:
+  - maskmypy
+  - mkdocs.yml
+  - docs
 markdown_extensions:
   - footnotes
   - toc:
@@ -20,15 +24,16 @@ plugins:
   - mkdocstrings:
       handlers:
         python:
-          selection:
-            show_root_heading: false
+          options:
+            show_source: true
             docstring_style: numpy
-            show_source: false
-            merge_init_into_class: true
-            docstring_section_style: list
+            docstring_section_style: table
+            show_root_heading: false
+            show_root_members_full_path: true
+            show_root_toc_entry: false
+            show_symbol_type_toc: true
+            show_symbol_type_heading: true
             heading_level: 3
-            line_length: 99
-          paths: [.]
   - git-revision-date-localized:
       timezone: America/Vancouver
 extra_css:

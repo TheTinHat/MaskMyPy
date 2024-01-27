@@ -33,14 +33,13 @@ def evaluate(
         A GeoDataFrame containing masked points to be evaluated.
     population_gdf : GeoDataFrame
         A GeoDataFrame containing either address points or polygons with a population column
-        (see `population_column`). Used to calculate k-anonymity metrics. Default: `None`
+        (see `population_column`). Used to calculate k-anonymity metrics. 
     population_column : str
         If a polygon-based `population_gdf` is provided, the name of the column containing
-        population counts. Default: `"pop"`.
+        population counts. 
     skip_slow : bool
         If True, skips analyses that are known to be slow. Currently, this only includes the
         root-mean-square error of Ripley's K results between the masked and unmasked data.
-        Default: `True`.
 
     Returns
     -------
@@ -95,7 +94,6 @@ def displacement(
         A GeoDataFrame containing masked points.
     col : str
         Name of the displacement distance column to add to `candidate_gdf`.
-        Default: `"_distance"`.
 
     Returns
     -------
@@ -126,10 +124,10 @@ def k_anonymity(
     population_gdf : GeoDataFrame
         A GeoDataFrame containing either address points or polygons with a population column
         (see `population_column`). Used to calculate k-anonymity metrics. Note that
-        address points tend to provide more accurate results. Default: `None`
+        address points tend to provide more accurate results. 
     population_column : str
         If a polygon-based `population_gdf` is provided, the name of the column containing
-        population counts. Default: `"pop"`.
+        population counts. 
 
     Returns
     -------
@@ -161,7 +159,7 @@ def k_satisfaction(gdf: GeoDataFrame, min_k: int, col: str = "k_anonymity") -> f
     min_k : int
         The minimum k-anonymity that must be satisfied.
     col : str
-        Name of the column containing k-anonymity values. Default: `"k_anonymity"`"
+        Name of the column containing k-anonymity values. 
 
     Returns
     -------
@@ -181,7 +179,7 @@ def summarize_k(gdf: GeoDataFrame, col: str = "k_anonymity") -> dict:
     gdf : GeoDataFrame
         A GeoDataFrame containing k-anonymity values.
     col : str
-        Name of the column containing k-anonymity values. Default: `"k_anonymity"`
+        Name of the column containing k-anonymity values.
 
     Returns
     -------
@@ -206,7 +204,7 @@ def summarize_displacement(gdf: GeoDataFrame, col: str = "_distance") -> dict:
     gdf : GeoDataFrame
         A GeoDataFrame containing displacement distance values.
     col : str
-        Name of the column containing displacement distance values. Default: `"_distance"`
+        Name of the column containing displacement distance values. 
 
     Returns
     -------
@@ -309,15 +307,14 @@ def ripleys_k(
     max_dist : float
         The largest distance band used for cluster analysis. If `None`, this defaults to one 
         quarter of the smallest side of the bounding box (i.e. Ripleys Rule of Thumb). 
-        Default: `None`.
     min_dist : float
         The smallest distance band used for cluster analysis. If `None`, this is automatically set
-        to  `max_dist / steps`. Default: `None`.
+        to  `max_dist / steps`. 
     steps : int
         The number of equally spaced intervals between the minimum and maximum distance bands 
-        to analyze clustering on. Default: `10`.
+        to analyze clustering on.
     simulations : int
-        The number of simulations to perform. Default: `99`
+        The number of simulations to perform. 
 
     Returns
     -------
@@ -381,7 +378,7 @@ def graph_ripleyresult(result: KtestResult, subtitle: str = None) -> Figure:
     result : KtestResult
         The KtestResult tuple from applying `maskmypy.analysis.ripleys_k()` on a given layer.
     subtitle : str
-        A subtitle to add to the graph. Default: `None`.
+        A subtitle to add to the graph. 
 
     Returns
     -------
@@ -422,7 +419,7 @@ def graph_ripleyresults(
     candidate_result : KtestResult
         The KtestResult tuple from applying `maskmypy.analysis.ripleys_k()` on a masked layer.
     subtitle : str
-        A subtitle to add to the graph. Default: `None`.
+        A subtitle to add to the graph. 
 
     Returns
     -------
@@ -485,10 +482,10 @@ def map_displacement(
     candidate_gdf : GeoDataFrame
         A GeoDataFrame containing masked points.
     filename : str
-        If specified, saves the map to the filesystem. Default: `None`.
+        If specified, saves the map to the filesystem. 
     context_gdf : GeoDataFrame
         A GeoDataFrame containing contextual data to be added to the map, such as address points,
-        administrative boundaries, etc. Default: `None`.
+        administrative boundaries, etc. 
 
     Returns
     -------

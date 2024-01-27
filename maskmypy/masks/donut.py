@@ -36,7 +36,6 @@ def donut(
         the same polygon prior to masking, and retrying until it does. Useful for preserving
         statistical relationships, such as census tract, or to ensure that points are not
         displaced into impossible locations, such as the ocean. CRS must match that of `gdf`.
-        Default: `None`.
     distribution : str
         The distribution used to determine masking distances. `uniform` provides
         a flat distribution where any value between the minimum and maximum distance is
@@ -44,13 +43,13 @@ def donut(
         further away. The `gaussian` distribution uses a normal distribution, where values
         towards the middle of the range are most likely to be selected. Note that gaussian
         distribution has a small chance of selecting values beyond the defined minimum and
-        maximum. Default: `uniform`.
+        maximum. 
     seed : int
         Used to seed the random number generator so that masked datasets are reproducible.
-        Randomly generated if left undefined. Default: `None`.
+        Randomly generated if left undefined. 
     snap_to_streets : bool
         If True, points are snapped to the nearest node on the OSM street network after masking.
-        This can reduce the chance of false-attribution. Default: `False`.
+        This can reduce the chance of false-attribution. 
 
     Returns
     -------

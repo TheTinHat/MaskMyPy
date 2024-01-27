@@ -40,15 +40,14 @@ def street(
         Maximum distance in meters between any two nodes along the street network.
         When traversing each node on the street network, MaskMyPy verifies that its immediate
         neighbours are no more than `max_length` away. This prevents extremely large masking
-        distances, such as those caused by long highways. Default: `1000`.
+        distances, such as those caused by long highways. 
     seed : int
         Used to seed the random number generator so that masked datasets are reproducible.
-        Randomly generated if left undefined. Default: `None`.
+        Randomly generated if left undefined. 
     padding : float
         OSM network data is retrieved based on the bounding box of the sensitive GeoDataFrame.
         Padding is used to expand this bounding box slightly to reduce unwanted edge-effects.
         A value of `0.2` would add 20% of the x and y extent to *each side* of the bounding box.
-        Default: `0.2`.
 
     Returns
     -------

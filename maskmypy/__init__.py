@@ -1,7 +1,6 @@
 from . import analysis
 from .atlas import Atlas
-
-# from .candidate import Candidate
 from .masks import donut, locationswap, street, voronoi
 
+__all__ = ['donut', 'voronoi', 'street', 'locationswap']
 name = "maskmypy"
