@@ -4,8 +4,8 @@ on:
     branches:
       - beta
     paths:
-    - 'docs/**'
-    - 'mkdocs.yml'
+      - "docs/**"
+      - "mkdocs.yml"
 
 jobs:
   deploy:
@@ -19,3 +19,4 @@ jobs:
           python-version: 3.x
       - run: pip install mkdocs-material mkdocs-roamlinks-plugin mkdocs-git-revision-date-localized-plugin mkdocstrings-python
       - run: mkdocs gh-deploy --force
+

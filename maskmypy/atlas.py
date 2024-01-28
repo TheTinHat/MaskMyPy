@@ -15,7 +15,7 @@ from . import analysis, masks, tools
 class Atlas:
     """
     A class for quickly performing and evaluating geographic masks. 
-
+    
     Attributes
     ----------
     sensitive : GeoDataFrame

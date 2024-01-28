@@ -28,6 +28,18 @@ def street(
     snapped to the nearest node on the network, then displaced along the surround network between
     `low` and `high` nodes away.
 
+    Example 
+    -------
+    ```python
+    from maskmypy import street 
+
+    masked = street(
+        gdf=sensitive_points, 
+        min=20, 
+        max=30
+    )
+    ```
+
     Parameters
     ----------
     gdf : GeoDataFrame

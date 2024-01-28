@@ -2,9 +2,15 @@
 title: Atlas
 ---
 
-## Introduction 
+## Introduction
+The `Atlas()` class makes it easy to both mask datasets and evaluate new masks. It acts as a type of manager that allows you to quickly test any number of combinations of masks and their associated parameters, automatically performing the evaluation for you and keeping track of the results. 
+
+
+## Candidates
+When the Atlas executes a given mask, the result is referred to as a 'candidate'. Each candidate is a simple Python dictionary stored in a ordinary list at `Atlas.candidates[]`. You can also access the candidate list by slicing the Atlas itself, e.g. `Atlas[2]`
 
 The structure of a candidate is as follows:
+
 ```python
 {
   mask: str, # Name of the mask callable used to create the candidate
@@ -32,9 +38,14 @@ The structure of a candidate is as follows:
 }
 ```
 
+## Using Custom Masks
+The Atlas can utilize custom masking functions passed to `Atlas.mask()` so long as they meet the following requirements: 
+
+ - The first argument is a GeoDataFrame of sensitive points,
+ - They return a masked GeoDataFrame in the same CRS as the input,
+ - All other arguments are specified as keyword arguments (kwargs),
+ - When a `seed` argument is provided, outputs are reproducible.
+
 ## Reference
+
 ::: maskmypy.Atlas
-    options:  
-      show_root_heading: false
-      show_root_toc_entry: false
-      show_root_members_full_path: false

@@ -5,7 +5,7 @@ with open("docs/README.md", "r") as fh:
 
 setup(
     name="maskmypy",
-    version="0.0.8",
+    version="1.0.0-beta",
     author="David Swanlund",
     author_email="maskmypy@swanlund.dev",
     description="Python tools for anonymizing geographic data.",
@@ -27,7 +27,6 @@ setup(
         "develop": [
             "pytest",
             "black",
-            "psutil",
             "mkdocs-material",
             "mkdocs-roamlinks-plugin",
             "mkdocs-git-revision-date-localized-plugin",

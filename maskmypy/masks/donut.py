@@ -22,6 +22,18 @@ def donut(
     maximum distance. Advantages of this mask is speed and simplicity, though it does not
     handle highly varied population densities well.
 
+    Example 
+    -------
+    ```python
+    from maskmypy import donut
+
+    masked = donut(
+        gdf=sensitive_points, 
+        min=100, 
+        max=1000
+    )
+    ```
+
     Parameters
     ----------
     gdf : GeoDataFrame

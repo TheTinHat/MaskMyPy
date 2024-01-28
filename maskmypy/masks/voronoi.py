@@ -13,6 +13,17 @@ def voronoi(gdf: GeoDataFrame, snap_to_streets: bool = False) -> GeoDataFrame:
     diagram. Note: because voronoi masking lacks any level of randomization, snapping to streets
     is recommended for this mask to provide another level of obfuscation.
 
+    Example 
+    -------
+    ```python
+    from maskmypy import voronoi
+
+    masked = voronoi(
+        gdf=sensitive_points, 
+        snap_to_streets=True
+    )
+    ```
+
     Parameters
     ----------
     gdf : GeoDataFrame

@@ -21,6 +21,19 @@ def locationswap(
     data is the most common data type used to provide eligible swap locations, other point-based
     datasets may be used.
 
+    Example 
+    -------
+    ```python
+    from maskmypy import locationswap
+
+    masked = locationswap(
+        gdf=sensitive_points,
+        low=50, 
+        high=500,
+        address=address_points
+    )
+    ```
+
     Parameters
     ----------
     gdf : GeoDataFrame
@@ -39,6 +52,7 @@ def locationswap(
         If True, points are snapped to the nearest node on the OSM street network after masking.
         This can reduce the chance of false-attribution.
     """
+
     gdf = gdf.copy()
     _validate_locationswap(gdf, low, high, address)
 
