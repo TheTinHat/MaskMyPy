@@ -12,8 +12,13 @@
       
         <link rel="canonical" href="https://thetinhat.github.io/MaskMyPy/">
       
+      
+      
+        <link rel="next" href="analysis/">
+      
+      
       <link rel="icon" href="assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.0, mkdocs-material-8.5.6">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.6">
     
     
       
@@ -21,15 +26,14 @@
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.20d9efc8.min.css">
-      
-        
-        <link rel="stylesheet" href="assets/stylesheets/palette.cbb835fc.min.css">
-        
+      <link rel="stylesheet" href="assets/stylesheets/main.50c56a3b.min.css">
       
       
 
+
     
+    
+      
     
     
       
@@ -55,14 +59,8 @@
   </head>
   
   
-    
-    
-    
-    
-    
-    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+    <body dir="ltr">
   
-    
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
@@ -82,7 +80,9 @@
     
       
 
-<header class="md-header" data-md-component="header">
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href="." title="MaskMyPy Documentation" class="md-header__button md-logo" aria-label="MaskMyPy Documentation" data-md-component="logo">
       
@@ -90,6 +90,7 @@
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
+      
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
     </label>
     <div class="md-header__title" data-md-component="header-title">
@@ -110,8 +111,12 @@
     </div>
     
     
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
     
       <label class="md-header__button md-icon" for="__search">
+        
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
       </label>
       <div class="md-search" data-md-component="search" role="dialog">
@@ -120,12 +125,15 @@
     <form class="md-search__form" name="search">
       <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
       <label class="md-search__icon md-icon" for="__search">
+        
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
       </label>
       <nav class="md-search__options" aria-label="Search">
         
         <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
         </button>
       </nav>
@@ -137,7 +145,7 @@
           <div class="md-search-result__meta">
             Initializing search
           </div>
-          <ol class="md-search-result__list"></ol>
+          <ol class="md-search-result__list" role="presentation"></ol>
         </div>
       </div>
     </div>
@@ -167,6 +175,7 @@
                     
 
 
+
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
     <a href="." title="MaskMyPy Documentation" class="md-nav__button md-logo" aria-label="MaskMyPy Documentation" data-md-component="logo">
@@ -181,28 +190,39 @@
     
       
       
-      
-
   
   
     
   
   
+  
     <li class="md-nav__item md-nav__item--active">
       
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
         
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          Home
+          
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <a href="." class="md-nav__link md-nav__link--active">
-        Home
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
       </a>
       
         
@@ -222,14 +242,18 @@
       
         <li class="md-nav__item">
   <a href="#key-features" class="md-nav__link">
-    Key Features
+    <span class="md-ellipsis">
+      Key Features
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#introduction" class="md-nav__link">
-    Introduction
+    <span class="md-ellipsis">
+      Introduction
+    </span>
   </a>
   
     <nav class="md-nav" aria-label="Introduction">
@@ -237,14 +261,18 @@
         
           <li class="md-nav__item">
   <a href="#use-cases-why-geographic-masks" class="md-nav__link">
-    Use Cases: Why Geographic Masks?
+    <span class="md-ellipsis">
+      Use Cases: Why Geographic Masks?
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#disclaimer" class="md-nav__link">
-    Disclaimer
+    <span class="md-ellipsis">
+      Disclaimer
+    </span>
   </a>
   
 </li>
@@ -256,29 +284,46 @@
       
         <li class="md-nav__item">
   <a href="#installation" class="md-nav__link">
-    Installation
+    <span class="md-ellipsis">
+      Installation
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#usage" class="md-nav__link">
-    Usage
+  <a href="#quickstart" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quickstart
+    </span>
   </a>
   
-    <nav class="md-nav" aria-label="Usage">
+    <nav class="md-nav" aria-label="Quickstart">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#maskinganonymization" class="md-nav__link">
-    Masking/Anonymization
+    <span class="md-ellipsis">
+      Masking/Anonymization
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#evaluation" class="md-nav__link">
-    Evaluation
+    <span class="md-ellipsis">
+      Evaluation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-atlas" class="md-nav__link">
+    <span class="md-ellipsis">
+      The Atlas
+    </span>
   </a>
   
 </li>
@@ -289,22 +334,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#command-line-interface-cli" class="md-nav__link">
-    Command Line Interface (CLI)
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#roadmap" class="md-nav__link">
-    Roadmap
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#contribute" class="md-nav__link">
-    Contribute
+    <span class="md-ellipsis">
+      Contribute
+    </span>
   </a>
   
 </li>
@@ -319,14 +352,19 @@
     
       
       
-      
-
+  
   
   
   
     <li class="md-nav__item">
-      <a href="donut/" class="md-nav__link">
-        Donut Masking
+      <a href="analysis/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Analysis
+  </span>
+  
+
       </a>
     </li>
   
@@ -334,14 +372,19 @@
     
       
       
-      
-
+  
   
   
   
     <li class="md-nav__item">
-      <a href="street/" class="md-nav__link">
-        Street Masking
+      <a href="atlas/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Atlas
+  </span>
+  
+
       </a>
     </li>
   
@@ -349,14 +392,39 @@
     
       
       
-      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="masks/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Masks
+  </span>
+  
 
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
   
   
   
     <li class="md-nav__item">
       <a href="tools/" class="md-nav__link">
-        Evaluation Tools
+        
+  
+  <span class="md-ellipsis">
+    Tools
+  </span>
+  
+
       </a>
     </li>
   
@@ -390,14 +458,18 @@
       
         <li class="md-nav__item">
   <a href="#key-features" class="md-nav__link">
-    Key Features
+    <span class="md-ellipsis">
+      Key Features
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#introduction" class="md-nav__link">
-    Introduction
+    <span class="md-ellipsis">
+      Introduction
+    </span>
   </a>
   
     <nav class="md-nav" aria-label="Introduction">
@@ -405,14 +477,18 @@
         
           <li class="md-nav__item">
   <a href="#use-cases-why-geographic-masks" class="md-nav__link">
-    Use Cases: Why Geographic Masks?
+    <span class="md-ellipsis">
+      Use Cases: Why Geographic Masks?
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#disclaimer" class="md-nav__link">
-    Disclaimer
+    <span class="md-ellipsis">
+      Disclaimer
+    </span>
   </a>
   
 </li>
@@ -424,29 +500,46 @@
       
         <li class="md-nav__item">
   <a href="#installation" class="md-nav__link">
-    Installation
+    <span class="md-ellipsis">
+      Installation
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#usage" class="md-nav__link">
-    Usage
+  <a href="#quickstart" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quickstart
+    </span>
   </a>
   
-    <nav class="md-nav" aria-label="Usage">
+    <nav class="md-nav" aria-label="Quickstart">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#maskinganonymization" class="md-nav__link">
-    Masking/Anonymization
+    <span class="md-ellipsis">
+      Masking/Anonymization
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#evaluation" class="md-nav__link">
-    Evaluation
+    <span class="md-ellipsis">
+      Evaluation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-atlas" class="md-nav__link">
+    <span class="md-ellipsis">
+      The Atlas
+    </span>
   </a>
   
 </li>
@@ -457,22 +550,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#command-line-interface-cli" class="md-nav__link">
-    Command Line Interface (CLI)
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#roadmap" class="md-nav__link">
-    Roadmap
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#contribute" class="md-nav__link">
-    Contribute
+    <span class="md-ellipsis">
+      Contribute
+    </span>
   </a>
   
 </li>
@@ -499,19 +580,26 @@
 <img alt="License" src="https://img.shields.io/github/license/TheTinHat/MaskMyPy" />
 <a href="https://pypi.org/project/maskmypy/"><img alt="PyPi" src="https://img.shields.io/pypi/v/maskmypy" /></a></p>
 <h1 id="maskmypy">MaskMyPy<a class="headerlink" href="#maskmypy" title="Permanent link">&para;</a></h1>
+<p><strong><em>Warning</em></strong>: This documentation reflects a upcoming beta release of MaskMyPy. </p>
 <h2 id="key-features">Key Features<a class="headerlink" href="#key-features" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Python tools for anonymizing geographic point data held in GeoDataFrames.</li>
-<li>Includes three approaches towards donut masking.</li>
-<li>Includes a new OpenStreetMap-based approach called street masking.</li>
-<li>Evaluation tools for assessing displacement distance &amp; spatial k-anonymity.</li>
-<li>A command line interface (CLI) for quick masking jobs.</li>
+<li>Includes four masks: donut, street, location swap, and voronoi.</li>
+<li>Evaluation tools for assessing information loss and privacy protection.</li>
+<li>An <code>Atlas</code> tool that allows for rapid experimentation of mask types and parameters.</li>
 </ul>
 <h2 id="introduction">Introduction<a class="headerlink" href="#introduction" title="Permanent link">&para;</a></h2>
-<p>MaskMyPy (<a href="https://github.com/TheTinHat/MaskMyPy">GitHub</a> | <a href="https://thetinhat.github.io/MaskMyPy/">Docs</a>) is a Python package that performs geographic masking on <a href="http://geopandas.org/data_structures.html">GeoDataFrames</a>. In other words, it helps with anonymizing point data, such as confidential home addresses. It currently offers two main approaches towards anonymization: <a href="donut/">donut masking</a> and <a href="street/">street masking</a>.</p>
-<p>MaskMyPy also <a href="tools/">includes evaluation tools</a> to help optimize and validate masking parameters. These include k-anonymity estimation using population data, k-anonymity calculation using address data, and displacement distance calculation between secret and masked points.</p>
+<p>MaskMyPy (<a href="https://github.com/TheTinHat/MaskMyPy">GitHub</a> | <a href="https://thetinhat.github.io/MaskMyPy/">Docs</a>) is a Python package that performs geographic masking on <a href="http://geopandas.org/data_structures.html">GeoDataFrames</a>. In other words, it helps with anonymizing point data, such as confidential home addresses. It currently offers four main approaches towards anonymization: donut masking, street masking, location swapping, and voronoi masking.</p>
+<p>MaskMyPy also offers a range of <a href="analysis/">analysis tools</a> to help assess mask performance. These include functions for calculating:</p>
+<ul>
+<li>k-anonymity using either address points or population polygons (e.g. census data)</li>
+<li>displacement distance</li>
+<li>clustering based on Ripley's K-function</li>
+<li>nearest neighbor distances</li>
+<li>and more!</li>
+</ul>
 <h3 id="use-cases-why-geographic-masks">Use Cases: Why Geographic Masks?<a class="headerlink" href="#use-cases-why-geographic-masks" title="Permanent link">&para;</a></h3>
-<p>Geographic masks are techniques that protect confidential point data while still maintaining important spatial patterns within the dataset. While aggregation is often employed for privacy protection (as done by many censuses), aggregation reduces the usefulness of the data for statistical analysis.  Example use cases for geographic masks include:</p>
+<p>Geographic masks are techniques that protect confidential point data while still maintaining important spatial patterns within the dataset. While aggregation is often employed for privacy protection (as done by many censuses), aggregation reduces the usefulness of the data for statistical analysis. Example use cases for geographic masks include:</p>
 <ul>
 <li>A epidemiologist wants to release a dataset of patient addresses to help other researchers study the spread of a given disease. They also want anonymized points to remain inside the same census tract after masking to preserve statistical attributes. By utilizing donut masking and a containment layer, they are able to publish the dataset without compromising patient privacy, the location of important disease clusters, or census attributes.</li>
 <li>A mobile app developer wants to publish an end-of-year blog post with a map showing where their users have posted from, but is concerned about the privacy of their users. They utilize street masking to randomly displace points to nearby intersections on the street network before making the post.</li>
@@ -520,92 +608,99 @@
 <h3 id="disclaimer">Disclaimer<a class="headerlink" href="#disclaimer" title="Permanent link">&para;</a></h3>
 <p><em>MaskMyPy is offered as-is, without warranty of any kind. Geographic masking is a hard problem that requires informed decisions and validation. MaskMyPy provides helpful tools for geographic masking, but does not replace expertise.</em></p>
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip install maskmypy
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip<span class="w"> </span>install<span class="w"> </span>maskmypy
 </code></pre></div>
-To also install optional dependencies (such as those required for displacement mapping):
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>pip install maskmypy<span class="o">[</span>extra<span class="o">]</span>
-</code></pre></div></p>
-<h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
+<p>To also install optional dependencies (such as those required for displacement mapping):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>pip<span class="w"> </span>install<span class="w"> </span>maskmypy<span class="o">[</span>extra<span class="o">]</span>
+</code></pre></div>
+<h2 id="quickstart">Quickstart<a class="headerlink" href="#quickstart" title="Permanent link">&para;</a></h2>
 <h3 id="maskinganonymization">Masking/Anonymization<a class="headerlink" href="#maskinganonymization" title="Permanent link">&para;</a></h3>
 <p>The following snippet applies a 500 meter donut mask to a GeoDataFrame of secret (e.g. sensitive) points:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">maskmypy</span> <span class="kn">import</span> <span class="n">Donut</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">geopandas</span> <span class="k">as</span> <span class="nn">gpd</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">secret</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="s1">&#39;secret_points&#39;</span><span class="p">)</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">secret</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>     <span class="n">CID</span>                           <span class="n">geometry</span>
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="mi">0</span>      <span class="mi">1</span>  <span class="n">POINT</span> <span class="p">(</span><span class="o">-</span><span class="mf">13703523.337</span> <span class="mf">6313860.932</span><span class="p">)</span>
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="mi">1</span>      <span class="mi">2</span>  <span class="n">POINT</span> <span class="p">(</span><span class="o">-</span><span class="mf">13703436.959</span> <span class="mf">6314112.457</span><span class="p">)</span>
-<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="mi">2</span>      <span class="mi">3</span>  <span class="n">POINT</span> <span class="p">(</span><span class="o">-</span><span class="mf">13703679.041</span> <span class="mf">6314040.923</span><span class="p">)</span>
-<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="mi">3</span>      <span class="mi">4</span>  <span class="n">POINT</span> <span class="p">(</span><span class="o">-</span><span class="mf">13703285.553</span> <span class="mf">6313721.356</span><span class="p">)</span>
-<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="mi">4</span>      <span class="mi">5</span>  <span class="n">POINT</span> <span class="p">(</span><span class="o">-</span><span class="mf">13703200.338</span> <span class="mf">6313847.431</span><span class="p">)</span>
-<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>
-<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">masked_points</span> <span class="o">=</span> <span class="n">Donut</span><span class="p">(</span><span class="n">secret</span><span class="p">,</span> <span class="n">min_distance</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">max_distance</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>
-<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">masked_points</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
-<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>     <span class="n">CID</span>                           <span class="n">geometry</span>
-<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="mi">0</span>      <span class="mi">1</span>  <span class="n">POINT</span> <span class="p">(</span><span class="o">-</span><span class="mf">13703383.941</span> <span class="mf">6313989.161</span><span class="p">)</span>
-<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="mi">1</span>      <span class="mi">2</span>  <span class="n">POINT</span> <span class="p">(</span><span class="o">-</span><span class="mf">13703227.863</span> <span class="mf">6313973.121</span><span class="p">)</span>
-<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a><span class="mi">2</span>      <span class="mi">3</span>  <span class="n">POINT</span> <span class="p">(</span><span class="o">-</span><span class="mf">13703313.001</span> <span class="mf">6314172.582</span><span class="p">)</span>
-<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a><span class="mi">3</span>      <span class="mi">4</span>  <span class="n">POINT</span> <span class="p">(</span><span class="o">-</span><span class="mf">13703107.232</span> <span class="mf">6313614.978</span><span class="p">)</span>
-<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a><span class="mi">4</span>      <span class="mi">5</span>  <span class="n">POINT</span> <span class="p">(</span><span class="o">-</span><span class="mf">13702837.385</span> <span class="mf">6314140.874</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span> <span class="nn">maskmypy</span> <span class="kn">import</span> <span class="n">donut</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="kn">import</span> <span class="nn">geopandas</span> <span class="k">as</span> <span class="nn">gpd</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="n">secret_points</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="s1">&#39;secret_points.shp&#39;</span><span class="p">)</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="n">masked_points</span> <span class="o">=</span> <span class="n">donut</span><span class="p">(</span><span class="n">secret_points</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
 </code></pre></div>
 <p>Unless specified, MaskMyPy uses the same units of distance as the CRS of the input secret points. If our secret points instead used a CRS that is in feet, then our mask would have had a maximum distance of 500 feet.</p>
 <h3 id="evaluation">Evaluation<a class="headerlink" href="#evaluation" title="Permanent link">&para;</a></h3>
-<p>We can also add some parameters to the <a href="tools/#shortcut-evaluation-using-run"><code>.run()</code></a> method to help us better evaluate our masking results. For instance, we can visually inspect the masking process by creating a rudimentary map of displacement distances like so:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">masked_points</span> <span class="o">=</span> <span class="n">Donut</span><span class="p">(</span><span class="n">secret</span><span class="p">,</span> <span class="n">min_distance</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">max_distance</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">map_displacement</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<p>If we wanted to analyze how effective this mask was, we can leverage many of the analysis tools MaskMyPy offers by using a convenience function called <code>evaluate()</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span> <span class="nn">maskmypy</span> <span class="kn">import</span> <span class="n">analysis</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="n">census_polygons</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="s1">&#39;census.shp&#39;</span><span class="p">)</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c1"># Return a dictionary containing evaluation results</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="n">mask_stats</span> <span class="o">=</span> <span class="n">analysis</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>  <span class="n">sensitive_gdf</span><span class="o">=</span><span class="n">secret_points</span><span class="p">,</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>  <span class="n">candidate_gdf</span><span class="o">=</span><span class="n">masked_points</span><span class="p">,</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>  <span class="n">population_gdf</span><span class="o">=</span><span class="n">census_polygons</span><span class="p">,</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>  <span class="n">population_column</span><span class="o">=</span><span class="s2">&quot;population&quot;</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="p">)</span>
 </code></pre></div>
-<p><img alt="Displacement Map" src="assets/displacement_map.png" /></p>
-<p>To more rigorously evaluate our results, we could add a <em>context layer</em> of address points and use it to calculate the k-anonymity of each masked point:</p>
-<p><div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">address_points</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="s1">&#39;addresses.shp&#39;</span><span class="p">)</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">masked_points</span> <span class="o">=</span> <span class="n">Donut</span><span class="p">(</span><span class="n">secret</span><span class="p">,</span> <span class="n">min_distance</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">max_distance</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="n">address_points</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">calculate_k</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<h3 id="the-atlas">The Atlas<a class="headerlink" href="#the-atlas" title="Permanent link">&para;</a></h3>
+<p>The <code>Atlas()</code> class makes it easy to both mask datasets and evaluate new masks. It acts as a type of manager that allows you to quickly test any number of combinations of masks and their associated parameters, automatically performing the evaluation for you and keeping track of the results. Each result is referred to as a 'candidate' and is kept in a list at <code>Atlas.candidates</code>, which you can also access by slicing the Atlas itself (e.g. <code>Atlas[0]</code>).</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">import</span> <span class="nn">geopandas</span> <span class="k">as</span> <span class="nn">gpd</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="kn">from</span> <span class="nn">maskmypy</span> <span class="kn">import</span> <span class="n">Atlas</span><span class="p">,</span> <span class="n">donut</span><span class="p">,</span> <span class="n">street</span><span class="p">,</span> <span class="n">locationswap</span>
 <a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">masked_points</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
-<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>     <span class="n">CID</span>                           <span class="n">geometry</span>  <span class="n">k_calc</span>
-<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="mi">0</span>      <span class="mi">1</span>  <span class="n">POINT</span> <span class="p">(</span><span class="o">-</span><span class="mf">13703383.941</span> <span class="mf">6313989.161</span><span class="p">)</span>      <span class="mi">19</span>
-<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="mi">1</span>      <span class="mi">2</span>  <span class="n">POINT</span> <span class="p">(</span><span class="o">-</span><span class="mf">13703227.863</span> <span class="mf">6313973.121</span><span class="p">)</span>      <span class="mi">15</span>
-<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="mi">2</span>      <span class="mi">3</span>  <span class="n">POINT</span> <span class="p">(</span><span class="o">-</span><span class="mf">13703313.001</span> <span class="mf">6314172.582</span><span class="p">)</span>      <span class="mi">43</span>
-<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="mi">3</span>      <span class="mi">4</span>  <span class="n">POINT</span> <span class="p">(</span><span class="o">-</span><span class="mf">13703107.232</span> <span class="mf">6313614.978</span><span class="p">)</span>      <span class="mi">23</span>
-<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="mi">4</span>      <span class="mi">5</span>  <span class="n">POINT</span> <span class="p">(</span><span class="o">-</span><span class="mf">13702837.385</span> <span class="mf">6314140.874</span><span class="p">)</span>      <span class="mi">51</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="c1"># Load some data</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="n">points</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="s1">&#39;sensitive_points.shp&#39;</span><span class="p">)</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="n">addresses</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="s1">&#39;address_points.shp&#39;</span><span class="p">)</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="c1"># Instantiate the Atlas</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="n">atlas</span> <span class="o">=</span> <span class="n">Atlas</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">addresses</span><span class="p">)</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="c1"># The mask() method takes any mask callable, with its arguments simply specified as keyword arguments</span>
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="n">atlas</span><span class="o">.</span><span class="n">mask</span><span class="p">(</span><span class="n">donut</span><span class="p">,</span> <span class="n">low</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span> <span class="c1"># Donut mask with small distances.</span>
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="n">atlas</span><span class="o">.</span><span class="n">mask</span><span class="p">(</span><span class="n">donut</span><span class="p">,</span> <span class="n">low</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span> <span class="c1"># Donut mask with larger distances.</span>
+<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>
+<a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="n">atlas</span><span class="o">.</span><span class="n">mask</span><span class="p">(</span><span class="n">street</span><span class="p">,</span> <span class="n">low</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span> <span class="c1"># Street masking.</span>
+<a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a><span class="n">atlas</span><span class="o">.</span><span class="n">mask</span><span class="p">(</span><span class="n">locationswap</span><span class="p">,</span> <span class="n">low</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="n">addresses</span><span class="p">)</span> <span class="c1"># Location swapping.</span>
+<a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a>
+<a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a><span class="n">atlas</span><span class="o">.</span><span class="n">as_df</span><span class="p">()</span> <span class="c1"># Return a nicely formatted dataframe detailing the results of each mask.</span>
+<a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a>
+<a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a><span class="n">atlas</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="s2">&quot;k_min&quot;</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1"># Sort the list of results by minimum k_anonymity.</span>
+<a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a>
+<a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a><span class="c1"># The Atlas doesn&#39;t keep every masked gdf after it&#39;s done evaluating it. This is done to save memory.</span>
+<a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a><span class="c1"># But we can reproduce an *exact copy* using the `gen_gdf()` method!</span>
+<a id="__codelineno-4-24" name="__codelineno-4-24" href="#__codelineno-4-24"></a><span class="c1"># The number represents the index in the candidate list. We sorted it by minimum k_anonymity, so</span>
+<a id="__codelineno-4-25" name="__codelineno-4-25" href="#__codelineno-4-25"></a><span class="c1"># this will return the masked gdf with the highest minimum k-anonymity.</span>
+<a id="__codelineno-4-26" name="__codelineno-4-26" href="#__codelineno-4-26"></a><span class="n">masked_gdf</span> <span class="o">=</span> <span class="n">atlas</span><span class="o">.</span><span class="n">gen_gdf</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 </code></pre></div>
-Of course, there are also use cases for geographic masking that may not involve addresses at all. In such cases, one could load an alternative point-based population layer in as an 'address' and receive similar benefits.</p>
-<p>For more information on what's available in the .run() method, see <a href="tools/#shortcut-evaluation-using-run">here</a>.</p>
-<h2 id="command-line-interface-cli">Command Line Interface (CLI)<a class="headerlink" href="#command-line-interface-cli" title="Permanent link">&para;</a></h2>
-<p>MaskMyPy also has a limited command line interface for quick jobs on shapefiles. The CLI contains commands for both donut and street masking classes (it does not support Donut_K or Donut_Multiply). Here's the command to street mask a input shapefile of points and save it as <code>masked_points.shp</code>:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>maskmypy street --max-depth <span class="m">25</span> secret_points.shp masked_points.shp
-</code></pre></div>
-<p>To find out more, just run <code>maskmypy --help</code>.</p>
-<h2 id="roadmap">Roadmap<a class="headerlink" href="#roadmap" title="Permanent link">&para;</a></h2>
-<p>The following features are currently planned for development:</p>
-<ul>
-<li>Location Swapping/Verified Neighbor masks</li>
-<li>Mask metadata export</li>
-<li>Data suppression tools</li>
-</ul>
 <h2 id="contribute">Contribute<a class="headerlink" href="#contribute" title="Permanent link">&para;</a></h2>
-<p>Any and all efforts to contribute are welcome, whether they include actual code or just feedback. Please find the GitHub repo <a href="https://github.com/TheTinHat/MaskMyPy">here</a>. In particular, I could use some help with:</p>
-<ul>
-<li>Architecture. Don't hesitate to point out things that look downright weird.</li>
-<li>Tests. A range of unit tests are already included for donut masking, but the street mask tests are currently a bit thin comparatively. The CLI could also use some tests.</li>
-<li>Documentation. Even just pointing out areas where you feel could use more documentation would be most helpful.</li>
-</ul>
+<p>Any and all efforts to contribute are welcome, whether they include actual code or just feedback. Please find the GitHub repo <a href="https://github.com/TheTinHat/MaskMyPy">here</a>.</p>
 <p>Developers, please keep the following in mind:</p>
 <ul>
-<li>You can install the necessary development tools by cloning the repo and running  <code>pip install -e .[develop]</code>.</li>
+<li>You can install the necessary development tools by cloning the repo and running <code>pip install -e .[develop]</code>.</li>
 <li>MaskMyPy uses <code>black</code> with a line length of 99 to format the codebase. Please run <code>black -l 99</code> before submitting any pull requests.</li>
 <li>Run <code>pytest</code> from the project root before submitting any code changes to ensure that your changes do not break anything.</li>
-<li>Please include any appropriate unit tests with any feature contributions.</li>
+<li>Please include tests with any feature contributions.</li>
 </ul>
 
-  <hr>
-<div class="md-source-file">
-  <small>
+
+
+
+
+
+
+  
     
-      Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 7, 2022</span>
+  
+  
+
+
+  <aside class="md-source-file">
+    
       
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 28, 2024</span>
+  </span>
+
     
-  </small>
-</div>
+    
+    
+    
+  </aside>
 
 
 
@@ -616,32 +711,12 @@ Of course, there are also use cases for geographic masking that may not involve 
             </div>
           
           
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
         </div>
         
       </main>
       
         <footer class="md-footer">
-  
-    
-    <nav class="md-footer__inner md-grid" aria-label="Footer" >
-      
-      
-        
-        <a href="donut/" class="md-footer__link md-footer__link--next" aria-label="Next: Donut Masking" rel="next">
-          <div class="md-footer__title">
-            <div class="md-ellipsis">
-              <span class="md-footer__direction">
-                Next
-              </span>
-              Donut Masking
-            </div>
-          </div>
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
-          </div>
-        </a>
-      
-    </nav>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
@@ -664,10 +739,11 @@ Of course, there are also use cases for geographic masking that may not involve 
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": ".", "features": [], "search": "assets/javascripts/workers/search.5bf1dace.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    <script id="__config" type="application/json">{"base": ".", "features": [], "search": "assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="assets/javascripts/bundle.078830c0.min.js"></script>
+      <script src="assets/javascripts/bundle.e1c3ead8.min.js"></script>
       
     
   </body>
