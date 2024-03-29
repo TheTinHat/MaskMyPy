@@ -21,7 +21,7 @@ setup(
     install_requires=[
         "osmnx>=1.7.0",
         "scikit-learn>=1.1.1",
-        "pointpats==2.3.0",
+        "pointpats>=2.3.0",
     ],
     extras_require={
         "develop": [
