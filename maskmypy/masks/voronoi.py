@@ -7,7 +7,7 @@ from shapely.ops import nearest_points
 from .. import tools
 
 
-def voronoi(gdf: GeoDataFrame, snap_to_streets: bool = False) -> GeoDataFrame:
+def voronoi(gdf: GeoDataFrame, snap_to_streets: bool = False, seed: int = None) -> GeoDataFrame:
     """
     Apply voronoi masking to a GeoDataFrame, displacing points to the nearest edges of a vornoi
     diagram. Note: because voronoi masking lacks any level of randomization, snapping to streets
@@ -42,6 +42,7 @@ def voronoi(gdf: GeoDataFrame, snap_to_streets: bool = False) -> GeoDataFrame:
 
     args = locals()
     del args["snap_to_streets"]
+    del args["seed"]
 
     masked_gdf = _Voronoi(**args).run()
 

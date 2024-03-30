@@ -3,6 +3,7 @@ import pprint
 from dataclasses import dataclass, field
 from pathlib import Path
 from time import time
+from timeit import default_timer
 from typing import Callable
 
 from geopandas import GeoDataFrame
@@ -75,6 +76,7 @@ class Atlas:
         keep_gdf: bool = False,
         keep_candidate: bool = True,
         skip_slow_evaluators: bool = True,
+        measure_execution_time: bool = False,
         **kwargs,
     ):
         """
@@ -95,6 +97,9 @@ class Atlas:
         skip_slow_evaluators : bool
             If `True`, skips any analyses that are known to be slow during mask result
             evaluation. See maskmypy.analysis.evaluate() for more information. 
+        measure_execution_time : bool
+            If `True`, measures the execution time of the mask function and adds it to the
+            candidate statistics.
         """
         candidate = {
             "mask": mask_func.__name__,
@@ -103,7 +108,12 @@ class Atlas:
         }
         candidate["kwargs"]["seed"] = candidate["kwargs"].get("seed") or tools.gen_seed()
 
+        if measure_execution_time:
+            time_start = default_timer()
         gdf = mask_func(self.sensitive, **candidate["kwargs"])
+
+        if measure_execution_time:
+            execution_time = default_timer() - time_start
 
         candidate["checksum"] = tools.checksum(gdf)
         candidate["kwargs"] = self._dehydrate_mask_kwargs(**candidate["kwargs"])
@@ -115,8 +125,13 @@ class Atlas:
             skip_slow=skip_slow_evaluators,
         )
 
+        if measure_execution_time:
+            candidate["stats"]["execution_time"] = execution_time
+
         if keep_gdf:
             self.layers[candidate["checksum"]] = gdf
+        else:
+            del gdf
         if keep_candidate:
             self.candidates.append(candidate)
         return candidate

@@ -1,4 +1,5 @@
 import statistics
+import time
 
 import pytest
 
@@ -138,3 +139,14 @@ def test_atlas_crs_mismatch(points, address):
     address = address.to_crs(epsg=4326)
     with pytest.raises(ValueError):
         atlas = Atlas(points, population=address)
+
+
+def test_execution_time(points):
+    atlas = Atlas(points)
+
+    def mask_mock(sensitive, seed):
+        time.sleep(0.1)
+        return sensitive
+
+    atlas.mask(mask_mock, measure_execution_time=True)
+    assert round(atlas[0]["stats"]["execution_time"], 1) == 0.1
