@@ -396,5 +396,6 @@ class Atlas:
         """
         for key, value in mask_kwargs.items():
             if isinstance(value, GeoDataFrame):
+                self.add_layers(value)
                 mask_kwargs[key] = "_".join(["context", tools.checksum(value)])
         return mask_kwargs
