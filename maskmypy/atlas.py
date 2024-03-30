@@ -7,6 +7,7 @@ from time import time
 from timeit import default_timer
 from typing import Callable
 
+import matplotlib.pyplot as plt
 from geopandas import GeoDataFrame
 from pandas import DataFrame, Series, concat
 
@@ -350,6 +351,27 @@ class Atlas:
         df = concat([df.drop(["kwargs"], axis=1), df["kwargs"].apply(Series)], axis=1)
         df = concat([df.drop(["stats"], axis=1), df["stats"].apply(Series)], axis=1)
         return df
+
+    def scatter(self, a: str, b: str):
+        """
+        Return a scatter plot of candidates across two given statistics.
+
+        Parameters
+        ----------
+        a : string
+            Name of the candidate statistic to plot.
+        b : string
+            Name of the candidate statistic to plot.
+        """
+        df = self.as_df()
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        ax.scatter(df[f"{a}"], df[f"{b}"], c="#1f77b4")
+        ax.set_xlabel(f"{a}")
+        ax.set_ylabel(f"{b}")
+        for i, label in enumerate(df["checksum"]):
+            ax.annotate(label, (df.loc[i, a], df.loc[i, b]))
+        return fig
 
     def _hydrate_mask_kwargs(self, **mask_kwargs: dict) -> dict:
         """
