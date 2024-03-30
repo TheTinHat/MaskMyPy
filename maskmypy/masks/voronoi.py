@@ -42,6 +42,9 @@ def voronoi(gdf: GeoDataFrame, snap_to_streets: bool = False, seed: int = None) 
 
     args = locals()
     del args["snap_to_streets"]
+
+    # Delete seed as it is unused in this mask, but still needed to
+    # satisfy atlas.mask()
     del args["seed"]
 
     masked_gdf = _Voronoi(**args).run()
