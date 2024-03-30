@@ -14,7 +14,7 @@ from pyproj.crs.crs import CRS
 
 def checksum(gdf: GeoDataFrame) -> str:
     """
-    Calculate SHA256 checksum of a GeoDataFrame and return the first 12 characters.
+    Calculate SHA256 checksum of a GeoDataFrame and return the first 8 characters.
     Two completely identical GeoDataFrames will always return the exact same value,
     whereas two similar, but not completely identical GeoDataFrames will return
     entirely different values.
@@ -27,9 +27,9 @@ def checksum(gdf: GeoDataFrame) -> str:
     Returns
     -------
     str
-        The first 12 characters of the SHA256 checksum of the input GeoDataFrame.
+        The first 8 characters of the SHA256 checksum of the input GeoDataFrame.
     """
-    return sha256(bytearray(hash_pandas_object(gdf).values)).hexdigest()[0:12]
+    return sha256(bytearray(hash_pandas_object(gdf).values)).hexdigest()[0:8]
 
 
 def gen_rng(seed: int = None) -> object:
