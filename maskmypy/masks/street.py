@@ -49,10 +49,9 @@ def street(
     high : int
         Maximum number of nodes along the OSM street network to traverse.
     max_length : float
-        Maximum distance in meters between any two nodes along the street network.
-        When traversing each node on the street network, MaskMyPy verifies that its immediate
-        neighbours are no more than `max_length` away. This prevents extremely large masking
-        distances, such as those caused by long highways.
+        When locating the closest node to each point on the street network, MaskMyPy verifies
+        that its immediate neighbours are no more than `max_length` away, in meters. This prevents
+        extremely large masking distances, such as those caused by long highways.
     seed : int
         Used to seed the random number generator so that masked datasets are reproducible.
         Randomly generated if left undefined.
@@ -90,9 +89,9 @@ class _Street:
     gdf: GeoDataFrame
     low: int
     high: int
-    max_length: float = 1000
-    seed: int = None
-    padding: float = 0.2
+    max_length: float
+    seed: int
+    padding: float
 
     def __post_init__(self) -> None:
         self._rng = random.default_rng(seed=self.seed)
@@ -139,13 +138,15 @@ class _Street:
     def _mask_point_from_node_id(self, node_id: int) -> Point:
         node_count = 0
         target_node_count = self._rng.integers(self.low, self.high, endpoint=False)
+        _max_length = self.max_length
 
         # Search for surrounding nodes until number of nodes found equals or exceeds target_node_count
         while node_count < target_node_count:
             paths = single_source_dijkstra_path_length(
-                G=self.graph, source=node_id, cutoff=self.max_length, weight="length"
+                G=self.graph, source=node_id, cutoff=_max_length, weight="length"
             )
             node_count = len(paths)
+            _max_length = _max_length * 2
 
         # Calculate the total distance to the closest nodes within the target_node_count
         i = 0
