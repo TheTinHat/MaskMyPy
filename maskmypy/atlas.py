@@ -15,21 +15,22 @@ from . import analysis, masks, tools
 @dataclass
 class Atlas:
     """
-    A class for quickly performing and evaluating geographic masks. 
-    
+    A class for quickly performing and evaluating geographic masks.
+
     Attributes
     ----------
     sensitive : GeoDataFrame
         A GeoDataFrame containing sensitive points.
     population : GeoDataFrame
-        A GeoDataFrame containing population information, such as address points or polygon 
+        A GeoDataFrame containing population information, such as address points or polygon
         with population counts.
-    population_column : str 
-        If the population layer is based on polygons, the name of the column containing population 
-        counts. 
+    population_column : str
+        If the population layer is based on polygons, the name of the column containing population
+        counts.
     candidates : list[]
-        A list of existing masked candidates, if any. 
+        A list of existing masked candidates, if any.
     """
+
     sensitive: GeoDataFrame
     population: GeoDataFrame = None
     population_column: str = "pop"
@@ -48,23 +49,23 @@ class Atlas:
 
     def __len__(self):
         return len(self.candidates)
-     
+
     def add_layers(self, *gdf: GeoDataFrame):
         """
         Add GeoDataFrames to the layer store (`Atlas.layers`).
 
-        When regenerating masked GeoDataFrames using `Atlas.gen_gdf()`, any context layers 
+        When regenerating masked GeoDataFrames using `Atlas.gen_gdf()`, any context layers
         that were used in creating the associated candidate must be present in the layer store.
-        If they are, they will be automatically found and used as needed. 
+        If they are, they will be automatically found and used as needed.
 
-        Note that layers are stored according to their checksum value (see 
-        `maskmypy.tools.checksum()`) to provide both deduplication and integrity 
+        Note that layers are stored according to their checksum value (see
+        `maskmypy.tools.checksum()`) to provide both deduplication and integrity
         checking.
 
         Parameters
         ----------
         gdf : GeoDataFrame
-            GeoDataFrames to be added to the layer store. 
+            GeoDataFrames to be added to the layer store.
         """
         for x in gdf:
             tools._validate_crs(self.sensitive.crs, x.crs)
@@ -90,13 +91,13 @@ class Atlas:
             keyword arguments, and must return a GeoDataFrame containing the results.
         keep_gdf : bool
             If `False`, the resulting GeoDataFrame will be analyzed and then dropped to save memory.
-            Use `gen_gdf` to regenerate the GeoDataFrame. 
+            Use `gen_gdf` to regenerate the GeoDataFrame.
         keep_candidate : bool
             If `True`, a dictionary containing mask parameters and analysis results are added to
-            the candidate list (`Atlas.candidates`, or `Atlas[index]`). 
+            the candidate list (`Atlas.candidates`, or `Atlas[index]`).
         skip_slow_evaluators : bool
             If `True`, skips any analyses that are known to be slow during mask result
-            evaluation. See maskmypy.analysis.evaluate() for more information. 
+            evaluation. See maskmypy.analysis.evaluate() for more information.
         measure_execution_time : bool
             If `True`, measures the execution time of the mask function and adds it to the
             candidate statistics.
@@ -132,8 +133,10 @@ class Atlas:
             self.layers[candidate["checksum"]] = gdf
         else:
             del gdf
+
         if keep_candidate:
             self.candidates.append(candidate)
+
         return candidate
 
     def gen_gdf(
@@ -150,15 +153,15 @@ class Atlas:
         Parameters
         ----------
         idx : int
-            Index of the candidate in `Atlas.candidates` to regenerate a GeoDataFrame for. 
+            Index of the candidate in `Atlas.candidates` to regenerate a GeoDataFrame for.
         checksum : str
-            Checksum of the candidate in `Atlas.candidates` to regenerate a GeoDataFrame for. 
+            Checksum of the candidate in `Atlas.candidates` to regenerate a GeoDataFrame for.
         keep : bool
             If `True`, return the masked GeoDataFrame and store it in `Atlas.layers` for future
-            use so it does not need to be regenerated. 
+            use so it does not need to be regenerated.
         custom_mask : Callable
             If the candidate was generated using a custom masking function from outside MaskMyPy,
-            provide the function here. 
+            provide the function here.
 
         """
         if (idx is None and checksum is None) or (idx is not None and checksum is not None):
@@ -214,7 +217,7 @@ class Atlas:
         by : str
             Name of the statistic to sort by.
         desc : bool
-            If `True`, sort in descending order. 
+            If `True`, sort in descending order.
 
         """
         if by in self.candidates[0]["stats"].keys():
@@ -299,24 +302,29 @@ class Atlas:
         candidate_json : Path
             Path to a candidate JSON file previously generated using `Atlas.to_json()`.
         population : GeoDataFrame
-            The original population layer, if one was specified. 
+            The original population layer, if one was specified.
         population_column : str
-            If a polygon-based population layer was used, the name of the population column. 
+            If a polygon-based population layer was used, the name of the population column.
         layers : List[GeoDataFrame]
             A list of additional GeoDataFrames used in the original Atlas. For instance,
-            any containers used during donut masking. 
+            any containers used during donut masking.
         """
         with open(candidate_json) as f:
             candidates = json.load(f)
 
-        atlas = cls(sensitive=sensitive, candidates=candidates, population=population, population_column=population_column)
+        atlas = cls(
+            sensitive=sensitive,
+            candidates=candidates,
+            population=population,
+            population_column=population_column,
+        )
         if layers:
             atlas.add_layers(*layers)
         return atlas
 
     def as_df(self):
         """
-        Return a pandas DataFrame describing each candidate. 
+        Return a pandas DataFrame describing each candidate.
         """
         df = DataFrame(data=self.candidates)
         df = concat([df.drop(["kwargs"], axis=1), df["kwargs"].apply(Series)], axis=1)
@@ -341,8 +349,8 @@ class Atlas:
         return mask_kwargs
 
     def _dehydrate_mask_kwargs(self, **mask_kwargs: dict) -> dict:
-        """ 
-        Search mask kwargs for any GeoDataFrames and replace them with their checksums. 
+        """
+        Search mask kwargs for any GeoDataFrames and replace them with their checksums.
         """
         for key, value in mask_kwargs.items():
             if isinstance(value, GeoDataFrame):

@@ -21,14 +21,14 @@ def locationswap(
     data is the most common data type used to provide eligible swap locations, other point-based
     datasets may be used.
 
-    Example 
+    Example
     -------
     ```python
     from maskmypy import locationswap
 
     masked = locationswap(
         gdf=sensitive_points,
-        low=50, 
+        low=50,
         high=500,
         address=address_points
     )
@@ -47,7 +47,7 @@ def locationswap(
         While addresses are most common, other point-based data may be used as well.
     seed : int
         Used to seed the random number generator so that masked datasets are reproducible.
-        Randomly generated if left undefined. 
+        Randomly generated if left undefined.
     snap_to_streets : bool
         If True, points are snapped to the nearest node on the OSM street network after masking.
         This can reduce the chance of false-attribution.

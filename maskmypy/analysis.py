@@ -33,10 +33,10 @@ def evaluate(
         A GeoDataFrame containing masked points to be evaluated.
     population_gdf : GeoDataFrame
         A GeoDataFrame containing either address points or polygons with a population column
-        (see `population_column`). Used to calculate k-anonymity metrics. 
+        (see `population_column`). Used to calculate k-anonymity metrics.
     population_column : str
         If a polygon-based `population_gdf` is provided, the name of the column containing
-        population counts. 
+        population counts.
     skip_slow : bool
         If True, skips analyses that are known to be slow. Currently, this only includes the
         root-mean-square error of Ripley's K results between the masked and unmasked data.
@@ -124,10 +124,10 @@ def k_anonymity(
     population_gdf : GeoDataFrame
         A GeoDataFrame containing either address points or polygons with a population column
         (see `population_column`). Used to calculate k-anonymity metrics. Note that
-        address points tend to provide more accurate results. 
+        address points tend to provide more accurate results.
     population_column : str
         If a polygon-based `population_gdf` is provided, the name of the column containing
-        population counts. 
+        population counts.
 
     Returns
     -------
@@ -159,7 +159,7 @@ def k_satisfaction(gdf: GeoDataFrame, min_k: int, col: str = "k_anonymity") -> f
     min_k : int
         The minimum k-anonymity that must be satisfied.
     col : str
-        Name of the column containing k-anonymity values. 
+        Name of the column containing k-anonymity values.
 
     Returns
     -------
@@ -204,7 +204,7 @@ def summarize_displacement(gdf: GeoDataFrame, col: str = "_distance") -> dict:
     gdf : GeoDataFrame
         A GeoDataFrame containing displacement distance values.
     col : str
-        Name of the column containing displacement distance values. 
+        Name of the column containing displacement distance values.
 
     Returns
     -------
@@ -292,34 +292,34 @@ def ripleys_k(
     steps: int = 10,
     simulations: int = 99,
 ) -> KtestResult:
-    """ 
-    Performs Ripley's K clustering analysis on a GeoDataFrame. This evaluates clustering across a 
+    """
+    Performs Ripley's K clustering analysis on a GeoDataFrame. This evaluates clustering across a
     range of spatial scales.
 
-    See `maskmypy.analysis.ripley_rmse()`, `maskmypy.analysis.graph_ripleyresult()`, and 
-    `maskmypy.analysis.graph_ripleyresults()` for functions that process/visualize the results 
+    See `maskmypy.analysis.ripley_rmse()`, `maskmypy.analysis.graph_ripleyresult()`, and
+    `maskmypy.analysis.graph_ripleyresults()` for functions that process/visualize the results
     of this function.
 
     Parameters
     ----------
     gdf : GeoDataFrame
-        GeoDataFrame to analyse. 
+        GeoDataFrame to analyse.
     max_dist : float
-        The largest distance band used for cluster analysis. If `None`, this defaults to one 
-        quarter of the smallest side of the bounding box (i.e. Ripleys Rule of Thumb). 
+        The largest distance band used for cluster analysis. If `None`, this defaults to one
+        quarter of the smallest side of the bounding box (i.e. Ripleys Rule of Thumb).
     min_dist : float
         The smallest distance band used for cluster analysis. If `None`, this is automatically set
-        to  `max_dist / steps`. 
+        to  `max_dist / steps`.
     steps : int
-        The number of equally spaced intervals between the minimum and maximum distance bands 
+        The number of equally spaced intervals between the minimum and maximum distance bands
         to analyze clustering on.
     simulations : int
-        The number of simulations to perform. 
+        The number of simulations to perform.
 
     Returns
     -------
     KtestResult
-        A named tuple that contains `("support", "statistic", "pvalue", "simulations")`. 
+        A named tuple that contains `("support", "statistic", "pvalue", "simulations")`.
     """
     if not max_dist:
         max_dist = _gdf_to_pointpattern(gdf).rot
@@ -338,15 +338,15 @@ def ripleys_k(
 
 def ripley_rmse(sensitive_result: KtestResult, candidate_result: KtestResult) -> float:
     """
-    Calculates the root-mean-square error between the Ripley's K-test results of unmasked and 
-    masked data. As the goal of geographic masking is to reduce information loss, the actual 
-    amount of clustering in masked data is unimportant; what matters is that the clustering 
-    or dispersion of the masked data resembles that of the original, sensitive data. By comparing 
-    the RMSE of k-test results, we can reduce this deviation to a single figure, which is useful 
-    for quickly comparing how multiple masks perform. 
+    Calculates the root-mean-square error between the Ripley's K-test results of unmasked and
+    masked data. As the goal of geographic masking is to reduce information loss, the actual
+    amount of clustering in masked data is unimportant; what matters is that the clustering
+    or dispersion of the masked data resembles that of the original, sensitive data. By comparing
+    the RMSE of k-test results, we can reduce this deviation to a single figure, which is useful
+    for quickly comparing how multiple masks perform.
 
     Lower RMSE values indicate less information loss due to masking, whereas higher values
-    indicate greater information loss due to masking. 
+    indicate greater information loss due to masking.
 
     Parameters
     ----------
@@ -370,7 +370,7 @@ def ripley_rmse(sensitive_result: KtestResult, candidate_result: KtestResult) ->
 
 def graph_ripleyresult(result: KtestResult, subtitle: str = None) -> Figure:
     """
-    Generate a graph depicting a given KtestResult, such as would be generated from using 
+    Generate a graph depicting a given KtestResult, such as would be generated from using
     `maskmypy.analysis.ripleys_k()`.
 
     Parameters
@@ -378,7 +378,7 @@ def graph_ripleyresult(result: KtestResult, subtitle: str = None) -> Figure:
     result : KtestResult
         The KtestResult tuple from applying `maskmypy.analysis.ripleys_k()` on a given layer.
     subtitle : str
-        A subtitle to add to the graph. 
+        A subtitle to add to the graph.
 
     Returns
     -------
@@ -405,11 +405,11 @@ def graph_ripleyresults(
     subtitle: str = None,
 ) -> Figure:
     """
-    Generate a graph depicting two KtestResults, such as would be generated from using 
-    `maskmypy.analysis.ripleys_k()`. 
+    Generate a graph depicting two KtestResults, such as would be generated from using
+    `maskmypy.analysis.ripleys_k()`.
 
     Similar to `maskmypy.analysis.graph_ripleyresult()` except this function graphs both
-    the sensitive and candidate results, allowing for visual comparison of clustering and dispersion 
+    the sensitive and candidate results, allowing for visual comparison of clustering and dispersion
     between the two.
 
     Parameters
@@ -419,7 +419,7 @@ def graph_ripleyresults(
     candidate_result : KtestResult
         The KtestResult tuple from applying `maskmypy.analysis.ripleys_k()` on a masked layer.
     subtitle : str
-        A subtitle to add to the graph. 
+        A subtitle to add to the graph.
 
     Returns
     -------
@@ -482,10 +482,10 @@ def map_displacement(
     candidate_gdf : GeoDataFrame
         A GeoDataFrame containing masked points.
     filename : str
-        If specified, saves the map to the filesystem. 
+        If specified, saves the map to the filesystem.
     context_gdf : GeoDataFrame
         A GeoDataFrame containing contextual data to be added to the map, such as address points,
-        administrative boundaries, etc. 
+        administrative boundaries, etc.
 
     Returns
     -------

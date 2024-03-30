@@ -20,6 +20,7 @@ def test_atlas_as_df(points):
     assert df.iloc[0]["high"] == 500
     assert df.iloc[0]["mask"] == "donut"
 
+
 def test_atlas_restore_from_json(points_small):
     points = points_small
     atlas = Atlas(points)
@@ -54,9 +55,10 @@ def test_atlas_restore_from_json(points_small):
     gdf_1 = atlas3.gen_gdf(checksum=check_2a)
     check_2c = tools.checksum(gdf_1)
     assert check_2a == check_2c
-    
+
     with pytest.raises(ValueError):
         atlas3.gen_gdf(checksum="aaaaaa")
+
 
 def test_atlas_context_hydration(points, container):
     atlas = Atlas(points)
@@ -82,13 +84,25 @@ def test_atlas_sort(points):
     atlas.mask(donut, low=200, high=299)
     atlas.mask(donut, low=100, high=199)
 
-    assert atlas[0]["stats"]["displacement_mean"] > atlas[1]["stats"]["displacement_mean"] > atlas[2]["stats"]["displacement_mean"]
+    assert (
+        atlas[0]["stats"]["displacement_mean"]
+        > atlas[1]["stats"]["displacement_mean"]
+        > atlas[2]["stats"]["displacement_mean"]
+    )
 
     atlas.sort(by="displacement_mean")
-    assert atlas[0]["stats"]["displacement_mean"] < atlas[1]["stats"]["displacement_mean"] < atlas[2]["stats"]["displacement_mean"]
+    assert (
+        atlas[0]["stats"]["displacement_mean"]
+        < atlas[1]["stats"]["displacement_mean"]
+        < atlas[2]["stats"]["displacement_mean"]
+    )
 
     atlas.sort(by="displacement_mean", desc=True)
-    assert atlas[0]["stats"]["displacement_mean"] > atlas[1]["stats"]["displacement_mean"] > atlas[2]["stats"]["displacement_mean"]
+    assert (
+        atlas[0]["stats"]["displacement_mean"]
+        > atlas[1]["stats"]["displacement_mean"]
+        > atlas[2]["stats"]["displacement_mean"]
+    )
 
 
 def test_displacement(points):

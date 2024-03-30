@@ -13,13 +13,13 @@ def voronoi(gdf: GeoDataFrame, snap_to_streets: bool = False, seed: int = None) 
     diagram. Note: because voronoi masking lacks any level of randomization, snapping to streets
     is recommended for this mask to provide another level of obfuscation.
 
-    Example 
+    Example
     -------
     ```python
     from maskmypy import voronoi
 
     masked = voronoi(
-        gdf=sensitive_points, 
+        gdf=sensitive_points,
         snap_to_streets=True
     )
     ```
@@ -30,7 +30,7 @@ def voronoi(gdf: GeoDataFrame, snap_to_streets: bool = False, seed: int = None) 
         GeoDataFrame containing sensitive points.
     snap_to_streets : bool
         If True, points are snapped to the nearest node on the OSM street network after masking.
-        This can reduce the chance of false-attribution. 
+        This can reduce the chance of false-attribution.
 
     Returns
     -------

@@ -22,14 +22,14 @@ def donut(
     maximum distance. Advantages of this mask is speed and simplicity, though it does not
     handle highly varied population densities well.
 
-    Example 
+    Example
     -------
     ```python
     from maskmypy import donut
 
     masked = donut(
-        gdf=sensitive_points, 
-        min=100, 
+        gdf=sensitive_points,
+        min=100,
         max=1000
     )
     ```
@@ -55,13 +55,13 @@ def donut(
         further away. The `gaussian` distribution uses a normal distribution, where values
         towards the middle of the range are most likely to be selected. Note that gaussian
         distribution has a small chance of selecting values beyond the defined minimum and
-        maximum. 
+        maximum.
     seed : int
         Used to seed the random number generator so that masked datasets are reproducible.
-        Randomly generated if left undefined. 
+        Randomly generated if left undefined.
     snap_to_streets : bool
         If True, points are snapped to the nearest node on the OSM street network after masking.
-        This can reduce the chance of false-attribution. 
+        This can reduce the chance of false-attribution.
 
     Returns
     -------

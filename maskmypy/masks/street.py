@@ -28,14 +28,14 @@ def street(
     snapped to the nearest node on the network, then displaced along the surround network between
     `low` and `high` nodes away.
 
-    Example 
+    Example
     -------
     ```python
-    from maskmypy import street 
+    from maskmypy import street
 
     masked = street(
-        gdf=sensitive_points, 
-        min=20, 
+        gdf=sensitive_points,
+        min=20,
         max=30
     )
     ```
@@ -52,10 +52,10 @@ def street(
         Maximum distance in meters between any two nodes along the street network.
         When traversing each node on the street network, MaskMyPy verifies that its immediate
         neighbours are no more than `max_length` away. This prevents extremely large masking
-        distances, such as those caused by long highways. 
+        distances, such as those caused by long highways.
     seed : int
         Used to seed the random number generator so that masked datasets are reproducible.
-        Randomly generated if left undefined. 
+        Randomly generated if left undefined.
     padding : float
         OSM network data is retrieved based on the bounding box of the sensitive GeoDataFrame.
         Padding is used to expand this bounding box slightly to reduce unwanted edge-effects.
