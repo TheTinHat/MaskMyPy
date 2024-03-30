@@ -1,5 +1,6 @@
 import json
 import pprint
+import tracemalloc
 from dataclasses import dataclass, field
 from pathlib import Path
 from time import time
@@ -78,6 +79,7 @@ class Atlas:
         keep_candidate: bool = True,
         skip_slow_evaluators: bool = True,
         measure_execution_time: bool = False,
+        measure_peak_memory: bool = False,
         **kwargs,
     ):
         """
@@ -100,8 +102,17 @@ class Atlas:
             evaluation. See maskmypy.analysis.evaluate() for more information.
         measure_execution_time : bool
             If `True`, measures the execution time of the mask function and adds it to the
-            candidate statistics.
+            candidate statistics. Mutually exclusive with `measure_peak_memory`
+        measure_peak_memory : bool
+            If `True`, will profile memory usage while the mask function is being applied,
+            and will add the value in MB to the candidate statistics. WARNING: this can
+            significantly slow down execution time. Mutually exclusive with `measure_peak_memory`.
         """
+        if measure_execution_time and measure_peak_memory:
+            raise ValueError(
+                "`measure_execution_time` and `measure_peak_memory` cannot both be true."
+            )
+
         candidate = {
             "mask": mask_func.__name__,
             "kwargs": self._hydrate_mask_kwargs(**kwargs),
@@ -111,10 +122,17 @@ class Atlas:
 
         if measure_execution_time:
             time_start = default_timer()
+        elif measure_peak_memory:
+            tracemalloc.start()
+
         gdf = mask_func(self.sensitive, **candidate["kwargs"])
 
         if measure_execution_time:
             execution_time = default_timer() - time_start
+        elif measure_peak_memory:
+            _, mem_peak = tracemalloc.get_traced_memory()
+            tracemalloc.stop()
+            mem_peak_mb = mem_peak / 1024 / 1024
 
         candidate["checksum"] = tools.checksum(gdf)
         candidate["kwargs"] = self._dehydrate_mask_kwargs(**candidate["kwargs"])
@@ -128,6 +146,8 @@ class Atlas:
 
         if measure_execution_time:
             candidate["stats"]["execution_time"] = execution_time
+        elif measure_peak_memory:
+            candidate["stats"]["memory_peak_mb"] = mem_peak_mb
 
         if keep_gdf:
             self.layers[candidate["checksum"]] = gdf

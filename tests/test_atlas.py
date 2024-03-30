@@ -164,3 +164,28 @@ def test_execution_time(points):
 
     atlas.mask(mask_mock, measure_execution_time=True)
     assert round(atlas[0]["stats"]["execution_time"], 1) == 0.1
+
+
+def test_peak_memory(points):
+    points = points[0:2]
+    atlas = Atlas(points)
+
+    def mask_mock(sensitive, memory_mb, seed):
+        peakmemory_size = memory_mb * 1024 * 1024  # 500MB
+        byte_array = bytearray(peakmemory_size)
+        return sensitive
+
+    atlas.mask(mask_mock, memory_mb=1, measure_peak_memory=True)
+    assert round(atlas[0]["stats"]["memory_peak_mb"]) == 1
+
+    atlas.mask(mask_mock, memory_mb=100, measure_peak_memory=True)
+    assert round(atlas[1]["stats"]["memory_peak_mb"]) == 100
+
+    atlas.mask(mask_mock, memory_mb=10, measure_peak_memory=True)
+    assert round(atlas[2]["stats"]["memory_peak_mb"]) == 10
+
+
+def test_memory_and_speed_are_exclusive(points):
+    atlas = Atlas(points)
+    with pytest.raises(ValueError):
+        atlas.mask(donut, low=1, high=2, measure_peak_memory=True, measure_execution_time=True)
