@@ -106,8 +106,12 @@ class Atlas:
             candidate statistics. Mutually exclusive with `measure_peak_memory`
         measure_peak_memory : bool
             If `True`, will profile memory usage while the mask function is being applied,
-            and will add the value in MB to the candidate statistics. WARNING: this can
-            significantly slow down execution time. Mutually exclusive with `measure_peak_memory`.
+            and will add the value in MB to the candidate statistics. Note that the reported
+            value represents *additional* memory used by the mask, and does not include existing
+            allocations. Mutually exclusive with `measure_peak_memory`.
+
+            Warning: this can significantly slow down execution time.
+
         """
         if measure_execution_time and measure_peak_memory:
             raise ValueError(
