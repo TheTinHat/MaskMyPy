@@ -21,6 +21,8 @@ def locationswap(
     data is the most common data type used to provide eligible swap locations, other point-based
     datasets may be used.
 
+    Note: If a sensitive point has no address points within range, the point is displaced to (0,0).
+
     Example
     -------
     ```python
