@@ -110,7 +110,8 @@ class _Street:
                     east=bbox[2],
                     network_type="drive",
                     truncate_by_edge=True,
-                )
+                ),
+                warn=False,
             )
         )
         self.graph_gdf = graph_to_gdfs(self.graph)

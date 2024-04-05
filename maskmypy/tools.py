@@ -92,7 +92,8 @@ def snap_to_streets(gdf: GeoDataFrame) -> GeoDataFrame:
             east=bbox[2],
             network_type="drive",
             truncate_by_edge=True,
-        )
+        ),
+        warn=False,
     )
     graph = project_graph(graph, to_crs=gdf.crs)
     node_gdf = graph_to_gdfs(graph)[0]
