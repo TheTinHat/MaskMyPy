@@ -53,15 +53,15 @@ def gen_rng(seed: int = None) -> object:
 
 def gen_seed() -> int:
     """
-    Generate a 32-digit random integer to seed random number generators.
+    Generate a 16-digit random integer to seed random number generators.
 
     Returns
     -------
     int
-        A 32 digit random integer.
+        A 16 digit random integer.
     """
 
-    return int(SystemRandom().random() * (10**32))
+    return int(SystemRandom().random() * (10**16))
 
 
 def snap_to_streets(gdf: GeoDataFrame) -> GeoDataFrame:
