@@ -5,7 +5,7 @@ with open("docs/README.md", "r") as fh:
 
 setup(
     name="maskmypy",
-    version="1.0.0-beta",
+    version="1.0.0",
     author="David Swanlund",
     author_email="maskmypy@swanlund.dev",
     description="Python tools for anonymizing geographic data.",
@@ -20,8 +20,8 @@ setup(
     ],
     install_requires=[
         "osmnx>=1.7.0,<2.0",
-        "scikit-learn>=1.1.1",
-        "pointpats>=2.3.0",
+        "scikit-learn>=1.1.1,<2.0",
+        "pointpats>=2.3.0,<3.0",
     ],
     extras_require={
         "develop": [
