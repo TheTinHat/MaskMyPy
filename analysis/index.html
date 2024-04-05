@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.6">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.17">
     
     
       
@@ -28,7 +28,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.50c56a3b.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.bcfcd587.min.css">
       
       
 
@@ -1175,10 +1175,10 @@ root-mean-square error of Ripley's K results between the masked and unmasked dat
 <a id="__codelineno-0-33" name="__codelineno-0-33"></a><span class="sd">        A GeoDataFrame containing masked points to be evaluated.</span>
 <a id="__codelineno-0-34" name="__codelineno-0-34"></a><span class="sd">    population_gdf : GeoDataFrame</span>
 <a id="__codelineno-0-35" name="__codelineno-0-35"></a><span class="sd">        A GeoDataFrame containing either address points or polygons with a population column</span>
-<a id="__codelineno-0-36" name="__codelineno-0-36"></a><span class="sd">        (see `population_column`). Used to calculate k-anonymity metrics. </span>
+<a id="__codelineno-0-36" name="__codelineno-0-36"></a><span class="sd">        (see `population_column`). Used to calculate k-anonymity metrics.</span>
 <a id="__codelineno-0-37" name="__codelineno-0-37"></a><span class="sd">    population_column : str</span>
 <a id="__codelineno-0-38" name="__codelineno-0-38"></a><span class="sd">        If a polygon-based `population_gdf` is provided, the name of the column containing</span>
-<a id="__codelineno-0-39" name="__codelineno-0-39"></a><span class="sd">        population counts. </span>
+<a id="__codelineno-0-39" name="__codelineno-0-39"></a><span class="sd">        population counts.</span>
 <a id="__codelineno-0-40" name="__codelineno-0-40"></a><span class="sd">    skip_slow : bool</span>
 <a id="__codelineno-0-41" name="__codelineno-0-41"></a><span class="sd">        If True, skips analyses that are known to be slow. Currently, this only includes the</span>
 <a id="__codelineno-0-42" name="__codelineno-0-42"></a><span class="sd">        root-mean-square error of Ripley&#39;s K results between the masked and unmasked data.</span>
@@ -1238,7 +1238,7 @@ root-mean-square error of Ripley's K results between the masked and unmasked dat
 
   <div class="doc doc-contents ">
   
-      <p>Generate a graph depicting a given KtestResult, such as would be generated from using 
+      <p>Generate a graph depicting a given KtestResult, such as would be generated from using
 <code>maskmypy.analysis.ripleys_k()</code>.</p>
 
 
@@ -1341,7 +1341,7 @@ root-mean-square error of Ripley's K results between the masked and unmasked dat
 <span class="normal"><a href="#__codelineno-0-398">398</a></span>
 <span class="normal"><a href="#__codelineno-0-399">399</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-371" name="__codelineno-0-371"></a><span class="k">def</span> <span class="nf">graph_ripleyresult</span><span class="p">(</span><span class="n">result</span><span class="p">:</span> <span class="n">KtestResult</span><span class="p">,</span> <span class="n">subtitle</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Figure</span><span class="p">:</span>
 <a id="__codelineno-0-372" name="__codelineno-0-372"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-373" name="__codelineno-0-373"></a><span class="sd">    Generate a graph depicting a given KtestResult, such as would be generated from using </span>
+<a id="__codelineno-0-373" name="__codelineno-0-373"></a><span class="sd">    Generate a graph depicting a given KtestResult, such as would be generated from using</span>
 <a id="__codelineno-0-374" name="__codelineno-0-374"></a><span class="sd">    `maskmypy.analysis.ripleys_k()`.</span>
 <a id="__codelineno-0-375" name="__codelineno-0-375"></a>
 <a id="__codelineno-0-376" name="__codelineno-0-376"></a><span class="sd">    Parameters</span>
@@ -1349,7 +1349,7 @@ root-mean-square error of Ripley's K results between the masked and unmasked dat
 <a id="__codelineno-0-378" name="__codelineno-0-378"></a><span class="sd">    result : KtestResult</span>
 <a id="__codelineno-0-379" name="__codelineno-0-379"></a><span class="sd">        The KtestResult tuple from applying `maskmypy.analysis.ripleys_k()` on a given layer.</span>
 <a id="__codelineno-0-380" name="__codelineno-0-380"></a><span class="sd">    subtitle : str</span>
-<a id="__codelineno-0-381" name="__codelineno-0-381"></a><span class="sd">        A subtitle to add to the graph. </span>
+<a id="__codelineno-0-381" name="__codelineno-0-381"></a><span class="sd">        A subtitle to add to the graph.</span>
 <a id="__codelineno-0-382" name="__codelineno-0-382"></a>
 <a id="__codelineno-0-383" name="__codelineno-0-383"></a><span class="sd">    Returns</span>
 <a id="__codelineno-0-384" name="__codelineno-0-384"></a><span class="sd">    -------</span>
@@ -1387,10 +1387,10 @@ root-mean-square error of Ripley's K results between the masked and unmasked dat
 
   <div class="doc doc-contents ">
   
-      <p>Generate a graph depicting two KtestResults, such as would be generated from using 
-<code>maskmypy.analysis.ripleys_k()</code>. </p>
+      <p>Generate a graph depicting two KtestResults, such as would be generated from using
+<code>maskmypy.analysis.ripleys_k()</code>.</p>
 <p>Similar to <code>maskmypy.analysis.graph_ripleyresult()</code> except this function graphs both
-the sensitive and candidate results, allowing for visual comparison of clustering and dispersion 
+the sensitive and candidate results, allowing for visual comparison of clustering and dispersion
 between the two.</p>
 
 
@@ -1546,11 +1546,11 @@ between the two.</p>
 <a id="__codelineno-0-405" name="__codelineno-0-405"></a>    <span class="n">subtitle</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <a id="__codelineno-0-406" name="__codelineno-0-406"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Figure</span><span class="p">:</span>
 <a id="__codelineno-0-407" name="__codelineno-0-407"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-408" name="__codelineno-0-408"></a><span class="sd">    Generate a graph depicting two KtestResults, such as would be generated from using </span>
-<a id="__codelineno-0-409" name="__codelineno-0-409"></a><span class="sd">    `maskmypy.analysis.ripleys_k()`. </span>
+<a id="__codelineno-0-408" name="__codelineno-0-408"></a><span class="sd">    Generate a graph depicting two KtestResults, such as would be generated from using</span>
+<a id="__codelineno-0-409" name="__codelineno-0-409"></a><span class="sd">    `maskmypy.analysis.ripleys_k()`.</span>
 <a id="__codelineno-0-410" name="__codelineno-0-410"></a>
 <a id="__codelineno-0-411" name="__codelineno-0-411"></a><span class="sd">    Similar to `maskmypy.analysis.graph_ripleyresult()` except this function graphs both</span>
-<a id="__codelineno-0-412" name="__codelineno-0-412"></a><span class="sd">    the sensitive and candidate results, allowing for visual comparison of clustering and dispersion </span>
+<a id="__codelineno-0-412" name="__codelineno-0-412"></a><span class="sd">    the sensitive and candidate results, allowing for visual comparison of clustering and dispersion</span>
 <a id="__codelineno-0-413" name="__codelineno-0-413"></a><span class="sd">    between the two.</span>
 <a id="__codelineno-0-414" name="__codelineno-0-414"></a>
 <a id="__codelineno-0-415" name="__codelineno-0-415"></a><span class="sd">    Parameters</span>
@@ -1560,7 +1560,7 @@ between the two.</p>
 <a id="__codelineno-0-419" name="__codelineno-0-419"></a><span class="sd">    candidate_result : KtestResult</span>
 <a id="__codelineno-0-420" name="__codelineno-0-420"></a><span class="sd">        The KtestResult tuple from applying `maskmypy.analysis.ripleys_k()` on a masked layer.</span>
 <a id="__codelineno-0-421" name="__codelineno-0-421"></a><span class="sd">    subtitle : str</span>
-<a id="__codelineno-0-422" name="__codelineno-0-422"></a><span class="sd">        A subtitle to add to the graph. </span>
+<a id="__codelineno-0-422" name="__codelineno-0-422"></a><span class="sd">        A subtitle to add to the graph.</span>
 <a id="__codelineno-0-423" name="__codelineno-0-423"></a>
 <a id="__codelineno-0-424" name="__codelineno-0-424"></a><span class="sd">    Returns</span>
 <a id="__codelineno-0-425" name="__codelineno-0-425"></a><span class="sd">    -------</span>
@@ -1785,10 +1785,10 @@ population counts.</p>
 <a id="__codelineno-0-124" name="__codelineno-0-124"></a><span class="sd">    population_gdf : GeoDataFrame</span>
 <a id="__codelineno-0-125" name="__codelineno-0-125"></a><span class="sd">        A GeoDataFrame containing either address points or polygons with a population column</span>
 <a id="__codelineno-0-126" name="__codelineno-0-126"></a><span class="sd">        (see `population_column`). Used to calculate k-anonymity metrics. Note that</span>
-<a id="__codelineno-0-127" name="__codelineno-0-127"></a><span class="sd">        address points tend to provide more accurate results. </span>
+<a id="__codelineno-0-127" name="__codelineno-0-127"></a><span class="sd">        address points tend to provide more accurate results.</span>
 <a id="__codelineno-0-128" name="__codelineno-0-128"></a><span class="sd">    population_column : str</span>
 <a id="__codelineno-0-129" name="__codelineno-0-129"></a><span class="sd">        If a polygon-based `population_gdf` is provided, the name of the column containing</span>
-<a id="__codelineno-0-130" name="__codelineno-0-130"></a><span class="sd">        population counts. </span>
+<a id="__codelineno-0-130" name="__codelineno-0-130"></a><span class="sd">        population counts.</span>
 <a id="__codelineno-0-131" name="__codelineno-0-131"></a>
 <a id="__codelineno-0-132" name="__codelineno-0-132"></a><span class="sd">    Returns</span>
 <a id="__codelineno-0-133" name="__codelineno-0-133"></a><span class="sd">    -------</span>
@@ -1943,7 +1943,7 @@ points that are equal to or greater than (i.e. satisfy) a given k-anonymity thre
 <a id="__codelineno-0-159" name="__codelineno-0-159"></a><span class="sd">    min_k : int</span>
 <a id="__codelineno-0-160" name="__codelineno-0-160"></a><span class="sd">        The minimum k-anonymity that must be satisfied.</span>
 <a id="__codelineno-0-161" name="__codelineno-0-161"></a><span class="sd">    col : str</span>
-<a id="__codelineno-0-162" name="__codelineno-0-162"></a><span class="sd">        Name of the column containing k-anonymity values. </span>
+<a id="__codelineno-0-162" name="__codelineno-0-162"></a><span class="sd">        Name of the column containing k-anonymity values.</span>
 <a id="__codelineno-0-163" name="__codelineno-0-163"></a>
 <a id="__codelineno-0-164" name="__codelineno-0-164"></a><span class="sd">    Returns</span>
 <a id="__codelineno-0-165" name="__codelineno-0-165"></a><span class="sd">    -------</span>
@@ -2142,10 +2142,10 @@ administrative boundaries, etc.</p>
 <a id="__codelineno-0-482" name="__codelineno-0-482"></a><span class="sd">    candidate_gdf : GeoDataFrame</span>
 <a id="__codelineno-0-483" name="__codelineno-0-483"></a><span class="sd">        A GeoDataFrame containing masked points.</span>
 <a id="__codelineno-0-484" name="__codelineno-0-484"></a><span class="sd">    filename : str</span>
-<a id="__codelineno-0-485" name="__codelineno-0-485"></a><span class="sd">        If specified, saves the map to the filesystem. </span>
+<a id="__codelineno-0-485" name="__codelineno-0-485"></a><span class="sd">        If specified, saves the map to the filesystem.</span>
 <a id="__codelineno-0-486" name="__codelineno-0-486"></a><span class="sd">    context_gdf : GeoDataFrame</span>
 <a id="__codelineno-0-487" name="__codelineno-0-487"></a><span class="sd">        A GeoDataFrame containing contextual data to be added to the map, such as address points,</span>
-<a id="__codelineno-0-488" name="__codelineno-0-488"></a><span class="sd">        administrative boundaries, etc. </span>
+<a id="__codelineno-0-488" name="__codelineno-0-488"></a><span class="sd">        administrative boundaries, etc.</span>
 <a id="__codelineno-0-489" name="__codelineno-0-489"></a>
 <a id="__codelineno-0-490" name="__codelineno-0-490"></a><span class="sd">    Returns</span>
 <a id="__codelineno-0-491" name="__codelineno-0-491"></a><span class="sd">    -------</span>
@@ -2446,14 +2446,14 @@ greater information loss due to masking.</p>
 
   <div class="doc doc-contents ">
   
-      <p>Calculates the root-mean-square error between the Ripley's K-test results of unmasked and 
-masked data. As the goal of geographic masking is to reduce information loss, the actual 
-amount of clustering in masked data is unimportant; what matters is that the clustering 
-or dispersion of the masked data resembles that of the original, sensitive data. By comparing 
-the RMSE of k-test results, we can reduce this deviation to a single figure, which is useful 
-for quickly comparing how multiple masks perform. </p>
+      <p>Calculates the root-mean-square error between the Ripley's K-test results of unmasked and
+masked data. As the goal of geographic masking is to reduce information loss, the actual
+amount of clustering in masked data is unimportant; what matters is that the clustering
+or dispersion of the masked data resembles that of the original, sensitive data. By comparing
+the RMSE of k-test results, we can reduce this deviation to a single figure, which is useful
+for quickly comparing how multiple masks perform.</p>
 <p>Lower RMSE values indicate less information loss due to masking, whereas higher values
-indicate greater information loss due to masking. </p>
+indicate greater information loss due to masking.</p>
 
 
 
@@ -2556,15 +2556,15 @@ indicate greater information loss due to masking. </p>
 <span class="normal"><a href="#__codelineno-0-367">367</a></span>
 <span class="normal"><a href="#__codelineno-0-368">368</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-339" name="__codelineno-0-339"></a><span class="k">def</span> <span class="nf">ripley_rmse</span><span class="p">(</span><span class="n">sensitive_result</span><span class="p">:</span> <span class="n">KtestResult</span><span class="p">,</span> <span class="n">candidate_result</span><span class="p">:</span> <span class="n">KtestResult</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <a id="__codelineno-0-340" name="__codelineno-0-340"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-341" name="__codelineno-0-341"></a><span class="sd">    Calculates the root-mean-square error between the Ripley&#39;s K-test results of unmasked and </span>
-<a id="__codelineno-0-342" name="__codelineno-0-342"></a><span class="sd">    masked data. As the goal of geographic masking is to reduce information loss, the actual </span>
-<a id="__codelineno-0-343" name="__codelineno-0-343"></a><span class="sd">    amount of clustering in masked data is unimportant; what matters is that the clustering </span>
-<a id="__codelineno-0-344" name="__codelineno-0-344"></a><span class="sd">    or dispersion of the masked data resembles that of the original, sensitive data. By comparing </span>
-<a id="__codelineno-0-345" name="__codelineno-0-345"></a><span class="sd">    the RMSE of k-test results, we can reduce this deviation to a single figure, which is useful </span>
-<a id="__codelineno-0-346" name="__codelineno-0-346"></a><span class="sd">    for quickly comparing how multiple masks perform. </span>
+<a id="__codelineno-0-341" name="__codelineno-0-341"></a><span class="sd">    Calculates the root-mean-square error between the Ripley&#39;s K-test results of unmasked and</span>
+<a id="__codelineno-0-342" name="__codelineno-0-342"></a><span class="sd">    masked data. As the goal of geographic masking is to reduce information loss, the actual</span>
+<a id="__codelineno-0-343" name="__codelineno-0-343"></a><span class="sd">    amount of clustering in masked data is unimportant; what matters is that the clustering</span>
+<a id="__codelineno-0-344" name="__codelineno-0-344"></a><span class="sd">    or dispersion of the masked data resembles that of the original, sensitive data. By comparing</span>
+<a id="__codelineno-0-345" name="__codelineno-0-345"></a><span class="sd">    the RMSE of k-test results, we can reduce this deviation to a single figure, which is useful</span>
+<a id="__codelineno-0-346" name="__codelineno-0-346"></a><span class="sd">    for quickly comparing how multiple masks perform.</span>
 <a id="__codelineno-0-347" name="__codelineno-0-347"></a>
 <a id="__codelineno-0-348" name="__codelineno-0-348"></a><span class="sd">    Lower RMSE values indicate less information loss due to masking, whereas higher values</span>
-<a id="__codelineno-0-349" name="__codelineno-0-349"></a><span class="sd">    indicate greater information loss due to masking. </span>
+<a id="__codelineno-0-349" name="__codelineno-0-349"></a><span class="sd">    indicate greater information loss due to masking.</span>
 <a id="__codelineno-0-350" name="__codelineno-0-350"></a>
 <a id="__codelineno-0-351" name="__codelineno-0-351"></a><span class="sd">    Parameters</span>
 <a id="__codelineno-0-352" name="__codelineno-0-352"></a><span class="sd">    ----------</span>
@@ -2603,10 +2603,10 @@ indicate greater information loss due to masking. </p>
 
   <div class="doc doc-contents ">
   
-      <p>Performs Ripley's K clustering analysis on a GeoDataFrame. This evaluates clustering across a 
+      <p>Performs Ripley's K clustering analysis on a GeoDataFrame. This evaluates clustering across a
 range of spatial scales.</p>
-<p>See <code>maskmypy.analysis.ripley_rmse()</code>, <code>maskmypy.analysis.graph_ripleyresult()</code>, and 
-<code>maskmypy.analysis.graph_ripleyresults()</code> for functions that process/visualize the results 
+<p>See <code>maskmypy.analysis.ripley_rmse()</code>, <code>maskmypy.analysis.graph_ripleyresult()</code>, and
+<code>maskmypy.analysis.graph_ripleyresults()</code> for functions that process/visualize the results
 of this function.</p>
 
 
@@ -2643,7 +2643,7 @@ of this function.</p>
           </td>
           <td>
             <div class="doc-md-description">
-              <p>The largest distance band used for cluster analysis. If <code>None</code>, this defaults to one 
+              <p>The largest distance band used for cluster analysis. If <code>None</code>, this defaults to one
 quarter of the smallest side of the bounding box (i.e. Ripleys Rule of Thumb).</p>
             </div>
           </td>
@@ -2673,7 +2673,7 @@ to  <code>max_dist / steps</code>.</p>
           </td>
           <td>
             <div class="doc-md-description">
-              <p>The number of equally spaced intervals between the minimum and maximum distance bands 
+              <p>The number of equally spaced intervals between the minimum and maximum distance bands
 to analyze clustering on.</p>
             </div>
           </td>
@@ -2779,34 +2779,34 @@ to analyze clustering on.</p>
 <a id="__codelineno-0-292" name="__codelineno-0-292"></a>    <span class="n">steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
 <a id="__codelineno-0-293" name="__codelineno-0-293"></a>    <span class="n">simulations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">99</span><span class="p">,</span>
 <a id="__codelineno-0-294" name="__codelineno-0-294"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">KtestResult</span><span class="p">:</span>
-<a id="__codelineno-0-295" name="__codelineno-0-295"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot; </span>
-<a id="__codelineno-0-296" name="__codelineno-0-296"></a><span class="sd">    Performs Ripley&#39;s K clustering analysis on a GeoDataFrame. This evaluates clustering across a </span>
+<a id="__codelineno-0-295" name="__codelineno-0-295"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-296" name="__codelineno-0-296"></a><span class="sd">    Performs Ripley&#39;s K clustering analysis on a GeoDataFrame. This evaluates clustering across a</span>
 <a id="__codelineno-0-297" name="__codelineno-0-297"></a><span class="sd">    range of spatial scales.</span>
 <a id="__codelineno-0-298" name="__codelineno-0-298"></a>
-<a id="__codelineno-0-299" name="__codelineno-0-299"></a><span class="sd">    See `maskmypy.analysis.ripley_rmse()`, `maskmypy.analysis.graph_ripleyresult()`, and </span>
-<a id="__codelineno-0-300" name="__codelineno-0-300"></a><span class="sd">    `maskmypy.analysis.graph_ripleyresults()` for functions that process/visualize the results </span>
+<a id="__codelineno-0-299" name="__codelineno-0-299"></a><span class="sd">    See `maskmypy.analysis.ripley_rmse()`, `maskmypy.analysis.graph_ripleyresult()`, and</span>
+<a id="__codelineno-0-300" name="__codelineno-0-300"></a><span class="sd">    `maskmypy.analysis.graph_ripleyresults()` for functions that process/visualize the results</span>
 <a id="__codelineno-0-301" name="__codelineno-0-301"></a><span class="sd">    of this function.</span>
 <a id="__codelineno-0-302" name="__codelineno-0-302"></a>
 <a id="__codelineno-0-303" name="__codelineno-0-303"></a><span class="sd">    Parameters</span>
 <a id="__codelineno-0-304" name="__codelineno-0-304"></a><span class="sd">    ----------</span>
 <a id="__codelineno-0-305" name="__codelineno-0-305"></a><span class="sd">    gdf : GeoDataFrame</span>
-<a id="__codelineno-0-306" name="__codelineno-0-306"></a><span class="sd">        GeoDataFrame to analyse. </span>
+<a id="__codelineno-0-306" name="__codelineno-0-306"></a><span class="sd">        GeoDataFrame to analyse.</span>
 <a id="__codelineno-0-307" name="__codelineno-0-307"></a><span class="sd">    max_dist : float</span>
-<a id="__codelineno-0-308" name="__codelineno-0-308"></a><span class="sd">        The largest distance band used for cluster analysis. If `None`, this defaults to one </span>
-<a id="__codelineno-0-309" name="__codelineno-0-309"></a><span class="sd">        quarter of the smallest side of the bounding box (i.e. Ripleys Rule of Thumb). </span>
+<a id="__codelineno-0-308" name="__codelineno-0-308"></a><span class="sd">        The largest distance band used for cluster analysis. If `None`, this defaults to one</span>
+<a id="__codelineno-0-309" name="__codelineno-0-309"></a><span class="sd">        quarter of the smallest side of the bounding box (i.e. Ripleys Rule of Thumb).</span>
 <a id="__codelineno-0-310" name="__codelineno-0-310"></a><span class="sd">    min_dist : float</span>
 <a id="__codelineno-0-311" name="__codelineno-0-311"></a><span class="sd">        The smallest distance band used for cluster analysis. If `None`, this is automatically set</span>
-<a id="__codelineno-0-312" name="__codelineno-0-312"></a><span class="sd">        to  `max_dist / steps`. </span>
+<a id="__codelineno-0-312" name="__codelineno-0-312"></a><span class="sd">        to  `max_dist / steps`.</span>
 <a id="__codelineno-0-313" name="__codelineno-0-313"></a><span class="sd">    steps : int</span>
-<a id="__codelineno-0-314" name="__codelineno-0-314"></a><span class="sd">        The number of equally spaced intervals between the minimum and maximum distance bands </span>
+<a id="__codelineno-0-314" name="__codelineno-0-314"></a><span class="sd">        The number of equally spaced intervals between the minimum and maximum distance bands</span>
 <a id="__codelineno-0-315" name="__codelineno-0-315"></a><span class="sd">        to analyze clustering on.</span>
 <a id="__codelineno-0-316" name="__codelineno-0-316"></a><span class="sd">    simulations : int</span>
-<a id="__codelineno-0-317" name="__codelineno-0-317"></a><span class="sd">        The number of simulations to perform. </span>
+<a id="__codelineno-0-317" name="__codelineno-0-317"></a><span class="sd">        The number of simulations to perform.</span>
 <a id="__codelineno-0-318" name="__codelineno-0-318"></a>
 <a id="__codelineno-0-319" name="__codelineno-0-319"></a><span class="sd">    Returns</span>
 <a id="__codelineno-0-320" name="__codelineno-0-320"></a><span class="sd">    -------</span>
 <a id="__codelineno-0-321" name="__codelineno-0-321"></a><span class="sd">    KtestResult</span>
-<a id="__codelineno-0-322" name="__codelineno-0-322"></a><span class="sd">        A named tuple that contains `(&quot;support&quot;, &quot;statistic&quot;, &quot;pvalue&quot;, &quot;simulations&quot;)`. </span>
+<a id="__codelineno-0-322" name="__codelineno-0-322"></a><span class="sd">        A named tuple that contains `(&quot;support&quot;, &quot;statistic&quot;, &quot;pvalue&quot;, &quot;simulations&quot;)`.</span>
 <a id="__codelineno-0-323" name="__codelineno-0-323"></a><span class="sd">    &quot;&quot;&quot;</span>
 <a id="__codelineno-0-324" name="__codelineno-0-324"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">max_dist</span><span class="p">:</span>
 <a id="__codelineno-0-325" name="__codelineno-0-325"></a>        <span class="n">max_dist</span> <span class="o">=</span> <span class="n">_gdf_to_pointpattern</span><span class="p">(</span><span class="n">gdf</span><span class="p">)</span><span class="o">.</span><span class="n">rot</span>
@@ -2945,7 +2945,7 @@ median, and mean displacement distance.</p>
 <a id="__codelineno-0-204" name="__codelineno-0-204"></a><span class="sd">    gdf : GeoDataFrame</span>
 <a id="__codelineno-0-205" name="__codelineno-0-205"></a><span class="sd">        A GeoDataFrame containing displacement distance values.</span>
 <a id="__codelineno-0-206" name="__codelineno-0-206"></a><span class="sd">    col : str</span>
-<a id="__codelineno-0-207" name="__codelineno-0-207"></a><span class="sd">        Name of the column containing displacement distance values. </span>
+<a id="__codelineno-0-207" name="__codelineno-0-207"></a><span class="sd">        Name of the column containing displacement distance values.</span>
 <a id="__codelineno-0-208" name="__codelineno-0-208"></a>
 <a id="__codelineno-0-209" name="__codelineno-0-209"></a><span class="sd">    Returns</span>
 <a id="__codelineno-0-210" name="__codelineno-0-210"></a><span class="sd">    -------</span>
@@ -3178,7 +3178,7 @@ median, and mean k-anonymity.</p>
     <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.e1c3ead8.min.js"></script>
+      <script src="../assets/javascripts/bundle.1e8ae164.min.js"></script>
       
     
   </body>
