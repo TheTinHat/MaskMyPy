@@ -19,6 +19,17 @@ class Atlas:
     """
     A class for quickly performing and evaluating geographic masks.
 
+    Example
+    -------
+    ```python
+    from maskmypy import Atlas, donut, locationswap
+
+    atlas = Atlas(sensitive=some_points, population=some_addresses)
+    atlas.mask(donut, low=50, high=500)
+    atlas.mask(locationswap, low=50, high=500, address=some_addresses)
+    atlas.as_df()
+    ```
+
     Attributes
     ----------
     sensitive : GeoDataFrame
