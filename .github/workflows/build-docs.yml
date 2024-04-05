@@ -6,7 +6,7 @@ on:
     paths:
       - "docs/**"
       - "mkdocs.yml"
-
+      - "maskmypy/**"
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -19,4 +19,3 @@ jobs:
           python-version: 3.x
       - run: pip install mkdocs-material mkdocs-roamlinks-plugin mkdocs-git-revision-date-localized-plugin mkdocstrings-python
       - run: mkdocs gh-deploy --force
-
