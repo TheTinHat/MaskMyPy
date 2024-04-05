@@ -1,3 +1,4 @@
+import inspect
 import json
 import pprint
 import tracemalloc
@@ -134,7 +135,9 @@ class Atlas:
             "kwargs": self._hydrate_mask_kwargs(**kwargs),
             "timestamp": time(),
         }
-        candidate["kwargs"]["seed"] = candidate["kwargs"].get("seed") or tools.gen_seed()
+
+        if "seed" in inspect.getfullargspec(mask_func).args and "seed" not in candidate["kwargs"]:
+            candidate["kwargs"]["seed"] = tools.gen_seed()
 
         if measure_execution_time:
             time_start = default_timer()

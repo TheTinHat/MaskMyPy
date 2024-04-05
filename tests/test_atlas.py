@@ -3,7 +3,7 @@ import time
 
 import pytest
 
-from maskmypy import Atlas, analysis, donut, tools
+from maskmypy import Atlas, analysis, donut, tools, voronoi
 
 
 def test_atlas_mask(points):
@@ -183,6 +183,13 @@ def test_peak_memory(points):
 
     atlas.mask(mask_mock, memory_mb=10, measure_peak_memory=True)
     assert round(atlas[2]["stats"]["memory_peak_mb"]) == 10
+
+
+def test_seed_not_in_voronoi_candidate(points):
+    atlas = Atlas(points)
+    atlas.mask(voronoi, snap_to_streets=False)
+    assert "seed" not in atlas[0]["kwargs"]
+    atlas.gen_gdf(idx=0)
 
 
 def test_memory_and_speed_are_exclusive(points):
