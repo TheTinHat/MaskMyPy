@@ -384,9 +384,9 @@ class Atlas:
         df = self.as_df()
         fig = plt.figure()
         ax = fig.add_subplot(111)
-        ax.scatter(df[f"{a}"], df[f"{b}"], c="#1f77b4")
-        ax.set_xlabel(f"{a}")
-        ax.set_ylabel(f"{b}")
+        ax.scatter(df[a], df[b], c="#1f77b4")
+        ax.set_xlabel(a)
+        ax.set_ylabel(b)
         for i, label in enumerate(df["checksum"]):
             ax.annotate(label, (df.loc[i, a], df.loc[i, b]))
         return fig
