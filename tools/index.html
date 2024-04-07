@@ -565,8 +565,7 @@ entirely different values.</p>
 
           <details class="quote">
             <summary>Source code in <code>maskmypy/tools.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-15">15</a></span>
-<span class="normal"><a href="#__codelineno-0-16">16</a></span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-16">16</a></span>
 <span class="normal"><a href="#__codelineno-0-17">17</a></span>
 <span class="normal"><a href="#__codelineno-0-18">18</a></span>
 <span class="normal"><a href="#__codelineno-0-19">19</a></span>
@@ -582,24 +581,25 @@ entirely different values.</p>
 <span class="normal"><a href="#__codelineno-0-29">29</a></span>
 <span class="normal"><a href="#__codelineno-0-30">30</a></span>
 <span class="normal"><a href="#__codelineno-0-31">31</a></span>
-<span class="normal"><a href="#__codelineno-0-32">32</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="k">def</span> <span class="nf">checksum</span><span class="p">(</span><span class="n">gdf</span><span class="p">:</span> <span class="n">GeoDataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="sd">    Calculate SHA256 checksum of a GeoDataFrame and return the first 8 characters.</span>
-<a id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="sd">    Two completely identical GeoDataFrames will always return the exact same value,</span>
-<a id="__codelineno-0-19" name="__codelineno-0-19"></a><span class="sd">    whereas two similar, but not completely identical GeoDataFrames will return</span>
-<a id="__codelineno-0-20" name="__codelineno-0-20"></a><span class="sd">    entirely different values.</span>
-<a id="__codelineno-0-21" name="__codelineno-0-21"></a>
-<a id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="sd">    Parameters</span>
-<a id="__codelineno-0-23" name="__codelineno-0-23"></a><span class="sd">    ----------</span>
-<a id="__codelineno-0-24" name="__codelineno-0-24"></a><span class="sd">    gdf : GeoDataFrame</span>
-<a id="__codelineno-0-25" name="__codelineno-0-25"></a><span class="sd">        Any valid GeoDataFrame.</span>
-<a id="__codelineno-0-26" name="__codelineno-0-26"></a>
-<a id="__codelineno-0-27" name="__codelineno-0-27"></a><span class="sd">    Returns</span>
-<a id="__codelineno-0-28" name="__codelineno-0-28"></a><span class="sd">    -------</span>
-<a id="__codelineno-0-29" name="__codelineno-0-29"></a><span class="sd">    str</span>
-<a id="__codelineno-0-30" name="__codelineno-0-30"></a><span class="sd">        The first 8 characters of the SHA256 checksum of the input GeoDataFrame.</span>
-<a id="__codelineno-0-31" name="__codelineno-0-31"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-32" name="__codelineno-0-32"></a>    <span class="k">return</span> <span class="n">sha256</span><span class="p">(</span><span class="nb">bytearray</span><span class="p">(</span><span class="n">hash_pandas_object</span><span class="p">(</span><span class="n">gdf</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">))</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()[</span><span class="mi">0</span><span class="p">:</span><span class="mi">8</span><span class="p">]</span>
+<span class="normal"><a href="#__codelineno-0-32">32</a></span>
+<span class="normal"><a href="#__codelineno-0-33">33</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="k">def</span> <span class="nf">checksum</span><span class="p">(</span><span class="n">gdf</span><span class="p">:</span> <span class="n">GeoDataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="sd">    Calculate SHA256 checksum of a GeoDataFrame and return the first 8 characters.</span>
+<a id="__codelineno-0-19" name="__codelineno-0-19"></a><span class="sd">    Two completely identical GeoDataFrames will always return the exact same value,</span>
+<a id="__codelineno-0-20" name="__codelineno-0-20"></a><span class="sd">    whereas two similar, but not completely identical GeoDataFrames will return</span>
+<a id="__codelineno-0-21" name="__codelineno-0-21"></a><span class="sd">    entirely different values.</span>
+<a id="__codelineno-0-22" name="__codelineno-0-22"></a>
+<a id="__codelineno-0-23" name="__codelineno-0-23"></a><span class="sd">    Parameters</span>
+<a id="__codelineno-0-24" name="__codelineno-0-24"></a><span class="sd">    ----------</span>
+<a id="__codelineno-0-25" name="__codelineno-0-25"></a><span class="sd">    gdf : GeoDataFrame</span>
+<a id="__codelineno-0-26" name="__codelineno-0-26"></a><span class="sd">        Any valid GeoDataFrame.</span>
+<a id="__codelineno-0-27" name="__codelineno-0-27"></a>
+<a id="__codelineno-0-28" name="__codelineno-0-28"></a><span class="sd">    Returns</span>
+<a id="__codelineno-0-29" name="__codelineno-0-29"></a><span class="sd">    -------</span>
+<a id="__codelineno-0-30" name="__codelineno-0-30"></a><span class="sd">    str</span>
+<a id="__codelineno-0-31" name="__codelineno-0-31"></a><span class="sd">        The first 8 characters of the SHA256 checksum of the input GeoDataFrame.</span>
+<a id="__codelineno-0-32" name="__codelineno-0-32"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-33" name="__codelineno-0-33"></a>    <span class="k">return</span> <span class="n">sha256</span><span class="p">(</span><span class="nb">bytearray</span><span class="p">(</span><span class="n">hash_pandas_object</span><span class="p">(</span><span class="n">gdf</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">))</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()[</span><span class="mi">0</span><span class="p">:</span><span class="mi">8</span><span class="p">]</span>
 </code></pre></div></td></tr></table></div>
           </details>
   </div>
@@ -678,8 +678,7 @@ generated using gen_seed() if one is not provided.</p>
 
           <details class="quote">
             <summary>Source code in <code>maskmypy/tools.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-35">35</a></span>
-<span class="normal"><a href="#__codelineno-0-36">36</a></span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-36">36</a></span>
 <span class="normal"><a href="#__codelineno-0-37">37</a></span>
 <span class="normal"><a href="#__codelineno-0-38">38</a></span>
 <span class="normal"><a href="#__codelineno-0-39">39</a></span>
@@ -694,23 +693,24 @@ generated using gen_seed() if one is not provided.</p>
 <span class="normal"><a href="#__codelineno-0-48">48</a></span>
 <span class="normal"><a href="#__codelineno-0-49">49</a></span>
 <span class="normal"><a href="#__codelineno-0-50">50</a></span>
-<span class="normal"><a href="#__codelineno-0-51">51</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-35" name="__codelineno-0-35"></a><span class="k">def</span> <span class="nf">gen_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
-<a id="__codelineno-0-36" name="__codelineno-0-36"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-37" name="__codelineno-0-37"></a><span class="sd">    Create a seeded numpy default_rng() object.</span>
-<a id="__codelineno-0-38" name="__codelineno-0-38"></a>
-<a id="__codelineno-0-39" name="__codelineno-0-39"></a><span class="sd">    Parameters</span>
-<a id="__codelineno-0-40" name="__codelineno-0-40"></a><span class="sd">    ----------</span>
-<a id="__codelineno-0-41" name="__codelineno-0-41"></a><span class="sd">    seed : int</span>
-<a id="__codelineno-0-42" name="__codelineno-0-42"></a><span class="sd">        An integer used to seed the random number generator. A seed is randomly</span>
-<a id="__codelineno-0-43" name="__codelineno-0-43"></a><span class="sd">        generated using gen_seed() if one is not provided.</span>
-<a id="__codelineno-0-44" name="__codelineno-0-44"></a><span class="sd">    Returns</span>
-<a id="__codelineno-0-45" name="__codelineno-0-45"></a><span class="sd">    -------</span>
-<a id="__codelineno-0-46" name="__codelineno-0-46"></a><span class="sd">    object</span>
-<a id="__codelineno-0-47" name="__codelineno-0-47"></a><span class="sd">        numpy.default_rng()</span>
-<a id="__codelineno-0-48" name="__codelineno-0-48"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-49" name="__codelineno-0-49"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">seed</span><span class="p">:</span>
-<a id="__codelineno-0-50" name="__codelineno-0-50"></a>        <span class="n">seed</span> <span class="o">=</span> <span class="n">gen_seed</span><span class="p">()</span>
-<a id="__codelineno-0-51" name="__codelineno-0-51"></a>    <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
+<span class="normal"><a href="#__codelineno-0-51">51</a></span>
+<span class="normal"><a href="#__codelineno-0-52">52</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-36" name="__codelineno-0-36"></a><span class="k">def</span> <span class="nf">gen_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
+<a id="__codelineno-0-37" name="__codelineno-0-37"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-38" name="__codelineno-0-38"></a><span class="sd">    Create a seeded numpy default_rng() object.</span>
+<a id="__codelineno-0-39" name="__codelineno-0-39"></a>
+<a id="__codelineno-0-40" name="__codelineno-0-40"></a><span class="sd">    Parameters</span>
+<a id="__codelineno-0-41" name="__codelineno-0-41"></a><span class="sd">    ----------</span>
+<a id="__codelineno-0-42" name="__codelineno-0-42"></a><span class="sd">    seed : int</span>
+<a id="__codelineno-0-43" name="__codelineno-0-43"></a><span class="sd">        An integer used to seed the random number generator. A seed is randomly</span>
+<a id="__codelineno-0-44" name="__codelineno-0-44"></a><span class="sd">        generated using gen_seed() if one is not provided.</span>
+<a id="__codelineno-0-45" name="__codelineno-0-45"></a><span class="sd">    Returns</span>
+<a id="__codelineno-0-46" name="__codelineno-0-46"></a><span class="sd">    -------</span>
+<a id="__codelineno-0-47" name="__codelineno-0-47"></a><span class="sd">    object</span>
+<a id="__codelineno-0-48" name="__codelineno-0-48"></a><span class="sd">        numpy.default_rng()</span>
+<a id="__codelineno-0-49" name="__codelineno-0-49"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-50" name="__codelineno-0-50"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">seed</span><span class="p">:</span>
+<a id="__codelineno-0-51" name="__codelineno-0-51"></a>        <span class="n">seed</span> <span class="o">=</span> <span class="n">gen_seed</span><span class="p">()</span>
+<a id="__codelineno-0-52" name="__codelineno-0-52"></a>    <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
           </details>
   </div>
@@ -730,7 +730,7 @@ generated using gen_seed() if one is not provided.</p>
 
   <div class="doc doc-contents ">
   
-      <p>Generate a 32-digit random integer to seed random number generators.</p>
+      <p>Generate a 16-digit random integer to seed random number generators.</p>
 
 
 
@@ -749,7 +749,7 @@ generated using gen_seed() if one is not provided.</p>
           </td>
           <td>
             <div class="doc-md-description">
-              <p>A 32 digit random integer.</p>
+              <p>A 16 digit random integer.</p>
             </div>
           </td>
         </tr>
@@ -758,8 +758,7 @@ generated using gen_seed() if one is not provided.</p>
 
           <details class="quote">
             <summary>Source code in <code>maskmypy/tools.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-54">54</a></span>
-<span class="normal"><a href="#__codelineno-0-55">55</a></span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-55">55</a></span>
 <span class="normal"><a href="#__codelineno-0-56">56</a></span>
 <span class="normal"><a href="#__codelineno-0-57">57</a></span>
 <span class="normal"><a href="#__codelineno-0-58">58</a></span>
@@ -768,17 +767,18 @@ generated using gen_seed() if one is not provided.</p>
 <span class="normal"><a href="#__codelineno-0-61">61</a></span>
 <span class="normal"><a href="#__codelineno-0-62">62</a></span>
 <span class="normal"><a href="#__codelineno-0-63">63</a></span>
-<span class="normal"><a href="#__codelineno-0-64">64</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-54" name="__codelineno-0-54"></a><span class="k">def</span> <span class="nf">gen_seed</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<a id="__codelineno-0-55" name="__codelineno-0-55"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-56" name="__codelineno-0-56"></a><span class="sd">    Generate a 32-digit random integer to seed random number generators.</span>
-<a id="__codelineno-0-57" name="__codelineno-0-57"></a>
-<a id="__codelineno-0-58" name="__codelineno-0-58"></a><span class="sd">    Returns</span>
-<a id="__codelineno-0-59" name="__codelineno-0-59"></a><span class="sd">    -------</span>
-<a id="__codelineno-0-60" name="__codelineno-0-60"></a><span class="sd">    int</span>
-<a id="__codelineno-0-61" name="__codelineno-0-61"></a><span class="sd">        A 32 digit random integer.</span>
-<a id="__codelineno-0-62" name="__codelineno-0-62"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-63" name="__codelineno-0-63"></a>
-<a id="__codelineno-0-64" name="__codelineno-0-64"></a>    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">SystemRandom</span><span class="p">()</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="p">(</span><span class="mi">10</span><span class="o">**</span><span class="mi">32</span><span class="p">))</span>
+<span class="normal"><a href="#__codelineno-0-64">64</a></span>
+<span class="normal"><a href="#__codelineno-0-65">65</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-55" name="__codelineno-0-55"></a><span class="k">def</span> <span class="nf">gen_seed</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<a id="__codelineno-0-56" name="__codelineno-0-56"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-57" name="__codelineno-0-57"></a><span class="sd">    Generate a 16-digit random integer to seed random number generators.</span>
+<a id="__codelineno-0-58" name="__codelineno-0-58"></a>
+<a id="__codelineno-0-59" name="__codelineno-0-59"></a><span class="sd">    Returns</span>
+<a id="__codelineno-0-60" name="__codelineno-0-60"></a><span class="sd">    -------</span>
+<a id="__codelineno-0-61" name="__codelineno-0-61"></a><span class="sd">    int</span>
+<a id="__codelineno-0-62" name="__codelineno-0-62"></a><span class="sd">        A 16 digit random integer.</span>
+<a id="__codelineno-0-63" name="__codelineno-0-63"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-64" name="__codelineno-0-64"></a>
+<a id="__codelineno-0-65" name="__codelineno-0-65"></a>    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">SystemRandom</span><span class="p">()</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="p">(</span><span class="mi">10</span><span class="o">**</span><span class="mi">16</span><span class="p">))</span>
 </code></pre></div></td></tr></table></div>
           </details>
   </div>
@@ -859,8 +859,7 @@ and may provide an additional layer of obfuscation.</p>
 
           <details class="quote">
             <summary>Source code in <code>maskmypy/tools.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-67"> 67</a></span>
-<span class="normal"><a href="#__codelineno-0-68"> 68</a></span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-68"> 68</a></span>
 <span class="normal"><a href="#__codelineno-0-69"> 69</a></span>
 <span class="normal"><a href="#__codelineno-0-70"> 70</a></span>
 <span class="normal"><a href="#__codelineno-0-71"> 71</a></span>
@@ -897,45 +896,46 @@ and may provide an additional layer of obfuscation.</p>
 <span class="normal"><a href="#__codelineno-0-102">102</a></span>
 <span class="normal"><a href="#__codelineno-0-103">103</a></span>
 <span class="normal"><a href="#__codelineno-0-104">104</a></span>
-<span class="normal"><a href="#__codelineno-0-105">105</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-67" name="__codelineno-0-67"></a><span class="k">def</span> <span class="nf">snap_to_streets</span><span class="p">(</span><span class="n">gdf</span><span class="p">:</span> <span class="n">GeoDataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GeoDataFrame</span><span class="p">:</span>
-<a id="__codelineno-0-68" name="__codelineno-0-68"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-69" name="__codelineno-0-69"></a><span class="sd">    Relocates each point of a GeoDataFrame to the nearest node on the OpenStreetMap driving</span>
-<a id="__codelineno-0-70" name="__codelineno-0-70"></a><span class="sd">    network. Performing this on masked datasets may reduce the chances of false attribution,</span>
-<a id="__codelineno-0-71" name="__codelineno-0-71"></a><span class="sd">    and may provide an additional layer of obfuscation.</span>
-<a id="__codelineno-0-72" name="__codelineno-0-72"></a>
-<a id="__codelineno-0-73" name="__codelineno-0-73"></a><span class="sd">    This is *not* an alternative to masking.</span>
-<a id="__codelineno-0-74" name="__codelineno-0-74"></a>
-<a id="__codelineno-0-75" name="__codelineno-0-75"></a><span class="sd">    Parameters</span>
-<a id="__codelineno-0-76" name="__codelineno-0-76"></a><span class="sd">    ----------</span>
-<a id="__codelineno-0-77" name="__codelineno-0-77"></a><span class="sd">    gdf : GeoDataFrame</span>
-<a id="__codelineno-0-78" name="__codelineno-0-78"></a><span class="sd">        A GeoDataFrame containing point data.</span>
-<a id="__codelineno-0-79" name="__codelineno-0-79"></a>
-<a id="__codelineno-0-80" name="__codelineno-0-80"></a><span class="sd">    Returns</span>
-<a id="__codelineno-0-81" name="__codelineno-0-81"></a><span class="sd">    -------</span>
-<a id="__codelineno-0-82" name="__codelineno-0-82"></a><span class="sd">    GeoDataFrame</span>
-<a id="__codelineno-0-83" name="__codelineno-0-83"></a><span class="sd">        A GeoDataFrame containing points that have been snapped to street nodes.</span>
-<a id="__codelineno-0-84" name="__codelineno-0-84"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-85" name="__codelineno-0-85"></a>    <span class="n">snapped_gdf</span> <span class="o">=</span> <span class="n">gdf</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-<a id="__codelineno-0-86" name="__codelineno-0-86"></a>    <span class="n">bbox</span> <span class="o">=</span> <span class="n">gdf</span><span class="o">.</span><span class="n">to_crs</span><span class="p">(</span><span class="n">epsg</span><span class="o">=</span><span class="mi">4326</span><span class="p">)</span><span class="o">.</span><span class="n">total_bounds</span>
-<a id="__codelineno-0-87" name="__codelineno-0-87"></a>    <span class="n">graph</span> <span class="o">=</span> <span class="n">remove_isolated_nodes</span><span class="p">(</span>
-<a id="__codelineno-0-88" name="__codelineno-0-88"></a>        <span class="n">graph_from_bbox</span><span class="p">(</span>
-<a id="__codelineno-0-89" name="__codelineno-0-89"></a>            <span class="n">north</span><span class="o">=</span><span class="n">bbox</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
-<a id="__codelineno-0-90" name="__codelineno-0-90"></a>            <span class="n">south</span><span class="o">=</span><span class="n">bbox</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-<a id="__codelineno-0-91" name="__codelineno-0-91"></a>            <span class="n">west</span><span class="o">=</span><span class="n">bbox</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-<a id="__codelineno-0-92" name="__codelineno-0-92"></a>            <span class="n">east</span><span class="o">=</span><span class="n">bbox</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
-<a id="__codelineno-0-93" name="__codelineno-0-93"></a>            <span class="n">network_type</span><span class="o">=</span><span class="s2">&quot;drive&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-94" name="__codelineno-0-94"></a>            <span class="n">truncate_by_edge</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<a id="__codelineno-0-95" name="__codelineno-0-95"></a>        <span class="p">),</span>
-<a id="__codelineno-0-96" name="__codelineno-0-96"></a>        <span class="n">warn</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-<a id="__codelineno-0-97" name="__codelineno-0-97"></a>    <span class="p">)</span>
-<a id="__codelineno-0-98" name="__codelineno-0-98"></a>    <span class="n">graph</span> <span class="o">=</span> <span class="n">project_graph</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">to_crs</span><span class="o">=</span><span class="n">gdf</span><span class="o">.</span><span class="n">crs</span><span class="p">)</span>
-<a id="__codelineno-0-99" name="__codelineno-0-99"></a>    <span class="n">node_gdf</span> <span class="o">=</span> <span class="n">graph_to_gdfs</span><span class="p">(</span><span class="n">graph</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-<a id="__codelineno-0-100" name="__codelineno-0-100"></a>
-<a id="__codelineno-0-101" name="__codelineno-0-101"></a>    <span class="n">snapped_gdf</span><span class="p">[</span><span class="n">snapped_gdf</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">snapped_gdf</span><span class="p">[</span><span class="n">snapped_gdf</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
-<a id="__codelineno-0-102" name="__codelineno-0-102"></a>        <span class="k">lambda</span> <span class="n">geom</span><span class="p">:</span> <span class="n">node_gdf</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">nearest_nodes</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">geom</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">geom</span><span class="o">.</span><span class="n">y</span><span class="p">),</span> <span class="n">node_gdf</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
-<a id="__codelineno-0-103" name="__codelineno-0-103"></a>    <span class="p">)</span>
-<a id="__codelineno-0-104" name="__codelineno-0-104"></a>
-<a id="__codelineno-0-105" name="__codelineno-0-105"></a>    <span class="k">return</span> <span class="n">snapped_gdf</span>
+<span class="normal"><a href="#__codelineno-0-105">105</a></span>
+<span class="normal"><a href="#__codelineno-0-106">106</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-68" name="__codelineno-0-68"></a><span class="k">def</span> <span class="nf">snap_to_streets</span><span class="p">(</span><span class="n">gdf</span><span class="p">:</span> <span class="n">GeoDataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GeoDataFrame</span><span class="p">:</span>
+<a id="__codelineno-0-69" name="__codelineno-0-69"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-70" name="__codelineno-0-70"></a><span class="sd">    Relocates each point of a GeoDataFrame to the nearest node on the OpenStreetMap driving</span>
+<a id="__codelineno-0-71" name="__codelineno-0-71"></a><span class="sd">    network. Performing this on masked datasets may reduce the chances of false attribution,</span>
+<a id="__codelineno-0-72" name="__codelineno-0-72"></a><span class="sd">    and may provide an additional layer of obfuscation.</span>
+<a id="__codelineno-0-73" name="__codelineno-0-73"></a>
+<a id="__codelineno-0-74" name="__codelineno-0-74"></a><span class="sd">    This is *not* an alternative to masking.</span>
+<a id="__codelineno-0-75" name="__codelineno-0-75"></a>
+<a id="__codelineno-0-76" name="__codelineno-0-76"></a><span class="sd">    Parameters</span>
+<a id="__codelineno-0-77" name="__codelineno-0-77"></a><span class="sd">    ----------</span>
+<a id="__codelineno-0-78" name="__codelineno-0-78"></a><span class="sd">    gdf : GeoDataFrame</span>
+<a id="__codelineno-0-79" name="__codelineno-0-79"></a><span class="sd">        A GeoDataFrame containing point data.</span>
+<a id="__codelineno-0-80" name="__codelineno-0-80"></a>
+<a id="__codelineno-0-81" name="__codelineno-0-81"></a><span class="sd">    Returns</span>
+<a id="__codelineno-0-82" name="__codelineno-0-82"></a><span class="sd">    -------</span>
+<a id="__codelineno-0-83" name="__codelineno-0-83"></a><span class="sd">    GeoDataFrame</span>
+<a id="__codelineno-0-84" name="__codelineno-0-84"></a><span class="sd">        A GeoDataFrame containing points that have been snapped to street nodes.</span>
+<a id="__codelineno-0-85" name="__codelineno-0-85"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-86" name="__codelineno-0-86"></a>    <span class="n">snapped_gdf</span> <span class="o">=</span> <span class="n">gdf</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<a id="__codelineno-0-87" name="__codelineno-0-87"></a>    <span class="n">bbox</span> <span class="o">=</span> <span class="n">gdf</span><span class="o">.</span><span class="n">to_crs</span><span class="p">(</span><span class="n">epsg</span><span class="o">=</span><span class="mi">4326</span><span class="p">)</span><span class="o">.</span><span class="n">total_bounds</span>
+<a id="__codelineno-0-88" name="__codelineno-0-88"></a>    <span class="n">graph</span> <span class="o">=</span> <span class="n">remove_isolated_nodes</span><span class="p">(</span>
+<a id="__codelineno-0-89" name="__codelineno-0-89"></a>        <span class="n">graph_from_bbox</span><span class="p">(</span>
+<a id="__codelineno-0-90" name="__codelineno-0-90"></a>            <span class="n">north</span><span class="o">=</span><span class="n">bbox</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
+<a id="__codelineno-0-91" name="__codelineno-0-91"></a>            <span class="n">south</span><span class="o">=</span><span class="n">bbox</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+<a id="__codelineno-0-92" name="__codelineno-0-92"></a>            <span class="n">west</span><span class="o">=</span><span class="n">bbox</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+<a id="__codelineno-0-93" name="__codelineno-0-93"></a>            <span class="n">east</span><span class="o">=</span><span class="n">bbox</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+<a id="__codelineno-0-94" name="__codelineno-0-94"></a>            <span class="n">network_type</span><span class="o">=</span><span class="s2">&quot;drive&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-95" name="__codelineno-0-95"></a>            <span class="n">truncate_by_edge</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<a id="__codelineno-0-96" name="__codelineno-0-96"></a>        <span class="p">),</span>
+<a id="__codelineno-0-97" name="__codelineno-0-97"></a>        <span class="n">warn</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<a id="__codelineno-0-98" name="__codelineno-0-98"></a>    <span class="p">)</span>
+<a id="__codelineno-0-99" name="__codelineno-0-99"></a>    <span class="n">graph</span> <span class="o">=</span> <span class="n">project_graph</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">to_crs</span><span class="o">=</span><span class="n">gdf</span><span class="o">.</span><span class="n">crs</span><span class="p">)</span>
+<a id="__codelineno-0-100" name="__codelineno-0-100"></a>    <span class="n">node_gdf</span> <span class="o">=</span> <span class="n">graph_to_gdfs</span><span class="p">(</span><span class="n">graph</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<a id="__codelineno-0-101" name="__codelineno-0-101"></a>
+<a id="__codelineno-0-102" name="__codelineno-0-102"></a>    <span class="n">snapped_gdf</span><span class="p">[</span><span class="n">snapped_gdf</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">snapped_gdf</span><span class="p">[</span><span class="n">snapped_gdf</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+<a id="__codelineno-0-103" name="__codelineno-0-103"></a>        <span class="k">lambda</span> <span class="n">geom</span><span class="p">:</span> <span class="n">node_gdf</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">nearest_nodes</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">geom</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">geom</span><span class="o">.</span><span class="n">y</span><span class="p">),</span> <span class="n">node_gdf</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+<a id="__codelineno-0-104" name="__codelineno-0-104"></a>    <span class="p">)</span>
+<a id="__codelineno-0-105" name="__codelineno-0-105"></a>
+<a id="__codelineno-0-106" name="__codelineno-0-106"></a>    <span class="k">return</span> <span class="n">snapped_gdf</span>
 </code></pre></div></td></tr></table></div>
           </details>
   </div>
