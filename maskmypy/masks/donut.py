@@ -68,13 +68,14 @@ def donut(
     GeoDataFrame
         A GeoDataFrame containing masked points.
     """
-    gdf = gdf.copy()
-    _validate_donut(gdf, low, high, container)
+    _gdf = gdf.copy()
+    _validate_donut(_gdf, low, high, container)
 
     seed = tools.gen_seed() if not seed else seed
 
     args = locals()
     del args["snap_to_streets"]
+    del args["gdf"]
 
     masked_gdf = _Donut(**args).run()
 
@@ -99,7 +100,7 @@ def _validate_donut(gdf, low, high, container):
 
 @dataclass
 class _Donut:
-    gdf: GeoDataFrame
+    _gdf: GeoDataFrame
     low: float
     high: float
     container: GeoDataFrame = None
@@ -168,12 +169,12 @@ class _Donut:
 
     def run(self) -> GeoDataFrame:
         if isinstance(self.container, GeoDataFrame):
-            self.gdf[self.gdf.geometry.name] = self.gdf[self.gdf.geometry.name].apply(
+            self._gdf[self._gdf.geometry.name] = self._gdf[self._gdf.geometry.name].apply(
                 self._mask_contained_point
             )
         else:
-            self.gdf[self.gdf.geometry.name] = self.gdf[self.gdf.geometry.name].apply(
+            self._gdf[self._gdf.geometry.name] = self._gdf[self._gdf.geometry.name].apply(
                 self._mask_point
             )
 
-        return self.gdf
+        return self._gdf

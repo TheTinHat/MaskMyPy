@@ -65,12 +65,13 @@ def street(
     GeoDataFrame
         A GeoDataFrame containing masked points.
     """
-    gdf = gdf.copy()
-    _validate_street(gdf, low, high)
+    _gdf = gdf.copy()
+    _validate_street(_gdf, low, high)
 
     seed = tools.gen_seed() if not seed else seed
 
     args = locals()
+    del args["gdf"]
 
     masked_gdf = _Street(**args).run()
 
@@ -86,7 +87,7 @@ def _validate_street(gdf, low, high):
 
 @dataclass
 class _Street:
-    gdf: GeoDataFrame
+    _gdf: GeoDataFrame
     low: int
     high: int
     max_length: float
@@ -95,12 +96,12 @@ class _Street:
 
     def __post_init__(self) -> None:
         self._rng = random.default_rng(seed=self.seed)
-        self.crs = self.gdf.crs
-        self.gdf = self.gdf.to_crs(epsg=4326)
+        self.crs = self._gdf.crs
+        self._gdf = self._gdf.to_crs(epsg=4326)
         self._get_osm()
 
     def _get_osm(self) -> None:
-        bbox = tools._pad(self.gdf.total_bounds, self.padding)
+        bbox = tools._pad(self._gdf.total_bounds, self.padding)
         self.graph = add_edge_lengths(
             remove_isolated_nodes(
                 graph_from_bbox(
@@ -174,6 +175,8 @@ class _Street:
         return self.graph_gdf[0].at[target_node, self.graph_gdf[0].geometry.name]
 
     def run(self) -> GeoDataFrame:
-        self.gdf[self.gdf.geometry.name] = self.gdf[self.gdf.geometry.name].apply(self._mask_point)
-        self.gdf = self.gdf.to_crs(self.crs)
-        return self.gdf
+        self._gdf[self._gdf.geometry.name] = self._gdf[self._gdf.geometry.name].apply(
+            self._mask_point
+        )
+        self._gdf = self._gdf.to_crs(self.crs)
+        return self._gdf

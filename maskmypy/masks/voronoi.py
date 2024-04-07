@@ -37,11 +37,12 @@ def voronoi(gdf: GeoDataFrame, snap_to_streets: bool = False) -> GeoDataFrame:
     GeoDataFrame
         A GeoDataFrame containing masked points.
     """
-    gdf = gdf.copy()
+    _gdf = gdf.copy()
     _validate_voronoi(gdf)
 
     args = locals()
     del args["snap_to_streets"]
+    del args["gdf"]
 
     masked_gdf = _Voronoi(**args).run()
 
@@ -57,10 +58,10 @@ def _validate_voronoi(gdf):
 
 @dataclass
 class _Voronoi:
-    gdf: GeoDataFrame
+    _gdf: GeoDataFrame
 
     def _generate_voronoi_polygons(self) -> GeoSeries:
-        points = self.gdf.dissolve()
+        points = self._gdf.dissolve()
         return voronoi_polygons(points.geometry, only_edges=True)
 
     def _mask_point(self, point: Point) -> Point:
@@ -68,6 +69,8 @@ class _Voronoi:
 
     def run(self) -> GeoDataFrame:
         self.voronoi = self._generate_voronoi_polygons()
-        self.gdf[self.gdf.geometry.name] = self.gdf[self.gdf.geometry.name].apply(self._mask_point)
+        self._gdf[self._gdf.geometry.name] = self._gdf[self._gdf.geometry.name].apply(
+            self._mask_point
+        )
 
-        return self.gdf
+        return self._gdf

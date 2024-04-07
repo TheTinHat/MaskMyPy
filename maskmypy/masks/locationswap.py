@@ -55,15 +55,20 @@ def locationswap(
         This can reduce the chance of false-attribution.
     """
 
-    gdf = gdf.copy()
-    _validate_locationswap(gdf, low, high, address)
+    _gdf = gdf.copy()
+    _validate_locationswap(_gdf, low, high, address)
 
     seed = tools.gen_seed() if not seed else seed
 
     args = locals()
     del args["snap_to_streets"]
+    del args["gdf"]
 
-    masked_gdf = _LocationSwap(**args).run()
+    mask = _LocationSwap(**args)
+    masked_gdf = mask.run()
+
+    if mask._unmasked_points:
+        masked_gdf = tools._mark_unmasked_points(gdf, masked_gdf)
 
     if snap_to_streets:
         masked_gdf = tools.snap_to_streets(masked_gdf)
@@ -82,7 +87,7 @@ def _validate_locationswap(gdf, low, high, address):
 
 @dataclass
 class _LocationSwap:
-    gdf: GeoDataFrame
+    _gdf: GeoDataFrame
     low: float
     high: float
     address: GeoDataFrame
@@ -91,6 +96,7 @@ class _LocationSwap:
     def __post_init__(self) -> None:
         # Initialize random number generator
         self._rng = random.default_rng(seed=self.seed)
+        self._unmasked_points = False
 
     def _mask_point(self, point: Point) -> Point:
         min_buffer = point.buffer(self.low)
@@ -106,8 +112,11 @@ class _LocationSwap:
         if len(included_locations) > 0:
             return self.address.iloc[self._rng.choice(included_locations)].geometry
         else:
-            return Point(0, 0)
+            self._unmasked_points = True
+            return point
 
     def run(self) -> GeoDataFrame:
-        self.gdf[self.gdf.geometry.name] = self.gdf[self.gdf.geometry.name].apply(self._mask_point)
-        return self.gdf
+        self._gdf[self._gdf.geometry.name] = self._gdf[self._gdf.geometry.name].apply(
+            self._mask_point
+        )
+        return self._gdf
