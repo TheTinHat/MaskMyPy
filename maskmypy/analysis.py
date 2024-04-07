@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from geopandas import GeoDataFrame, sjoin
 from matplotlib.axis import Axis
 from matplotlib.figure import Figure
-from numpy import array, square
+from numpy import array, floor, square
 from pointpats import PointPattern, k_test
 from pointpats.distance_statistics import KtestResult
 from shapely.geometry import LineString
@@ -574,8 +574,8 @@ def _estimate_k(
         .pipe(_disaggregate, gdf_b=population_gdf, gdf_b_col=population_column)
         .groupby("_index_2")[pop_col_adjusted]
         .sum()
-        .round()
-    )
+        .apply(floor)
+    ) - 1
     return candidate_gdf
 
 
