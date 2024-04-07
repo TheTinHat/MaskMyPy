@@ -87,10 +87,7 @@ def snap_to_streets(gdf: GeoDataFrame) -> GeoDataFrame:
     bbox = gdf.to_crs(epsg=4326).total_bounds
     graph = remove_isolated_nodes(
         graph_from_bbox(
-            north=bbox[3],
-            south=bbox[1],
-            west=bbox[0],
-            east=bbox[2],
+            bbox=(bbox[3], bbox[1], bbox[2], bbox[0]),
             network_type="drive",
             truncate_by_edge=True,
         ),

@@ -103,9 +103,9 @@ class _Street:
     def _get_osm(self) -> None:
         bbox = tools._pad(self._gdf.total_bounds, self.padding)
         self.graph = add_edge_lengths(
-            remove_isolated_nodes( # This will be deprecated in OSMNX 2.0
+            remove_isolated_nodes(  # This will be deprecated in OSMNX 2.0
                 graph_from_bbox(
-                    bbox=(bbox[3], bbox[1], bbox[2],bbox[0]),
+                    bbox=(bbox[3], bbox[1], bbox[2], bbox[0]),
                     network_type="drive",
                     truncate_by_edge=True,
                 ),
