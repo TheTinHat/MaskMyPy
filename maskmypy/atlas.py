@@ -163,6 +163,9 @@ class Atlas:
             skip_slow=skip_slow_evaluators,
         )
 
+        if "UNMASKED" in gdf.columns:
+            candidate["stats"]["UNMASKED_POINTS"] = gdf["UNMASKED"].sum()
+
         if measure_execution_time:
             candidate["stats"]["execution_time"] = execution_time
         elif measure_peak_memory:

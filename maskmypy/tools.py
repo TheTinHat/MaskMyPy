@@ -1,3 +1,4 @@
+import warnings
 from hashlib import sha256
 from random import SystemRandom
 
@@ -103,6 +104,20 @@ def snap_to_streets(gdf: GeoDataFrame) -> GeoDataFrame:
     )
 
     return snapped_gdf
+
+
+def _mark_unmasked_points(sensitive: GeoDataFrame, masked: GeoDataFrame):
+    geom_col_idx = sensitive.columns.get_loc(sensitive.geometry.name)
+    masked["UNMASKED"] = masked.apply(
+        lambda x: (1 if x[masked.geometry.name] == sensitive.iat[x.name, geom_col_idx] else 0),
+        axis=1,
+    )
+    unmasked_count = masked["UNMASKED"].sum()
+    if unmasked_count > 0:
+        warnings.warn(
+            f"{unmasked_count} points could not be masked. Adding 'UNMASKED' column to mark unmasked points."
+        )
+    return masked
 
 
 def _crop(gdf: GeoDataFrame, bbox: list[float], padding: float) -> GeoDataFrame:

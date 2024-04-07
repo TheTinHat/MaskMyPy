@@ -1,3 +1,4 @@
+import pandas as pd
 import pytest
 from shapely.geometry import Point
 
@@ -58,6 +59,12 @@ def test_locationswap_validation(points, address):
         locationswap(points, 10, 100, address_as_polygons)
 
 
-def test_locationswap_sets_impossible_points_as_null(points, address):
-    masked = locationswap(points, low=1, high=2, address=address)
-    assert all(masked.geometry == Point(0, 0))
+def test_locationswap_marks_impossible_points(points, address):
+    with pytest.warns(UserWarning):
+        masked_1 = locationswap(points[:24], low=1, high=2, address=address)
+
+    masked_2 = locationswap(points[25:], low=100, high=500, address=address)
+    masked = pd.concat([masked_1, masked_2])
+
+    assert all(masked.loc[:24, "UNMASKED"] == 1)
+    assert all(masked.loc[25:, "UNMASKED"] != 1)
