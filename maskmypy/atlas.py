@@ -166,9 +166,9 @@ class Atlas:
             candidate["stats"]["UNMASKED_POINTS"] = gdf["UNMASKED"].sum()
 
         if measure_execution_time:
-            candidate["stats"]["execution_time"] = execution_time
+            candidate["stats"]["execution_time"] = round(execution_time, 3)
         elif measure_peak_memory:
-            candidate["stats"]["memory_peak_mb"] = mem_peak_mb
+            candidate["stats"]["memory_peak_mb"] = round(mem_peak_mb, 3)
 
         if keep_gdf:
             self.layers[candidate["checksum"]] = gdf

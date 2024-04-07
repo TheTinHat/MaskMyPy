@@ -166,7 +166,7 @@ def k_satisfaction(gdf: GeoDataFrame, min_k: int, col: str = "k_anonymity") -> f
     float
         A percentage of points in the GeoDataFrame that satisfy `min_k`.
     """
-    return gdf.loc[gdf[col] >= min_k, col].count() / gdf[col].count()
+    return round(gdf.loc[gdf[col] >= min_k, col].count() / gdf[col].count(), 3)
 
 
 def summarize_k(gdf: GeoDataFrame, col: str = "k_anonymity") -> dict:
@@ -189,8 +189,8 @@ def summarize_k(gdf: GeoDataFrame, col: str = "k_anonymity") -> dict:
     return {
         "k_min": int(gdf.loc[:, col].min()),
         "k_max": int(gdf.loc[:, col].max()),
-        "k_med": float(gdf.loc[:, col].median()),
-        "k_mean": float(gdf.loc[:, col].mean()),
+        "k_med": round(float(gdf.loc[:, col].median()), 2),
+        "k_mean": round(float(gdf.loc[:, col].mean()), 2),
     }
 
 
@@ -212,10 +212,10 @@ def summarize_displacement(gdf: GeoDataFrame, col: str = "_distance") -> dict:
         A dictionary containing summary displacement distance statistics.
     """
     return {
-        "displacement_min": float(gdf.loc[:, col].min()),
-        "displacement_max": float(gdf.loc[:, col].max()),
-        "displacement_med": float(gdf.loc[:, col].median()),
-        "displacement_mean": float(gdf.loc[:, col].mean()),
+        "displacement_min": round(float(gdf.loc[:, col].min()), 6),
+        "displacement_max": round(float(gdf.loc[:, col].max()), 6),
+        "displacement_med": round(float(gdf.loc[:, col].median()), 6),
+        "displacement_mean": round(float(gdf.loc[:, col].mean()), 6),
     }
 
 
@@ -259,7 +259,7 @@ def nnd_delta(sensitive_gdf: GeoDataFrame, candidate_gdf: GeoDataFrame) -> dict:
     after = nnd(candidate_gdf)
     delta = {}
     for key, value in before.items():
-        delta.update({f"{key}_delta": (after[key] - before[key])})
+        delta.update({f"{key}_delta": round(after[key] - before[key], 6)})
     return delta
 
 
@@ -282,7 +282,7 @@ def central_drift(sensitive_gdf: GeoDataFrame, candidate_gdf: GeoDataFrame) -> f
     """
     centroid_a = sensitive_gdf.dissolve().centroid
     centroid_b = candidate_gdf.dissolve().centroid
-    return float(centroid_a.distance(centroid_b).iloc[0])
+    return round(float(centroid_a.distance(centroid_b).iloc[0]), 6)
 
 
 def ripleys_k(
@@ -365,7 +365,7 @@ def ripley_rmse(sensitive_result: KtestResult, candidate_result: KtestResult) ->
     for i in range(step_count):
         residual = candidate_result.statistic[i] - sensitive_result.statistic[i]
         residuals.append(residual)
-    return sqrt(square(residuals).mean())
+    return round(sqrt(square(residuals).mean()), 3)
 
 
 def graph_ripleyresult(result: KtestResult, subtitle: str = None) -> Figure:
