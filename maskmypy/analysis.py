@@ -499,11 +499,11 @@ def map_displacement(
     lines.geometry = lines.apply(
         lambda x: LineString([x["geometry"], x["geometry_masked"]]), axis=1
     )
-    ax = lines.plot(color="black", zorder=2, linewidth=1, figsize=[10, 10])
-    ax = sensitive_gdf.plot(ax=ax, color="red", zorder=3, markersize=12)
-    ax = candidate_gdf.plot(ax=ax, color="blue", zorder=4, markersize=12)
+    ax = lines.plot(color="black", zorder=2, linewidth=1, figsize=[8, 8])
+    ax = sensitive_gdf.plot(ax=ax, color="red", zorder=3, markersize=6)
+    ax = candidate_gdf.plot(ax=ax, color="blue", zorder=4, markersize=6)
     if isinstance(context_gdf, GeoDataFrame):
-        ax = context_gdf.plot(ax=ax, color="grey", zorder=1, markersize=6)
+        ax = context_gdf.plot(ax=ax, color="grey", zorder=1, markersize=3)
 
     ctx.add_basemap(ax, crs=sensitive_gdf.crs, source=ctx.providers.OpenStreetMap.Mapnik)
     plt.title("Displacement Distances", fontsize=16)
