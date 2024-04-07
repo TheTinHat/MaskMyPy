@@ -16,7 +16,6 @@ The structure of a candidate is as follows:
   mask: str, # Name of the mask callable used to create the candidate
   kwargs: dict, # Dictionary containing the keyword arguments used to create the candidate
   checksum: str, # Checksum of the candidate GeoDataFrame
-  timestamp: float,
   stats: { # Dictionary containing statistics describing information loss and privacy protection
     "central_drift": float,
     "displacement_min": float,

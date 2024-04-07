@@ -133,7 +133,6 @@ class Atlas:
         candidate = {
             "mask": mask_func.__name__,
             "kwargs": self._hydrate_mask_kwargs(**kwargs),
-            "timestamp": time(),
         }
 
         if "seed" in inspect.getfullargspec(mask_func).args and "seed" not in candidate["kwargs"]:
