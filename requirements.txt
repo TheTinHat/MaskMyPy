@@ -8,7 +8,7 @@ cycler==0.11.0
 Fiona==1.8.21
 fonttools==4.43.0
 geopandas==0.11.1
-idna==3.3
+idna==3.7
 iniconfig==1.1.1
 joblib==1.2.0
 kiwisolver==1.4.4
