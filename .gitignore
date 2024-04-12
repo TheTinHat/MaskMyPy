@@ -10,3 +10,4 @@ dist
 maskmypy.egg-info
 .pytest_cache
 __pycache__
+.ipynb_checkpoints
