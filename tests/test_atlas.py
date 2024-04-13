@@ -175,13 +175,13 @@ def test_peak_memory(points):
         byte_array = bytearray(peakmemory_size)
         return sensitive
 
-    atlas.mask(mask_mock, memory_mb=1, measure_peak_memory=True)
+    atlas.mask(mask_mock, memory_mb=1, measure_peak_memory=True, measure_execution_time=False)
     assert round(atlas[0]["stats"]["memory_peak_mb"]) == 1
 
-    atlas.mask(mask_mock, memory_mb=100, measure_peak_memory=True)
+    atlas.mask(mask_mock, memory_mb=100, measure_peak_memory=True, measure_execution_time=False)
     assert round(atlas[1]["stats"]["memory_peak_mb"]) == 100
 
-    atlas.mask(mask_mock, memory_mb=10, measure_peak_memory=True)
+    atlas.mask(mask_mock, memory_mb=10, measure_peak_memory=True, measure_execution_time=False)
     assert round(atlas[2]["stats"]["memory_peak_mb"]) == 10
 
 
