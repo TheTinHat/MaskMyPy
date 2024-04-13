@@ -1255,7 +1255,7 @@ counts.</p>
 <a id="__codelineno-0-91" name="__codelineno-0-91"></a>        <span class="n">keep_gdf</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <a id="__codelineno-0-92" name="__codelineno-0-92"></a>        <span class="n">keep_candidate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <a id="__codelineno-0-93" name="__codelineno-0-93"></a>        <span class="n">skip_slow_evaluators</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-<a id="__codelineno-0-94" name="__codelineno-0-94"></a>        <span class="n">measure_execution_time</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<a id="__codelineno-0-94" name="__codelineno-0-94"></a>        <span class="n">measure_execution_time</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <a id="__codelineno-0-95" name="__codelineno-0-95"></a>        <span class="n">measure_peak_memory</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <a id="__codelineno-0-96" name="__codelineno-0-96"></a>        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <a id="__codelineno-0-97" name="__codelineno-0-97"></a>    <span class="p">):</span>
@@ -2163,7 +2163,7 @@ provide the function here.</p>
 
 
 <h4 id="maskmypy.Atlas.mask" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <code class="highlight language-python"><span class="n">mask</span><span class="p">(</span><span class="n">mask_func</span><span class="p">,</span> <span class="n">keep_gdf</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">keep_candidate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">skip_slow_evaluators</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">measure_execution_time</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">measure_peak_memory</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <code class="highlight language-python"><span class="n">mask</span><span class="p">(</span><span class="n">mask_func</span><span class="p">,</span> <span class="n">keep_gdf</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">keep_candidate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">skip_slow_evaluators</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">measure_execution_time</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">measure_peak_memory</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
 
 <a href="#maskmypy.Atlas.mask" class="headerlink" title="Permanent link">&para;</a></h4>
 
@@ -2258,7 +2258,7 @@ candidate statistics. Mutually exclusive with <code>measure_peak_memory</code></
             </div>
           </td>
           <td>
-                <code>False</code>
+                <code>True</code>
           </td>
         </tr>
         <tr>
@@ -2383,7 +2383,7 @@ allocations. Mutually exclusive with <code>measure_peak_memory</code>.</p>
 <a id="__codelineno-0-91" name="__codelineno-0-91"></a>    <span class="n">keep_gdf</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <a id="__codelineno-0-92" name="__codelineno-0-92"></a>    <span class="n">keep_candidate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <a id="__codelineno-0-93" name="__codelineno-0-93"></a>    <span class="n">skip_slow_evaluators</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-<a id="__codelineno-0-94" name="__codelineno-0-94"></a>    <span class="n">measure_execution_time</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<a id="__codelineno-0-94" name="__codelineno-0-94"></a>    <span class="n">measure_execution_time</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <a id="__codelineno-0-95" name="__codelineno-0-95"></a>    <span class="n">measure_peak_memory</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <a id="__codelineno-0-96" name="__codelineno-0-96"></a>    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <a id="__codelineno-0-97" name="__codelineno-0-97"></a><span class="p">):</span>
