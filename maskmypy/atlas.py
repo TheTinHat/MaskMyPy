@@ -91,7 +91,7 @@ class Atlas:
         keep_gdf: bool = False,
         keep_candidate: bool = True,
         skip_slow_evaluators: bool = True,
-        measure_execution_time: bool = False,
+        measure_execution_time: bool = True,
         measure_peak_memory: bool = False,
         **kwargs,
     ):
