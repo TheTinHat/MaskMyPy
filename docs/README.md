@@ -2,7 +2,7 @@
 
 ---
 
-![Master Tests](https://img.shields.io/github/actions/workflow/status/TheTinHat/maskmypy/test-package.yml?branch=master)
+[![Tests](https://github.com/TheTinHat/MaskMyPy/actions/workflows/test-package.yml/badge.svg?branch=master)](https://github.com/TheTinHat/MaskMyPy/actions/workflows/test-package.yml)
 ![License](https://img.shields.io/github/license/TheTinHat/MaskMyPy)
 [![PyPi](https://img.shields.io/pypi/v/maskmypy)](https://pypi.org/project/maskmypy/)
 
