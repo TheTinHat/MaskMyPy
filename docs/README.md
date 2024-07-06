@@ -8,8 +8,6 @@
 
 # MaskMyPy
 
-***Warning***: This documentation reflects a upcoming beta release of MaskMyPy. 
-
 ## Key Features
 
 - Python tools for anonymizing geographic point data held in GeoDataFrames.
