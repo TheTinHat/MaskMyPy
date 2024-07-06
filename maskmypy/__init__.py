@@ -1,10 +1,5 @@
-import warnings
-
-from shapely.errors import ShapelyDeprecationWarning
-
-from .donut import Donut, Donut_MaxK, Donut_Multiply
-from .street import Street
-
-warnings.filterwarnings("ignore", category=ShapelyDeprecationWarning)
+from . import analysis
+from .atlas import Atlas
+from .masks import donut, locationswap, street, voronoi
 
 name = "maskmypy"

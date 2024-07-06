@@ -15,5 +15,6 @@
 			"99"
 		],
 		"git.ignoreRebaseWarning": true,
+		"autoDocstring.docstringFormat": "numpy",
 	}
 }

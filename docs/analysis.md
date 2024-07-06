@@ -1,0 +1,5 @@
+---
+title: Analysis
+---
+
+::: maskmypy.analysis
