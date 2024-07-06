@@ -18,7 +18,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.17">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.28">
     
     
       
@@ -26,7 +26,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.bcfcd587.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.6543a935.min.css">
       
       
 
@@ -140,7 +140,7 @@
       
     </form>
     <div class="md-search__output">
-      <div class="md-search__scrollwrap" data-md-scrollfix>
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
         <div class="md-search-result" data-md-component="search-result">
           <div class="md-search-result__meta">
             Initializing search
@@ -472,17 +472,16 @@
 
 
 <h3 id="maskmypy.tools" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-module"></code>          <code>maskmypy.tools</code>
+<code class="doc-symbol doc-symbol-heading doc-symbol-module"></code>            <code>maskmypy.tools</code>
 
 
 <a href="#maskmypy.tools" class="headerlink" title="Permanent link">&para;</a></h3>
 
-  <div class="doc doc-contents first">
+    <div class="doc doc-contents first">
 
-  
+
 
   <div class="doc doc-children">
-
 
 
 
@@ -495,77 +494,74 @@
 <div class="doc doc-object doc-function">
 
 
-
 <h4 id="maskmypy.tools.checksum" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>          <code class="highlight language-python"><span class="n">checksum</span><span class="p">(</span><span class="n">gdf</span><span class="p">)</span></code>
+<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">checksum</span><span class="p">(</span><span class="n">gdf</span><span class="p">)</span></code>
 
 <a href="#maskmypy.tools.checksum" class="headerlink" title="Permanent link">&para;</a></h4>
 
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>Calculate SHA256 checksum of a GeoDataFrame and return the first 8 characters.
 Two completely identical GeoDataFrames will always return the exact same value,
 whereas two similar, but not completely identical GeoDataFrames will return
 entirely different values.</p>
 
 
-
-  <p><strong>Parameters:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td><code>gdf</code></td>
-          <td>
-                <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Any valid GeoDataFrame.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code>gdf</code></td>
+            <td>
+                  <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Any valid GeoDataFrame.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
-
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td>
-                <code>str</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The first 8 characters of the SHA256 checksum of the input GeoDataFrame.</p>
-            </div>
-          </td>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The first 8 characters of the SHA256 checksum of the input GeoDataFrame.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-          <details class="quote">
-            <summary>Source code in <code>maskmypy/tools.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-16">16</a></span>
+            <details class="quote">
+              <summary>Source code in <code>maskmypy/tools.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-16">16</a></span>
 <span class="normal"><a href="#__codelineno-0-17">17</a></span>
 <span class="normal"><a href="#__codelineno-0-18">18</a></span>
 <span class="normal"><a href="#__codelineno-0-19">19</a></span>
@@ -601,84 +597,80 @@ entirely different values.</p>
 <a id="__codelineno-0-32" name="__codelineno-0-32"></a><span class="sd">    &quot;&quot;&quot;</span>
 <a id="__codelineno-0-33" name="__codelineno-0-33"></a>    <span class="k">return</span> <span class="n">sha256</span><span class="p">(</span><span class="nb">bytearray</span><span class="p">(</span><span class="n">hash_pandas_object</span><span class="p">(</span><span class="n">gdf</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">))</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()[</span><span class="mi">0</span><span class="p">:</span><span class="mi">8</span><span class="p">]</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h4 id="maskmypy.tools.gen_rng" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>          <code class="highlight language-python"><span class="n">gen_rng</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">gen_rng</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 <a href="#maskmypy.tools.gen_rng" class="headerlink" title="Permanent link">&para;</a></h4>
 
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>Create a seeded numpy default_rng() object.</p>
 
 
-
-  <p><strong>Parameters:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td><code>seed</code></td>
-          <td>
-                <code>int</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>An integer used to seed the random number generator. A seed is randomly
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code>seed</code></td>
+            <td>
+                  <code>int</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>An integer used to seed the random number generator. A seed is randomly
 generated using gen_seed() if one is not provided.</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-    </tbody>
-  </table>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
-
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td>
-                <code>object</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>numpy.default_rng()</p>
-            </div>
-          </td>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>object</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>numpy.default_rng()</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-          <details class="quote">
-            <summary>Source code in <code>maskmypy/tools.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-36">36</a></span>
+            <details class="quote">
+              <summary>Source code in <code>maskmypy/tools.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-36">36</a></span>
 <span class="normal"><a href="#__codelineno-0-37">37</a></span>
 <span class="normal"><a href="#__codelineno-0-38">38</a></span>
 <span class="normal"><a href="#__codelineno-0-39">39</a></span>
@@ -712,53 +704,50 @@ generated using gen_seed() if one is not provided.</p>
 <a id="__codelineno-0-51" name="__codelineno-0-51"></a>        <span class="n">seed</span> <span class="o">=</span> <span class="n">gen_seed</span><span class="p">()</span>
 <a id="__codelineno-0-52" name="__codelineno-0-52"></a>    <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h4 id="maskmypy.tools.gen_seed" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>          <code class="highlight language-python"><span class="n">gen_seed</span><span class="p">()</span></code>
+<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">gen_seed</span><span class="p">()</span></code>
 
 <a href="#maskmypy.tools.gen_seed" class="headerlink" title="Permanent link">&para;</a></h4>
 
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>Generate a 16-digit random integer to seed random number generators.</p>
 
 
-
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td>
-                <code>int</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>A 16 digit random integer.</p>
-            </div>
-          </td>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>int</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A 16 digit random integer.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-          <details class="quote">
-            <summary>Source code in <code>maskmypy/tools.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-55">55</a></span>
+            <details class="quote">
+              <summary>Source code in <code>maskmypy/tools.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-55">55</a></span>
 <span class="normal"><a href="#__codelineno-0-56">56</a></span>
 <span class="normal"><a href="#__codelineno-0-57">57</a></span>
 <span class="normal"><a href="#__codelineno-0-58">58</a></span>
@@ -780,86 +769,82 @@ generated using gen_seed() if one is not provided.</p>
 <a id="__codelineno-0-64" name="__codelineno-0-64"></a>
 <a id="__codelineno-0-65" name="__codelineno-0-65"></a>    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">SystemRandom</span><span class="p">()</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="p">(</span><span class="mi">10</span><span class="o">**</span><span class="mi">16</span><span class="p">))</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h4 id="maskmypy.tools.snap_to_streets" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>          <code class="highlight language-python"><span class="n">snap_to_streets</span><span class="p">(</span><span class="n">gdf</span><span class="p">)</span></code>
+<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">snap_to_streets</span><span class="p">(</span><span class="n">gdf</span><span class="p">)</span></code>
 
 <a href="#maskmypy.tools.snap_to_streets" class="headerlink" title="Permanent link">&para;</a></h4>
 
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>Relocates each point of a GeoDataFrame to the nearest node on the OpenStreetMap driving
 network. Performing this on masked datasets may reduce the chances of false attribution,
 and may provide an additional layer of obfuscation.</p>
 <p>This is <em>not</em> an alternative to masking.</p>
 
 
-
-  <p><strong>Parameters:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td><code>gdf</code></td>
-          <td>
-                <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>A GeoDataFrame containing point data.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code>gdf</code></td>
+            <td>
+                  <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A GeoDataFrame containing point data.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
-
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td>
-                <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>A GeoDataFrame containing points that have been snapped to street nodes.</p>
-            </div>
-          </td>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A GeoDataFrame containing points that have been snapped to street nodes.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-          <details class="quote">
-            <summary>Source code in <code>maskmypy/tools.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-68"> 68</a></span>
+            <details class="quote">
+              <summary>Source code in <code>maskmypy/tools.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-68"> 68</a></span>
 <span class="normal"><a href="#__codelineno-0-69"> 69</a></span>
 <span class="normal"><a href="#__codelineno-0-70"> 70</a></span>
 <span class="normal"><a href="#__codelineno-0-71"> 71</a></span>
@@ -931,8 +916,8 @@ and may provide an additional layer of obfuscation.</p>
 <a id="__codelineno-0-102" name="__codelineno-0-102"></a>
 <a id="__codelineno-0-103" name="__codelineno-0-103"></a>    <span class="k">return</span> <span class="n">snapped_gdf</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
 
@@ -940,7 +925,7 @@ and may provide an additional layer of obfuscation.</p>
 
   </div>
 
-  </div>
+    </div>
 
 </div>
 
@@ -963,7 +948,7 @@ and may provide an additional layer of obfuscation.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 26, 2024</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 6, 2024</span>
   </span>
 
     
@@ -1013,7 +998,7 @@ and may provide an additional layer of obfuscation.</p>
     <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.1e8ae164.min.js"></script>
+      <script src="../assets/javascripts/bundle.fe8b6f2b.min.js"></script>
       
     
   </body>

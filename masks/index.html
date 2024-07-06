@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.17">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.28">
     
     
       
@@ -28,7 +28,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.bcfcd587.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.6543a935.min.css">
       
       
 
@@ -142,7 +142,7 @@
       
     </form>
     <div class="md-search__output">
-      <div class="md-search__scrollwrap" data-md-scrollfix>
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
         <div class="md-search-result" data-md-component="search-result">
           <div class="md-search-result__meta">
             Initializing search
@@ -311,7 +311,7 @@
           <li class="md-nav__item">
   <a href="#maskmypy.donut.donut" class="md-nav__link">
     <span class="md-ellipsis">
-      &nbsp;donut
+      <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;donut
     </span>
   </a>
   
@@ -335,7 +335,7 @@
           <li class="md-nav__item">
   <a href="#maskmypy.street.street" class="md-nav__link">
     <span class="md-ellipsis">
-      &nbsp;street
+      <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;street
     </span>
   </a>
   
@@ -359,7 +359,7 @@
           <li class="md-nav__item">
   <a href="#maskmypy.locationswap.locationswap" class="md-nav__link">
     <span class="md-ellipsis">
-      &nbsp;locationswap
+      <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;locationswap
     </span>
   </a>
   
@@ -383,7 +383,7 @@
           <li class="md-nav__item">
   <a href="#maskmypy.voronoi.voronoi" class="md-nav__link">
     <span class="md-ellipsis">
-      &nbsp;voronoi
+      <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;voronoi
     </span>
   </a>
   
@@ -459,7 +459,7 @@
           <li class="md-nav__item">
   <a href="#maskmypy.donut.donut" class="md-nav__link">
     <span class="md-ellipsis">
-      &nbsp;donut
+      <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;donut
     </span>
   </a>
   
@@ -483,7 +483,7 @@
           <li class="md-nav__item">
   <a href="#maskmypy.street.street" class="md-nav__link">
     <span class="md-ellipsis">
-      &nbsp;street
+      <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;street
     </span>
   </a>
   
@@ -507,7 +507,7 @@
           <li class="md-nav__item">
   <a href="#maskmypy.locationswap.locationswap" class="md-nav__link">
     <span class="md-ellipsis">
-      &nbsp;locationswap
+      <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;locationswap
     </span>
   </a>
   
@@ -531,7 +531,7 @@
           <li class="md-nav__item">
   <a href="#maskmypy.voronoi.voronoi" class="md-nav__link">
     <span class="md-ellipsis">
-      &nbsp;voronoi
+      <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;voronoi
     </span>
   </a>
   
@@ -571,12 +571,11 @@
 
 
 
-  <div class="doc doc-contents first">
+    <div class="doc doc-contents first">
 
-  
+
 
   <div class="doc doc-children">
-
 
 
 
@@ -589,18 +588,18 @@
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="maskmypy.donut.donut" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>          <code class="highlight language-python"><span class="n">donut</span><span class="p">(</span><span class="n">gdf</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">container</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">distribution</span><span class="o">=</span><span class="s1">&#39;uniform&#39;</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">snap_to_streets</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">donut</span><span class="p">(</span><span class="n">gdf</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">container</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">distribution</span><span class="o">=</span><span class="s1">&#39;uniform&#39;</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">snap_to_streets</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
 
 <a href="#maskmypy.donut.donut" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>Apply donut masking to a GeoDataFrame, randomly displacing points between a minimum and
 maximum distance. Advantages of this mask is speed and simplicity, though it does not
 handle highly varied population densities well.</p>
+
 
 <details class="example" open>
   <summary>Example</summary>
@@ -614,158 +613,156 @@ handle highly varied population densities well.</p>
 </code></pre></div>
 </details>
 
-
-  <p><strong>Parameters:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td><code>gdf</code></td>
-          <td>
-                <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>GeoDataFrame containing sensitive points.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
         </tr>
-        <tr>
-          <td><code>low</code></td>
-          <td>
-                <code>float</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Minimum distance to displace points. Unit must match that of the <code>gdf</code> CRS.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-        <tr>
-          <td><code>high</code></td>
-          <td>
-                <code>float</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Maximum displacement to displace points. Unit must match that of the <code>gdf</code> CRS.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-        <tr>
-          <td><code>container</code></td>
-          <td>
-                <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>A  GeoDataFrame containing polygons within which intersecting sensitive points should
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code>gdf</code></td>
+            <td>
+                  <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>GeoDataFrame containing sensitive points.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>low</code></td>
+            <td>
+                  <code>float</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Minimum distance to displace points. Unit must match that of the <code>gdf</code> CRS.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>high</code></td>
+            <td>
+                  <code>float</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Maximum displacement to displace points. Unit must match that of the <code>gdf</code> CRS.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>container</code></td>
+            <td>
+                  <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A  GeoDataFrame containing polygons within which intersecting sensitive points should
 remain after masking. This works by masking a point, checking if it intersects
 the same polygon prior to masking, and retrying until it does. Useful for preserving
 statistical relationships, such as census tract, or to ensure that points are not
 displaced into impossible locations, such as the ocean. CRS must match that of <code>gdf</code>.</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr>
-          <td><code>distribution</code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The distribution used to determine masking distances. <code>uniform</code> provides
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>distribution</code></td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The distribution used to determine masking distances. <code>uniform</code> provides
 a flat distribution where any value between the minimum and maximum distance is
 equally likely to be selected. <code>areal</code> is more likely to select distances that are
 further away. The <code>gaussian</code> distribution uses a normal distribution, where values
 towards the middle of the range are most likely to be selected. Note that gaussian
 distribution has a small chance of selecting values beyond the defined minimum and
 maximum.</p>
-            </div>
-          </td>
-          <td>
-                <code>&#39;uniform&#39;</code>
-          </td>
-        </tr>
-        <tr>
-          <td><code>seed</code></td>
-          <td>
-                <code>int</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Used to seed the random number generator so that masked datasets are reproducible.
+              </div>
+            </td>
+            <td>
+                  <code>&#39;uniform&#39;</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>seed</code></td>
+            <td>
+                  <code>int</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Used to seed the random number generator so that masked datasets are reproducible.
 Randomly generated if left undefined.</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr>
-          <td><code>snap_to_streets</code></td>
-          <td>
-                <code>bool</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>If True, points are snapped to the nearest node on the OSM street network after masking.
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>snap_to_streets</code></td>
+            <td>
+                  <code>bool</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If True, points are snapped to the nearest node on the OSM street network after masking.
 This can reduce the chance of false-attribution.</p>
-            </div>
-          </td>
-          <td>
-                <code>False</code>
-          </td>
-        </tr>
-    </tbody>
-  </table>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
-
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td>
-                <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>A GeoDataFrame containing masked points.</p>
-            </div>
-          </td>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A GeoDataFrame containing masked points.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-          <details class="quote">
-            <summary>Source code in <code>maskmypy/masks/donut.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-11">11</a></span>
+            <details class="quote">
+              <summary>Source code in <code>maskmypy/masks/donut.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-11">11</a></span>
 <span class="normal"><a href="#__codelineno-0-12">12</a></span>
 <span class="normal"><a href="#__codelineno-0-13">13</a></span>
 <span class="normal"><a href="#__codelineno-0-14">14</a></span>
@@ -915,8 +912,8 @@ This can reduce the chance of false-attribution.</p>
 <a id="__codelineno-0-84" name="__codelineno-0-84"></a>
 <a id="__codelineno-0-85" name="__codelineno-0-85"></a>    <span class="k">return</span> <span class="n">masked_gdf</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
 
@@ -924,7 +921,7 @@ This can reduce the chance of false-attribution.</p>
 
   </div>
 
-  </div>
+    </div>
 
 </div><hr />
 <h2 id="street-masking">Street Masking<a class="headerlink" href="#street-masking" title="Permanent link">&para;</a></h2>
@@ -942,12 +939,11 @@ This can reduce the chance of false-attribution.</p>
 
 
 
-  <div class="doc doc-contents first">
+    <div class="doc doc-contents first">
 
-  
+
 
   <div class="doc doc-children">
-
 
 
 
@@ -960,20 +956,20 @@ This can reduce the chance of false-attribution.</p>
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="maskmypy.street.street" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>          <code class="highlight language-python"><span class="n">street</span><span class="p">(</span><span class="n">gdf</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span></code>
+<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">street</span><span class="p">(</span><span class="n">gdf</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span></code>
 
 <a href="#maskmypy.street.street" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>Apply street masking to a GeoDataFrame, displacing points along the OpenStreetMap street
 network. This helps account for variations in population density, and reduces the likelihood
 of false attribution as points are always displaced to the street network. Each point is
 snapped to the nearest node on the network, then displaced along the surround network between
 <code>low</code> and <code>high</code> nodes away.</p>
+
 
 <details class="example" open>
   <summary>Example</summary>
@@ -987,137 +983,135 @@ snapped to the nearest node on the network, then displaced along the surround ne
 </code></pre></div>
 </details>
 
-
-  <p><strong>Parameters:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td><code>gdf</code></td>
-          <td>
-                <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>GeoDataFrame containing sensitive points.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
         </tr>
-        <tr>
-          <td><code>low</code></td>
-          <td>
-                <code>int</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Minimum number of nodes along the OSM street network to traverse.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-        <tr>
-          <td><code>high</code></td>
-          <td>
-                <code>int</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Maximum number of nodes along the OSM street network to traverse.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-        <tr>
-          <td><code>max_length</code></td>
-          <td>
-                <code>float</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>When locating the closest node to each point on the street network, MaskMyPy verifies
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code>gdf</code></td>
+            <td>
+                  <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>GeoDataFrame containing sensitive points.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>low</code></td>
+            <td>
+                  <code>int</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Minimum number of nodes along the OSM street network to traverse.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>high</code></td>
+            <td>
+                  <code>int</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Maximum number of nodes along the OSM street network to traverse.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>max_length</code></td>
+            <td>
+                  <code>float</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>When locating the closest node to each point on the street network, MaskMyPy verifies
 that its immediate neighbours are no more than <code>max_length</code> away, in meters. This prevents
 extremely large masking distances, such as those caused by long highways.</p>
-            </div>
-          </td>
-          <td>
-                <code>1000</code>
-          </td>
-        </tr>
-        <tr>
-          <td><code>seed</code></td>
-          <td>
-                <code>int</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Used to seed the random number generator so that masked datasets are reproducible.
+              </div>
+            </td>
+            <td>
+                  <code>1000</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>seed</code></td>
+            <td>
+                  <code>int</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Used to seed the random number generator so that masked datasets are reproducible.
 Randomly generated if left undefined.</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr>
-          <td><code>padding</code></td>
-          <td>
-                <code>float</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>OSM network data is retrieved based on the bounding box of the sensitive GeoDataFrame.
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>padding</code></td>
+            <td>
+                  <code>float</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>OSM network data is retrieved based on the bounding box of the sensitive GeoDataFrame.
 Padding is used to expand this bounding box slightly to reduce unwanted edge-effects.
 A value of <code>0.2</code> would add 20% of the x and y extent to <em>each side</em> of the bounding box.</p>
-            </div>
-          </td>
-          <td>
-                <code>0.2</code>
-          </td>
-        </tr>
-    </tbody>
-  </table>
+              </div>
+            </td>
+            <td>
+                  <code>0.2</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
-
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td>
-                <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>A GeoDataFrame containing masked points.</p>
-            </div>
-          </td>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A GeoDataFrame containing masked points.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-          <details class="quote">
-            <summary>Source code in <code>maskmypy/masks/street.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-16">16</a></span>
+            <details class="quote">
+              <summary>Source code in <code>maskmypy/masks/street.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-16">16</a></span>
 <span class="normal"><a href="#__codelineno-0-17">17</a></span>
 <span class="normal"><a href="#__codelineno-0-18">18</a></span>
 <span class="normal"><a href="#__codelineno-0-19">19</a></span>
@@ -1243,8 +1237,8 @@ A value of <code>0.2</code> would add 20% of the x and y extent to <em>each side
 <a id="__codelineno-0-77" name="__codelineno-0-77"></a>
 <a id="__codelineno-0-78" name="__codelineno-0-78"></a>    <span class="k">return</span> <span class="n">masked_gdf</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
 
@@ -1252,7 +1246,7 @@ A value of <code>0.2</code> would add 20% of the x and y extent to <em>each side
 
   </div>
 
-  </div>
+    </div>
 
 </div><hr />
 <h2 id="location-swapping">Location Swapping<a class="headerlink" href="#location-swapping" title="Permanent link">&para;</a></h2>
@@ -1263,12 +1257,11 @@ A value of <code>0.2</code> would add 20% of the x and y extent to <em>each side
 
 
 
-  <div class="doc doc-contents first">
+    <div class="doc doc-contents first">
 
-  
+
 
   <div class="doc doc-children">
-
 
 
 
@@ -1281,20 +1274,20 @@ A value of <code>0.2</code> would add 20% of the x and y extent to <em>each side
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="maskmypy.locationswap.locationswap" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>          <code class="highlight language-python"><span class="n">locationswap</span><span class="p">(</span><span class="n">gdf</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">snap_to_streets</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">locationswap</span><span class="p">(</span><span class="n">gdf</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">snap_to_streets</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
 
 <a href="#maskmypy.locationswap.locationswap" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>Applies location swapping to a GeoDataFrame, displacing points to a randomly selected address
 that is between a minimum and maximum distance away from the original point. While address
 data is the most common data type used to provide eligible swap locations, other point-based
 datasets may be used.</p>
 <p>Note: If a sensitive point has no address points within range, the point is displaced to (0,0).</p>
+
 
 <details class="example" open>
   <summary>Example</summary>
@@ -1309,111 +1302,110 @@ datasets may be used.</p>
 </code></pre></div>
 </details>
 
-
-  <p><strong>Parameters:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td><code>gdf</code></td>
-          <td>
-                <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>GeoDataFrame containing sensitive points.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
         </tr>
-        <tr>
-          <td><code>low</code></td>
-          <td>
-                <code>float</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Minimum distance to displace points. Unit must match that of the <code>gdf</code> CRS.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-        <tr>
-          <td><code>high</code></td>
-          <td>
-                <code>float</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Maximum displacement to displace points. Unit must match that of the <code>gdf</code> CRS.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-        <tr>
-          <td><code>address</code></td>
-          <td>
-                <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>GeoDataFrame containing points that sensitive locations may be swapped to.
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code>gdf</code></td>
+            <td>
+                  <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>GeoDataFrame containing sensitive points.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>low</code></td>
+            <td>
+                  <code>float</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Minimum distance to displace points. Unit must match that of the <code>gdf</code> CRS.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>high</code></td>
+            <td>
+                  <code>float</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Maximum displacement to displace points. Unit must match that of the <code>gdf</code> CRS.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>address</code></td>
+            <td>
+                  <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>GeoDataFrame containing points that sensitive locations may be swapped to.
 While addresses are most common, other point-based data may be used as well.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-        <tr>
-          <td><code>seed</code></td>
-          <td>
-                <code>int</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Used to seed the random number generator so that masked datasets are reproducible.
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>seed</code></td>
+            <td>
+                  <code>int</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Used to seed the random number generator so that masked datasets are reproducible.
 Randomly generated if left undefined.</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr>
-          <td><code>snap_to_streets</code></td>
-          <td>
-                <code>bool</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>If True, points are snapped to the nearest node on the OSM street network after masking.
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>snap_to_streets</code></td>
+            <td>
+                  <code>bool</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If True, points are snapped to the nearest node on the OSM street network after masking.
 This can reduce the chance of false-attribution.</p>
-            </div>
-          </td>
-          <td>
-                <code>False</code>
-          </td>
-        </tr>
-    </tbody>
-  </table>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-          <details class="quote">
-            <summary>Source code in <code>maskmypy/masks/locationswap.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-10">10</a></span>
+            <details class="quote">
+              <summary>Source code in <code>maskmypy/masks/locationswap.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-10">10</a></span>
 <span class="normal"><a href="#__codelineno-0-11">11</a></span>
 <span class="normal"><a href="#__codelineno-0-12">12</a></span>
 <span class="normal"><a href="#__codelineno-0-13">13</a></span>
@@ -1547,8 +1539,8 @@ This can reduce the chance of false-attribution.</p>
 <a id="__codelineno-0-75" name="__codelineno-0-75"></a>
 <a id="__codelineno-0-76" name="__codelineno-0-76"></a>    <span class="k">return</span> <span class="n">masked_gdf</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
 
@@ -1556,7 +1548,7 @@ This can reduce the chance of false-attribution.</p>
 
   </div>
 
-  </div>
+    </div>
 
 </div><hr />
 <h2 id="voronoi-masking">Voronoi Masking<a class="headerlink" href="#voronoi-masking" title="Permanent link">&para;</a></h2>
@@ -1567,12 +1559,11 @@ This can reduce the chance of false-attribution.</p>
 
 
 
-  <div class="doc doc-contents first">
+    <div class="doc doc-contents first">
 
-  
+
 
   <div class="doc doc-children">
-
 
 
 
@@ -1585,18 +1576,18 @@ This can reduce the chance of false-attribution.</p>
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="maskmypy.voronoi.voronoi" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>          <code class="highlight language-python"><span class="n">voronoi</span><span class="p">(</span><span class="n">gdf</span><span class="p">,</span> <span class="n">snap_to_streets</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">voronoi</span><span class="p">(</span><span class="n">gdf</span><span class="p">,</span> <span class="n">snap_to_streets</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
 
 <a href="#maskmypy.voronoi.voronoi" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>Apply voronoi masking to a GeoDataFrame, displacing points to the nearest edges of a vornoi
 diagram. Note: because voronoi masking lacks any level of randomization, snapping to streets
 is recommended for this mask to provide another level of obfuscation.</p>
+
 
 <details class="example" open>
   <summary>Example</summary>
@@ -1609,77 +1600,75 @@ is recommended for this mask to provide another level of obfuscation.</p>
 </code></pre></div>
 </details>
 
-
-  <p><strong>Parameters:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td><code>gdf</code></td>
-          <td>
-                <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>GeoDataFrame containing sensitive points.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
         </tr>
-        <tr>
-          <td><code>snap_to_streets</code></td>
-          <td>
-                <code>bool</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>If True, points are snapped to the nearest node on the OSM street network after masking.
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code>gdf</code></td>
+            <td>
+                  <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>GeoDataFrame containing sensitive points.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>snap_to_streets</code></td>
+            <td>
+                  <code>bool</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If True, points are snapped to the nearest node on the OSM street network after masking.
 This can reduce the chance of false-attribution.</p>
-            </div>
-          </td>
-          <td>
-                <code>False</code>
-          </td>
-        </tr>
-    </tbody>
-  </table>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
-
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td>
-                <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>A GeoDataFrame containing masked points.</p>
-            </div>
-          </td>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A GeoDataFrame containing masked points.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-          <details class="quote">
-            <summary>Source code in <code>maskmypy/masks/voronoi.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-10">10</a></span>
+            <details class="quote">
+              <summary>Source code in <code>maskmypy/masks/voronoi.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-10">10</a></span>
 <span class="normal"><a href="#__codelineno-0-11">11</a></span>
 <span class="normal"><a href="#__codelineno-0-12">12</a></span>
 <span class="normal"><a href="#__codelineno-0-13">13</a></span>
@@ -1765,8 +1754,8 @@ This can reduce the chance of false-attribution.</p>
 <a id="__codelineno-0-51" name="__codelineno-0-51"></a>
 <a id="__codelineno-0-52" name="__codelineno-0-52"></a>    <span class="k">return</span> <span class="n">masked_gdf</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
 
@@ -1774,7 +1763,7 @@ This can reduce the chance of false-attribution.</p>
 
   </div>
 
-  </div>
+    </div>
 
 </div>
 
@@ -1797,7 +1786,7 @@ This can reduce the chance of false-attribution.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 28, 2024</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 6, 2024</span>
   </span>
 
     
@@ -1847,7 +1836,7 @@ This can reduce the chance of false-attribution.</p>
     <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.1e8ae164.min.js"></script>
+      <script src="../assets/javascripts/bundle.fe8b6f2b.min.js"></script>
       
     
   </body>

@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.17">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.28">
     
     
       
@@ -28,7 +28,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.bcfcd587.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.6543a935.min.css">
       
       
 
@@ -142,7 +142,7 @@
       
     </form>
     <div class="md-search__output">
-      <div class="md-search__scrollwrap" data-md-scrollfix>
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
         <div class="md-search-result" data-md-component="search-result">
           <div class="md-search-result__meta">
             Initializing search
@@ -654,17 +654,16 @@
 
 
 <h3 id="maskmypy.analysis" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-module"></code>          <code>maskmypy.analysis</code>
+<code class="doc-symbol doc-symbol-heading doc-symbol-module"></code>            <code>maskmypy.analysis</code>
 
 
 <a href="#maskmypy.analysis" class="headerlink" title="Permanent link">&para;</a></h3>
 
-  <div class="doc doc-contents first">
+    <div class="doc doc-contents first">
 
-  
+
 
   <div class="doc doc-children">
-
 
 
 
@@ -677,89 +676,86 @@
 <div class="doc doc-object doc-function">
 
 
-
 <h4 id="maskmypy.analysis.central_drift" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>          <code class="highlight language-python"><span class="n">central_drift</span><span class="p">(</span><span class="n">sensitive_gdf</span><span class="p">,</span> <span class="n">candidate_gdf</span><span class="p">)</span></code>
+<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">central_drift</span><span class="p">(</span><span class="n">sensitive_gdf</span><span class="p">,</span> <span class="n">candidate_gdf</span><span class="p">)</span></code>
 
 <a href="#maskmypy.analysis.central_drift" class="headerlink" title="Permanent link">&para;</a></h4>
 
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>Calculates how far the centroid of the point pattern has been displaced due to masking.
 Higher central drift indicates more information loss.</p>
 
 
-
-  <p><strong>Parameters:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td><code>sensitive_gdf</code></td>
-          <td>
-                <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>A GeoDataFrame containing sensitive points prior to masking.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
         </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code>sensitive_gdf</code></td>
+            <td>
+                  <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A GeoDataFrame containing sensitive points prior to masking.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>candidate_gdf</code></td>
+            <td>
+                  <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A GeoDataFrame containing masked points.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td><code>candidate_gdf</code></td>
-          <td>
-                <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>A GeoDataFrame containing masked points.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>float</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The central drift, with units equal to the CRS of the <code>sensitive_gdf</code>.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-
-
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td>
-                <code>float</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The central drift, with units equal to the CRS of the <code>sensitive_gdf</code>.</p>
-            </div>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
-          <details class="quote">
-            <summary>Source code in <code>maskmypy/analysis.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-266">266</a></span>
+            <details class="quote">
+              <summary>Source code in <code>maskmypy/analysis.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-266">266</a></span>
 <span class="normal"><a href="#__codelineno-0-267">267</a></span>
 <span class="normal"><a href="#__codelineno-0-268">268</a></span>
 <span class="normal"><a href="#__codelineno-0-269">269</a></span>
@@ -799,112 +795,108 @@ Higher central drift indicates more information loss.</p>
 <a id="__codelineno-0-284" name="__codelineno-0-284"></a>    <span class="n">centroid_b</span> <span class="o">=</span> <span class="n">candidate_gdf</span><span class="o">.</span><span class="n">dissolve</span><span class="p">()</span><span class="o">.</span><span class="n">centroid</span>
 <a id="__codelineno-0-285" name="__codelineno-0-285"></a>    <span class="k">return</span> <span class="nb">round</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">centroid_a</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">centroid_b</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="mi">6</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h4 id="maskmypy.analysis.displacement" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>          <code class="highlight language-python"><span class="n">displacement</span><span class="p">(</span><span class="n">sensitive_gdf</span><span class="p">,</span> <span class="n">candidate_gdf</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="s1">&#39;_distance&#39;</span><span class="p">)</span></code>
+<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">displacement</span><span class="p">(</span><span class="n">sensitive_gdf</span><span class="p">,</span> <span class="n">candidate_gdf</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="s1">&#39;_distance&#39;</span><span class="p">)</span></code>
 
 <a href="#maskmypy.analysis.displacement" class="headerlink" title="Permanent link">&para;</a></h4>
 
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>Adds a column to the <code>candidate_gdf</code> containing the distance between each masked point
 and its original, unmasked location (<code>sensitive_gdf</code>).</p>
 
 
-
-  <p><strong>Parameters:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td><code>sensitive_gdf</code></td>
-          <td>
-                <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>A GeoDataFrame containing sensitive points prior to masking.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
         </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code>sensitive_gdf</code></td>
+            <td>
+                  <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A GeoDataFrame containing sensitive points prior to masking.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>candidate_gdf</code></td>
+            <td>
+                  <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A GeoDataFrame containing masked points.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>col</code></td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Name of the displacement distance column to add to <code>candidate_gdf</code>.</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;_distance&#39;</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td><code>candidate_gdf</code></td>
-          <td>
-                <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>A GeoDataFrame containing masked points.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-        <tr>
-          <td><code>col</code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Name of the displacement distance column to add to <code>candidate_gdf</code>.</p>
-            </div>
-          </td>
-          <td>
-                <code>&#39;_distance&#39;</code>
-          </td>
-        </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The <code>candidate_gdf</code> with an additional column describing displacement distance.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-
-
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td>
-                <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The <code>candidate_gdf</code> with an additional column describing displacement distance.</p>
-            </div>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
-          <details class="quote">
-            <summary>Source code in <code>maskmypy/analysis.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-82"> 82</a></span>
+            <details class="quote">
+              <summary>Source code in <code>maskmypy/analysis.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-82"> 82</a></span>
 <span class="normal"><a href="#__codelineno-0-83"> 83</a></span>
 <span class="normal"><a href="#__codelineno-0-84"> 84</a></span>
 <span class="normal"><a href="#__codelineno-0-85"> 85</a></span>
@@ -952,145 +944,141 @@ and its original, unmasked location (<code>sensitive_gdf</code>).</p>
 <a id="__codelineno-0-104" name="__codelineno-0-104"></a>    <span class="n">candidate_gdf</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">candidate_gdf</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">sensitive_gdf</span><span class="o">.</span><span class="n">geometry</span><span class="p">)</span>
 <a id="__codelineno-0-105" name="__codelineno-0-105"></a>    <span class="k">return</span> <span class="n">candidate_gdf</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h4 id="maskmypy.analysis.evaluate" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>          <code class="highlight language-python"><span class="n">evaluate</span><span class="p">(</span><span class="n">sensitive_gdf</span><span class="p">,</span> <span class="n">candidate_gdf</span><span class="p">,</span> <span class="n">population_gdf</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">population_column</span><span class="o">=</span><span class="s1">&#39;pop&#39;</span><span class="p">,</span> <span class="n">skip_slow</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
+<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">evaluate</span><span class="p">(</span><span class="n">sensitive_gdf</span><span class="p">,</span> <span class="n">candidate_gdf</span><span class="p">,</span> <span class="n">population_gdf</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">population_column</span><span class="o">=</span><span class="s1">&#39;pop&#39;</span><span class="p">,</span> <span class="n">skip_slow</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
 
 <a href="#maskmypy.analysis.evaluate" class="headerlink" title="Permanent link">&para;</a></h4>
 
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>Evaluate the privacy protection and information loss of a masked dataset (<code>candidate_gdf</code>)
 compared to the unmasked sensitive dataset (<code>sensitive_gdf</code>). This is a convenience function
 that automatically runs many of the analysis tools that MaskMyPy offers, returning a simple
 dictionary of results. Note that privacy metrics require a <code>population_gdf</code> to be provided.</p>
 
 
-
-  <p><strong>Parameters:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td><code>sensitive_gdf</code></td>
-          <td>
-                <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>A GeoDataFrame containing sensitive points prior to masking.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
         </tr>
-        <tr>
-          <td><code>candidate_gdf</code></td>
-          <td>
-                <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>A GeoDataFrame containing masked points to be evaluated.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-        <tr>
-          <td><code>population_gdf</code></td>
-          <td>
-                <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>A GeoDataFrame containing either address points or polygons with a population column
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code>sensitive_gdf</code></td>
+            <td>
+                  <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A GeoDataFrame containing sensitive points prior to masking.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>candidate_gdf</code></td>
+            <td>
+                  <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A GeoDataFrame containing masked points to be evaluated.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>population_gdf</code></td>
+            <td>
+                  <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A GeoDataFrame containing either address points or polygons with a population column
 (see <code>population_column</code>). Used to calculate k-anonymity metrics.</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr>
-          <td><code>population_column</code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>If a polygon-based <code>population_gdf</code> is provided, the name of the column containing
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>population_column</code></td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If a polygon-based <code>population_gdf</code> is provided, the name of the column containing
 population counts.</p>
-            </div>
-          </td>
-          <td>
-                <code>&#39;pop&#39;</code>
-          </td>
-        </tr>
-        <tr>
-          <td><code>skip_slow</code></td>
-          <td>
-                <code>bool</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>If True, skips analyses that are known to be slow. Currently, this only includes the
+              </div>
+            </td>
+            <td>
+                  <code>&#39;pop&#39;</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>skip_slow</code></td>
+            <td>
+                  <code>bool</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If True, skips analyses that are known to be slow. Currently, this only includes the
 root-mean-square error of Ripley's K results between the masked and unmasked data.</p>
-            </div>
-          </td>
-          <td>
-                <code>True</code>
-          </td>
-        </tr>
-    </tbody>
-  </table>
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
-
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td>
-                <code>dict</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>A dictionary containing evaluation results.</p>
-            </div>
-          </td>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>dict</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A dictionary containing evaluation results.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-          <details class="quote">
-            <summary>Source code in <code>maskmypy/analysis.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-15">15</a></span>
+            <details class="quote">
+              <summary>Source code in <code>maskmypy/analysis.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-15">15</a></span>
 <span class="normal"><a href="#__codelineno-0-16">16</a></span>
 <span class="normal"><a href="#__codelineno-0-17">17</a></span>
 <span class="normal"><a href="#__codelineno-0-18">18</a></span>
@@ -1220,98 +1208,94 @@ root-mean-square error of Ripley's K results between the masked and unmasked dat
 <a id="__codelineno-0-78" name="__codelineno-0-78"></a>        <span class="n">stats</span><span class="p">[</span><span class="s2">&quot;k_satisfaction_50&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">k_satisfaction</span><span class="p">(</span><span class="n">k_gdf</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
 <a id="__codelineno-0-79" name="__codelineno-0-79"></a>    <span class="k">return</span> <span class="n">stats</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h4 id="maskmypy.analysis.graph_ripleyresult" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>          <code class="highlight language-python"><span class="n">graph_ripleyresult</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">subtitle</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">graph_ripleyresult</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">subtitle</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 <a href="#maskmypy.analysis.graph_ripleyresult" class="headerlink" title="Permanent link">&para;</a></h4>
 
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>Generate a graph depicting a given KtestResult, such as would be generated from using
 <code>maskmypy.analysis.ripleys_k()</code>.</p>
 
 
-
-  <p><strong>Parameters:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td><code>result</code></td>
-          <td>
-                <code><span title="pointpats.distance_statistics.KtestResult">KtestResult</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The KtestResult tuple from applying <code>maskmypy.analysis.ripleys_k()</code> on a given layer.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
         </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code>result</code></td>
+            <td>
+                  <code><span title="pointpats.distance_statistics.KtestResult">KtestResult</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The KtestResult tuple from applying <code>maskmypy.analysis.ripleys_k()</code> on a given layer.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>subtitle</code></td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A subtitle to add to the graph.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td><code>subtitle</code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>A subtitle to add to the graph.</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="matplotlib.figure.Figure">Figure</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A matplotlib.figure.Figure object.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-
-
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td>
-                <code><span title="matplotlib.figure.Figure">Figure</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>A matplotlib.figure.Figure object.</p>
-            </div>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
-          <details class="quote">
-            <summary>Source code in <code>maskmypy/analysis.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-371">371</a></span>
+            <details class="quote">
+              <summary>Source code in <code>maskmypy/analysis.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-371">371</a></span>
 <span class="normal"><a href="#__codelineno-0-372">372</a></span>
 <span class="normal"><a href="#__codelineno-0-373">373</a></span>
 <span class="normal"><a href="#__codelineno-0-374">374</a></span>
@@ -1369,24 +1353,22 @@ root-mean-square error of Ripley's K results between the masked and unmasked dat
 <a id="__codelineno-0-398" name="__codelineno-0-398"></a>    <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">&quot;K Function Plot&quot;</span><span class="p">)</span>
 <a id="__codelineno-0-399" name="__codelineno-0-399"></a>    <span class="k">return</span> <span class="n">fig</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h4 id="maskmypy.analysis.graph_ripleyresults" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>          <code class="highlight language-python"><span class="n">graph_ripleyresults</span><span class="p">(</span><span class="n">sensitive_result</span><span class="p">,</span> <span class="n">candidate_result</span><span class="p">,</span> <span class="n">subtitle</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">graph_ripleyresults</span><span class="p">(</span><span class="n">sensitive_result</span><span class="p">,</span> <span class="n">candidate_result</span><span class="p">,</span> <span class="n">subtitle</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 <a href="#maskmypy.analysis.graph_ripleyresults" class="headerlink" title="Permanent link">&para;</a></h4>
 
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>Generate a graph depicting two KtestResults, such as would be generated from using
 <code>maskmypy.analysis.ripleys_k()</code>.</p>
 <p>Similar to <code>maskmypy.analysis.graph_ripleyresult()</code> except this function graphs both
@@ -1394,90 +1376,88 @@ the sensitive and candidate results, allowing for visual comparison of clusterin
 between the two.</p>
 
 
-
-  <p><strong>Parameters:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td><code>sensitive_result</code></td>
-          <td>
-                <code><span title="pointpats.distance_statistics.KtestResult">KtestResult</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The KtestResult tuple from applying <code>maskmypy.analysis.ripleys_k()</code> on the sensitive layer.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
         </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code>sensitive_result</code></td>
+            <td>
+                  <code><span title="pointpats.distance_statistics.KtestResult">KtestResult</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The KtestResult tuple from applying <code>maskmypy.analysis.ripleys_k()</code> on the sensitive layer.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>candidate_result</code></td>
+            <td>
+                  <code><span title="pointpats.distance_statistics.KtestResult">KtestResult</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The KtestResult tuple from applying <code>maskmypy.analysis.ripleys_k()</code> on a masked layer.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>subtitle</code></td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A subtitle to add to the graph.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td><code>candidate_result</code></td>
-          <td>
-                <code><span title="pointpats.distance_statistics.KtestResult">KtestResult</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The KtestResult tuple from applying <code>maskmypy.analysis.ripleys_k()</code> on a masked layer.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-        <tr>
-          <td><code>subtitle</code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>A subtitle to add to the graph.</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="matplotlib.figure.Figure">Figure</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A matplotlib.figure.Figure object.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-
-
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td>
-                <code><span title="matplotlib.figure.Figure">Figure</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>A matplotlib.figure.Figure object.</p>
-            </div>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
-          <details class="quote">
-            <summary>Source code in <code>maskmypy/analysis.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-402">402</a></span>
+            <details class="quote">
+              <summary>Source code in <code>maskmypy/analysis.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-402">402</a></span>
 <span class="normal"><a href="#__codelineno-0-403">403</a></span>
 <span class="normal"><a href="#__codelineno-0-404">404</a></span>
 <span class="normal"><a href="#__codelineno-0-405">405</a></span>
@@ -1605,129 +1585,125 @@ between the two.</p>
 <a id="__codelineno-0-464" name="__codelineno-0-464"></a>    <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">&quot;K Function Result Comparison&quot;</span><span class="p">)</span>
 <a id="__codelineno-0-465" name="__codelineno-0-465"></a>    <span class="k">return</span> <span class="n">fig</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h4 id="maskmypy.analysis.k_anonymity" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>          <code class="highlight language-python"><span class="n">k_anonymity</span><span class="p">(</span><span class="n">sensitive_gdf</span><span class="p">,</span> <span class="n">candidate_gdf</span><span class="p">,</span> <span class="n">population_gdf</span><span class="p">,</span> <span class="n">population_column</span><span class="o">=</span><span class="s1">&#39;pop&#39;</span><span class="p">)</span></code>
+<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">k_anonymity</span><span class="p">(</span><span class="n">sensitive_gdf</span><span class="p">,</span> <span class="n">candidate_gdf</span><span class="p">,</span> <span class="n">population_gdf</span><span class="p">,</span> <span class="n">population_column</span><span class="o">=</span><span class="s1">&#39;pop&#39;</span><span class="p">)</span></code>
 
 <a href="#maskmypy.analysis.k_anonymity" class="headerlink" title="Permanent link">&para;</a></h4>
 
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>Adds a column to the <code>candidate_gdf</code> containing the spatial k-anonymity value of each
 masked point.</p>
 
 
-
-  <p><strong>Parameters:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td><code>sensitive_gdf</code></td>
-          <td>
-                <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>A GeoDataFrame containing sensitive points prior to masking.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
         </tr>
-        <tr>
-          <td><code>candidate_gdf</code></td>
-          <td>
-                <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>A GeoDataFrame containing masked points.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-        <tr>
-          <td><code>population_gdf</code></td>
-          <td>
-                <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>A GeoDataFrame containing either address points or polygons with a population column
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code>sensitive_gdf</code></td>
+            <td>
+                  <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A GeoDataFrame containing sensitive points prior to masking.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>candidate_gdf</code></td>
+            <td>
+                  <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A GeoDataFrame containing masked points.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>population_gdf</code></td>
+            <td>
+                  <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A GeoDataFrame containing either address points or polygons with a population column
 (see <code>population_column</code>). Used to calculate k-anonymity metrics. Note that
 address points tend to provide more accurate results.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-        <tr>
-          <td><code>population_column</code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>If a polygon-based <code>population_gdf</code> is provided, the name of the column containing
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>population_column</code></td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If a polygon-based <code>population_gdf</code> is provided, the name of the column containing
 population counts.</p>
-            </div>
-          </td>
-          <td>
-                <code>&#39;pop&#39;</code>
-          </td>
-        </tr>
-    </tbody>
-  </table>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;pop&#39;</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
-
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td>
-                <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The <code>candidate_gdf</code> with an additional column describing k-anonymity.</p>
-            </div>
-          </td>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The <code>candidate_gdf</code> with an additional column describing k-anonymity.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-          <details class="quote">
-            <summary>Source code in <code>maskmypy/analysis.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-108">108</a></span>
+            <details class="quote">
+              <summary>Source code in <code>maskmypy/analysis.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-108">108</a></span>
 <span class="normal"><a href="#__codelineno-0-109">109</a></span>
 <span class="normal"><a href="#__codelineno-0-110">110</a></span>
 <span class="normal"><a href="#__codelineno-0-111">111</a></span>
@@ -1807,112 +1783,108 @@ population counts.</p>
 <a id="__codelineno-0-146" name="__codelineno-0-146"></a>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;population_gdf must include either Points or Polygons/MultiPolygons.&quot;</span><span class="p">)</span>
 <a id="__codelineno-0-147" name="__codelineno-0-147"></a>    <span class="k">return</span> <span class="n">k_gdf</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h4 id="maskmypy.analysis.k_satisfaction" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>          <code class="highlight language-python"><span class="n">k_satisfaction</span><span class="p">(</span><span class="n">gdf</span><span class="p">,</span> <span class="n">min_k</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="s1">&#39;k_anonymity&#39;</span><span class="p">)</span></code>
+<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">k_satisfaction</span><span class="p">(</span><span class="n">gdf</span><span class="p">,</span> <span class="n">min_k</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="s1">&#39;k_anonymity&#39;</span><span class="p">)</span></code>
 
 <a href="#maskmypy.analysis.k_satisfaction" class="headerlink" title="Permanent link">&para;</a></h4>
 
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>For a masked GeoDataFrame containing k-anonymity values, calculate the percentage of
 points that are equal to or greater than (i.e. satisfy) a given k-anonymity threshold (<code>min_k</code>).</p>
 
 
-
-  <p><strong>Parameters:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td><code>gdf</code></td>
-          <td>
-                <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>A GeoDataFrame containing k-anonymity values.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
         </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code>gdf</code></td>
+            <td>
+                  <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A GeoDataFrame containing k-anonymity values.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>min_k</code></td>
+            <td>
+                  <code>int</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The minimum k-anonymity that must be satisfied.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>col</code></td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Name of the column containing k-anonymity values.</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;k_anonymity&#39;</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td><code>min_k</code></td>
-          <td>
-                <code>int</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The minimum k-anonymity that must be satisfied.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-        <tr>
-          <td><code>col</code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Name of the column containing k-anonymity values.</p>
-            </div>
-          </td>
-          <td>
-                <code>&#39;k_anonymity&#39;</code>
-          </td>
-        </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>float</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A percentage of points in the GeoDataFrame that satisfy <code>min_k</code>.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-
-
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td>
-                <code>float</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>A percentage of points in the GeoDataFrame that satisfy <code>min_k</code>.</p>
-            </div>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
-          <details class="quote">
-            <summary>Source code in <code>maskmypy/analysis.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-150">150</a></span>
+            <details class="quote">
+              <summary>Source code in <code>maskmypy/analysis.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-150">150</a></span>
 <span class="normal"><a href="#__codelineno-0-151">151</a></span>
 <span class="normal"><a href="#__codelineno-0-152">152</a></span>
 <span class="normal"><a href="#__codelineno-0-153">153</a></span>
@@ -1952,127 +1924,123 @@ points that are equal to or greater than (i.e. satisfy) a given k-anonymity thre
 <a id="__codelineno-0-168" name="__codelineno-0-168"></a><span class="sd">    &quot;&quot;&quot;</span>
 <a id="__codelineno-0-169" name="__codelineno-0-169"></a>    <span class="k">return</span> <span class="nb">round</span><span class="p">(</span><span class="n">gdf</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">gdf</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">min_k</span><span class="p">,</span> <span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">count</span><span class="p">()</span> <span class="o">/</span> <span class="n">gdf</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">count</span><span class="p">(),</span> <span class="mi">3</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h4 id="maskmypy.analysis.map_displacement" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>          <code class="highlight language-python"><span class="n">map_displacement</span><span class="p">(</span><span class="n">sensitive_gdf</span><span class="p">,</span> <span class="n">candidate_gdf</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">context_gdf</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">map_displacement</span><span class="p">(</span><span class="n">sensitive_gdf</span><span class="p">,</span> <span class="n">candidate_gdf</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">context_gdf</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 <a href="#maskmypy.analysis.map_displacement" class="headerlink" title="Permanent link">&para;</a></h4>
 
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>Generate a map showing the displacement of each masked point from its original location.
 Requires the <code>contextily</code> package.</p>
 
 
-
-  <p><strong>Parameters:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td><code>sensitive_gdf</code></td>
-          <td>
-                <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>A GeoDataFrame containing sensitive points prior to masking.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
         </tr>
-        <tr>
-          <td><code>candidate_gdf</code></td>
-          <td>
-                <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>A GeoDataFrame containing masked points.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-        <tr>
-          <td><code>filename</code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>If specified, saves the map to the filesystem.</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr>
-          <td><code>context_gdf</code></td>
-          <td>
-                <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>A GeoDataFrame containing contextual data to be added to the map, such as address points,
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code>sensitive_gdf</code></td>
+            <td>
+                  <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A GeoDataFrame containing sensitive points prior to masking.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>candidate_gdf</code></td>
+            <td>
+                  <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A GeoDataFrame containing masked points.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>filename</code></td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If specified, saves the map to the filesystem.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>context_gdf</code></td>
+            <td>
+                  <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A GeoDataFrame containing contextual data to be added to the map, such as address points,
 administrative boundaries, etc.</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-    </tbody>
-  </table>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
-
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td>
-                <code><span title="matplotlib.pyplot">pyplot</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>A pyplot object containing the mapped data.</p>
-            </div>
-          </td>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="matplotlib.pyplot">pyplot</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A pyplot object containing the mapped data.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-          <details class="quote">
-            <summary>Source code in <code>maskmypy/analysis.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-468">468</a></span>
+            <details class="quote">
+              <summary>Source code in <code>maskmypy/analysis.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-468">468</a></span>
 <span class="normal"><a href="#__codelineno-0-469">469</a></span>
 <span class="normal"><a href="#__codelineno-0-470">470</a></span>
 <span class="normal"><a href="#__codelineno-0-471">471</a></span>
@@ -2180,83 +2148,79 @@ administrative boundaries, etc.</p>
 <a id="__codelineno-0-520" name="__codelineno-0-520"></a>
 <a id="__codelineno-0-521" name="__codelineno-0-521"></a>    <span class="k">return</span> <span class="n">plt</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h4 id="maskmypy.analysis.nnd" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>          <code class="highlight language-python"><span class="n">nnd</span><span class="p">(</span><span class="n">gdf</span><span class="p">)</span></code>
+<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">nnd</span><span class="p">(</span><span class="n">gdf</span><span class="p">)</span></code>
 
 <a href="#maskmypy.analysis.nnd" class="headerlink" title="Permanent link">&para;</a></h4>
 
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>Calculate the minimum, maximum, and mean nearest neighbor distance for a given GeoDataFrame.</p>
 
 
-
-  <p><strong>Parameters:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td><code>gdf</code></td>
-          <td>
-                <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>A GeoDataFrame containing points.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code>gdf</code></td>
+            <td>
+                  <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A GeoDataFrame containing points.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
-
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td>
-                <code>dict</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>A dictionary containing the minimum, maximum, and mean nearest neighbor distance.</p>
-            </div>
-          </td>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>dict</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A dictionary containing the minimum, maximum, and mean nearest neighbor distance.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-          <details class="quote">
-            <summary>Source code in <code>maskmypy/analysis.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-222">222</a></span>
+            <details class="quote">
+              <summary>Source code in <code>maskmypy/analysis.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-222">222</a></span>
 <span class="normal"><a href="#__codelineno-0-223">223</a></span>
 <span class="normal"><a href="#__codelineno-0-224">224</a></span>
 <span class="normal"><a href="#__codelineno-0-225">225</a></span>
@@ -2288,99 +2252,95 @@ administrative boundaries, etc.</p>
 <a id="__codelineno-0-236" name="__codelineno-0-236"></a>    <span class="n">pp</span> <span class="o">=</span> <span class="n">_gdf_to_pointpattern</span><span class="p">(</span><span class="n">gdf</span><span class="p">)</span>
 <a id="__codelineno-0-237" name="__codelineno-0-237"></a>    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;nnd_min&quot;</span><span class="p">:</span> <span class="n">pp</span><span class="o">.</span><span class="n">min_nnd</span><span class="p">,</span> <span class="s2">&quot;nnd_max&quot;</span><span class="p">:</span> <span class="n">pp</span><span class="o">.</span><span class="n">max_nnd</span><span class="p">,</span> <span class="s2">&quot;nnd_mean&quot;</span><span class="p">:</span> <span class="n">pp</span><span class="o">.</span><span class="n">mean_nnd</span><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h4 id="maskmypy.analysis.nnd_delta" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>          <code class="highlight language-python"><span class="n">nnd_delta</span><span class="p">(</span><span class="n">sensitive_gdf</span><span class="p">,</span> <span class="n">candidate_gdf</span><span class="p">)</span></code>
+<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">nnd_delta</span><span class="p">(</span><span class="n">sensitive_gdf</span><span class="p">,</span> <span class="n">candidate_gdf</span><span class="p">)</span></code>
 
 <a href="#maskmypy.analysis.nnd_delta" class="headerlink" title="Permanent link">&para;</a></h4>
 
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>Calculate the <em>difference</em> between minimum, maximum, and mean nearest neighbor distances
 before (<code>sensitive_gdf</code>) and after (<code>candidate_gdf</code>) masking. Higher values indicate
 greater information loss due to masking.</p>
 
 
-
-  <p><strong>Parameters:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td><code>sensitive_gdf</code></td>
-          <td>
-                <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>A GeoDataFrame containing sensitive points prior to masking.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
         </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code>sensitive_gdf</code></td>
+            <td>
+                  <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A GeoDataFrame containing sensitive points prior to masking.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>candidate_gdf</code></td>
+            <td>
+                  <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A GeoDataFrame containing masked points.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td><code>candidate_gdf</code></td>
-          <td>
-                <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>A GeoDataFrame containing masked points.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>dict</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A dictionary describing deltas in nearest neighbor distance before and after masking.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-
-
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td>
-                <code>dict</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>A dictionary describing deltas in nearest neighbor distance before and after masking.</p>
-            </div>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
-          <details class="quote">
-            <summary>Source code in <code>maskmypy/analysis.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-240">240</a></span>
+            <details class="quote">
+              <summary>Source code in <code>maskmypy/analysis.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-240">240</a></span>
 <span class="normal"><a href="#__codelineno-0-241">241</a></span>
 <span class="normal"><a href="#__codelineno-0-242">242</a></span>
 <span class="normal"><a href="#__codelineno-0-243">243</a></span>
@@ -2428,24 +2388,22 @@ greater information loss due to masking.</p>
 <a id="__codelineno-0-262" name="__codelineno-0-262"></a>        <span class="n">delta</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_delta&quot;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">after</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">-</span> <span class="n">before</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="mi">6</span><span class="p">)})</span>
 <a id="__codelineno-0-263" name="__codelineno-0-263"></a>    <span class="k">return</span> <span class="n">delta</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h4 id="maskmypy.analysis.ripley_rmse" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>          <code class="highlight language-python"><span class="n">ripley_rmse</span><span class="p">(</span><span class="n">sensitive_result</span><span class="p">,</span> <span class="n">candidate_result</span><span class="p">)</span></code>
+<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">ripley_rmse</span><span class="p">(</span><span class="n">sensitive_result</span><span class="p">,</span> <span class="n">candidate_result</span><span class="p">)</span></code>
 
 <a href="#maskmypy.analysis.ripley_rmse" class="headerlink" title="Permanent link">&para;</a></h4>
 
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>Calculates the root-mean-square error between the Ripley's K-test results of unmasked and
 masked data. As the goal of geographic masking is to reduce information loss, the actual
 amount of clustering in masked data is unimportant; what matters is that the clustering
@@ -2456,76 +2414,74 @@ for quickly comparing how multiple masks perform.</p>
 indicate greater information loss due to masking.</p>
 
 
-
-  <p><strong>Parameters:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td><code>sensitive_result</code></td>
-          <td>
-                <code><span title="pointpats.distance_statistics.KtestResult">KtestResult</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The KtestResult tuple from applying <code>maskmypy.analysis.ripleys_k()</code> on a sensitive layer.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
         </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code>sensitive_result</code></td>
+            <td>
+                  <code><span title="pointpats.distance_statistics.KtestResult">KtestResult</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The KtestResult tuple from applying <code>maskmypy.analysis.ripleys_k()</code> on a sensitive layer.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>candidate_result</code></td>
+            <td>
+                  <code><span title="pointpats.distance_statistics.KtestResult">KtestResult</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The KtestResult tuple from applying <code>maskmypy.analysis.ripleys_k()</code> on a masked layer.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td><code>candidate_result</code></td>
-          <td>
-                <code><span title="pointpats.distance_statistics.KtestResult">KtestResult</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The KtestResult tuple from applying <code>maskmypy.analysis.ripleys_k()</code> on a masked layer.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>float</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The root-mean-square error between the two k-test results.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-
-
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td>
-                <code>float</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The root-mean-square error between the two k-test results.</p>
-            </div>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
-          <details class="quote">
-            <summary>Source code in <code>maskmypy/analysis.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-339">339</a></span>
+            <details class="quote">
+              <summary>Source code in <code>maskmypy/analysis.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-339">339</a></span>
 <span class="normal"><a href="#__codelineno-0-340">340</a></span>
 <span class="normal"><a href="#__codelineno-0-341">341</a></span>
 <span class="normal"><a href="#__codelineno-0-342">342</a></span>
@@ -2585,24 +2541,22 @@ indicate greater information loss due to masking.</p>
 <a id="__codelineno-0-367" name="__codelineno-0-367"></a>        <span class="n">residuals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">residual</span><span class="p">)</span>
 <a id="__codelineno-0-368" name="__codelineno-0-368"></a>    <span class="k">return</span> <span class="nb">round</span><span class="p">(</span><span class="n">sqrt</span><span class="p">(</span><span class="n">square</span><span class="p">(</span><span class="n">residuals</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()),</span> <span class="mi">3</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h4 id="maskmypy.analysis.ripleys_k" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>          <code class="highlight language-python"><span class="n">ripleys_k</span><span class="p">(</span><span class="n">gdf</span><span class="p">,</span> <span class="n">max_dist</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">min_dist</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">simulations</span><span class="o">=</span><span class="mi">99</span><span class="p">)</span></code>
+<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">ripleys_k</span><span class="p">(</span><span class="n">gdf</span><span class="p">,</span> <span class="n">max_dist</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">min_dist</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">simulations</span><span class="o">=</span><span class="mi">99</span><span class="p">)</span></code>
 
 <a href="#maskmypy.analysis.ripleys_k" class="headerlink" title="Permanent link">&para;</a></h4>
 
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>Performs Ripley's K clustering analysis on a GeoDataFrame. This evaluates clustering across a
 range of spatial scales.</p>
 <p>See <code>maskmypy.analysis.ripley_rmse()</code>, <code>maskmypy.analysis.graph_ripleyresult()</code>, and
@@ -2610,121 +2564,119 @@ range of spatial scales.</p>
 of this function.</p>
 
 
-
-  <p><strong>Parameters:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td><code>gdf</code></td>
-          <td>
-                <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>GeoDataFrame to analyse.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
         </tr>
-        <tr>
-          <td><code>max_dist</code></td>
-          <td>
-                <code>float</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The largest distance band used for cluster analysis. If <code>None</code>, this defaults to one
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code>gdf</code></td>
+            <td>
+                  <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>GeoDataFrame to analyse.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>max_dist</code></td>
+            <td>
+                  <code>float</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The largest distance band used for cluster analysis. If <code>None</code>, this defaults to one
 quarter of the smallest side of the bounding box (i.e. Ripleys Rule of Thumb).</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr>
-          <td><code>min_dist</code></td>
-          <td>
-                <code>float</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The smallest distance band used for cluster analysis. If <code>None</code>, this is automatically set
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>min_dist</code></td>
+            <td>
+                  <code>float</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The smallest distance band used for cluster analysis. If <code>None</code>, this is automatically set
 to  <code>max_dist / steps</code>.</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr>
-          <td><code>steps</code></td>
-          <td>
-                <code>int</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The number of equally spaced intervals between the minimum and maximum distance bands
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>steps</code></td>
+            <td>
+                  <code>int</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The number of equally spaced intervals between the minimum and maximum distance bands
 to analyze clustering on.</p>
-            </div>
-          </td>
-          <td>
-                <code>10</code>
-          </td>
-        </tr>
+              </div>
+            </td>
+            <td>
+                  <code>10</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>simulations</code></td>
+            <td>
+                  <code>int</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The number of simulations to perform.</p>
+              </div>
+            </td>
+            <td>
+                  <code>99</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td><code>simulations</code></td>
-          <td>
-                <code>int</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The number of simulations to perform.</p>
-            </div>
-          </td>
-          <td>
-                <code>99</code>
-          </td>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="pointpats.distance_statistics.KtestResult">KtestResult</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A named tuple that contains <code>("support", "statistic", "pvalue", "simulations")</code>.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-
-
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td>
-                <code><span title="pointpats.distance_statistics.KtestResult">KtestResult</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>A named tuple that contains <code>("support", "statistic", "pvalue", "simulations")</code>.</p>
-            </div>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
-          <details class="quote">
-            <summary>Source code in <code>maskmypy/analysis.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-288">288</a></span>
+            <details class="quote">
+              <summary>Source code in <code>maskmypy/analysis.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-288">288</a></span>
 <span class="normal"><a href="#__codelineno-0-289">289</a></span>
 <span class="normal"><a href="#__codelineno-0-290">290</a></span>
 <span class="normal"><a href="#__codelineno-0-291">291</a></span>
@@ -2822,98 +2774,94 @@ to analyze clustering on.</p>
 <a id="__codelineno-0-335" name="__codelineno-0-335"></a>    <span class="p">)</span>
 <a id="__codelineno-0-336" name="__codelineno-0-336"></a>    <span class="k">return</span> <span class="n">k_results</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h4 id="maskmypy.analysis.summarize_displacement" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>          <code class="highlight language-python"><span class="n">summarize_displacement</span><span class="p">(</span><span class="n">gdf</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="s1">&#39;_distance&#39;</span><span class="p">)</span></code>
+<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">summarize_displacement</span><span class="p">(</span><span class="n">gdf</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="s1">&#39;_distance&#39;</span><span class="p">)</span></code>
 
 <a href="#maskmypy.analysis.summarize_displacement" class="headerlink" title="Permanent link">&para;</a></h4>
 
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>For a masked GeoDataFrame containing displacement distances, calculate the minimum, maximum,
 median, and mean displacement distance.</p>
 
 
-
-  <p><strong>Parameters:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td><code>gdf</code></td>
-          <td>
-                <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>A GeoDataFrame containing displacement distance values.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
         </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code>gdf</code></td>
+            <td>
+                  <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A GeoDataFrame containing displacement distance values.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>col</code></td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Name of the column containing displacement distance values.</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;_distance&#39;</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td><code>col</code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Name of the column containing displacement distance values.</p>
-            </div>
-          </td>
-          <td>
-                <code>&#39;_distance&#39;</code>
-          </td>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>dict</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A dictionary containing summary displacement distance statistics.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-
-
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td>
-                <code>dict</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>A dictionary containing summary displacement distance statistics.</p>
-            </div>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
-          <details class="quote">
-            <summary>Source code in <code>maskmypy/analysis.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-197">197</a></span>
+            <details class="quote">
+              <summary>Source code in <code>maskmypy/analysis.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-197">197</a></span>
 <span class="normal"><a href="#__codelineno-0-198">198</a></span>
 <span class="normal"><a href="#__codelineno-0-199">199</a></span>
 <span class="normal"><a href="#__codelineno-0-200">200</a></span>
@@ -2959,98 +2907,94 @@ median, and mean displacement distance.</p>
 <a id="__codelineno-0-218" name="__codelineno-0-218"></a>        <span class="s2">&quot;displacement_mean&quot;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">gdf</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()),</span> <span class="mi">6</span><span class="p">),</span>
 <a id="__codelineno-0-219" name="__codelineno-0-219"></a>    <span class="p">}</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h4 id="maskmypy.analysis.summarize_k" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>          <code class="highlight language-python"><span class="n">summarize_k</span><span class="p">(</span><span class="n">gdf</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="s1">&#39;k_anonymity&#39;</span><span class="p">)</span></code>
+<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">summarize_k</span><span class="p">(</span><span class="n">gdf</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="s1">&#39;k_anonymity&#39;</span><span class="p">)</span></code>
 
 <a href="#maskmypy.analysis.summarize_k" class="headerlink" title="Permanent link">&para;</a></h4>
 
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>For a masked GeoDataFrame containing k-anonymity values, calculate the minimum, maximum,
 median, and mean k-anonymity.</p>
 
 
-
-  <p><strong>Parameters:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td><code>gdf</code></td>
-          <td>
-                <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>A GeoDataFrame containing k-anonymity values.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
         </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code>gdf</code></td>
+            <td>
+                  <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A GeoDataFrame containing k-anonymity values.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>col</code></td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Name of the column containing k-anonymity values.</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;k_anonymity&#39;</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td><code>col</code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Name of the column containing k-anonymity values.</p>
-            </div>
-          </td>
-          <td>
-                <code>&#39;k_anonymity&#39;</code>
-          </td>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>dict</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A dictionary containing summary k-anonymity statistics.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-
-
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td>
-                <code>dict</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>A dictionary containing summary k-anonymity statistics.</p>
-            </div>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
-          <details class="quote">
-            <summary>Source code in <code>maskmypy/analysis.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-172">172</a></span>
+            <details class="quote">
+              <summary>Source code in <code>maskmypy/analysis.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-172">172</a></span>
 <span class="normal"><a href="#__codelineno-0-173">173</a></span>
 <span class="normal"><a href="#__codelineno-0-174">174</a></span>
 <span class="normal"><a href="#__codelineno-0-175">175</a></span>
@@ -3096,8 +3040,8 @@ median, and mean k-anonymity.</p>
 <a id="__codelineno-0-193" name="__codelineno-0-193"></a>        <span class="s2">&quot;k_mean&quot;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">gdf</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()),</span> <span class="mi">2</span><span class="p">),</span>
 <a id="__codelineno-0-194" name="__codelineno-0-194"></a>    <span class="p">}</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
 
@@ -3105,7 +3049,7 @@ median, and mean k-anonymity.</p>
 
   </div>
 
-  </div>
+    </div>
 
 </div>
 
@@ -3128,7 +3072,7 @@ median, and mean k-anonymity.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 26, 2024</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 6, 2024</span>
   </span>
 
     
@@ -3178,7 +3122,7 @@ median, and mean k-anonymity.</p>
     <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.1e8ae164.min.js"></script>
+      <script src="../assets/javascripts/bundle.fe8b6f2b.min.js"></script>
       
     
   </body>
