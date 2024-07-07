@@ -35,8 +35,8 @@ def street(
 
     masked = street(
         gdf=sensitive_points,
-        min=20,
-        max=30
+        low=20,
+        high=30
     )
     ```
 
