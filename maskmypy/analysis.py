@@ -575,7 +575,7 @@ def _estimate_k(
         .groupby("_index_2")[pop_col_adjusted]
         .sum()
         .apply(floor)
-    ) - 1
+    )
     return candidate_gdf
 
 
@@ -590,6 +590,7 @@ def _calculate_k(
         sjoin(address_gdf, candidate_gdf_tmp, how="left", rsuffix="candidate")
         .groupby("index_candidate")
         .size()
+        + 1
     )
-    candidate_gdf.fillna({"k_anonymity": 0}, inplace=True)
+    candidate_gdf.fillna({"k_anonymity": 1}, inplace=True)
     return candidate_gdf
