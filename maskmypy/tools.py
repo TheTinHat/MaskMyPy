@@ -13,6 +13,36 @@ from pandas.util import hash_pandas_object
 from pyproj.crs.crs import CRS
 
 
+def suppress(gdf, min_k, col: str = "k_anonymity", label: bool = True):
+    """
+    Suppresses points that do not meet a minimum k-anonymity value by displacing them
+    to the mean center of the overall point pattern and (optionally) labelling them.
+
+    Parameters
+    ----------
+    gdf : GeoDataFrame
+        A GeoDataFrame containing point data and a column with k-anonymity values.
+    min_k : int
+        Minimum k-anonymity. Points with a k-anonymity below this value will be suppressed.
+    col : str
+        Name of the column containing k-anonymity values.
+    label : bool
+        If True, adds a "SUPPRESSED" column and labels suppressed points.
+
+    Returns
+    -------
+    gdf
+        A GeoDataFrame containing the result of the suppression
+    """
+    sgdf = gdf.copy()
+    centroid = sgdf.dissolve().centroid[0]
+    sgdf.loc[sgdf[col] < min_k, sgdf.geometry.name] = centroid
+    if label:
+        sgdf.loc[sgdf[col] < min_k, "SUPPRESSED"] = "TRUE"
+        sgdf.loc[sgdf[col] >= min_k, "SUPPRESSED"] = "FALSE"
+    return sgdf
+
+
 def checksum(gdf: GeoDataFrame) -> str:
     """
     Calculate SHA256 checksum of a GeoDataFrame and return the first 8 characters.
