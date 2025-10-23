@@ -54,20 +54,32 @@ def test_estimate_k_address():
     results1 = analysis._calculate_k(
         sensitive_gdf=sens_gdf, candidate_gdf=mask1_gdf, address_gdf=addr_gdf
     )
-    assert results1.loc[0, "k_anonymity"] == 2
+    assert results1.loc[0, "k_anonymity"] == 3
 
     mask2_gdf = gpd.GeoDataFrame({"geometry": [Point(2, 0)]}, crs="EPSG:32630")
     results2 = analysis._calculate_k(
         sensitive_gdf=sens_gdf, candidate_gdf=mask2_gdf, address_gdf=addr_gdf
     )
-    assert results2.loc[0, "k_anonymity"] == 4
+    assert results2.loc[0, "k_anonymity"] == 5
 
     mask3_gdf = gpd.GeoDataFrame({"geometry": [Point(3, 0)]}, crs="EPSG:32630")
     results3 = analysis._calculate_k(
         sensitive_gdf=sens_gdf, candidate_gdf=mask3_gdf, address_gdf=addr_gdf
     )
-    assert results3.loc[0, "k_anonymity"] == 5
+    assert results3.loc[0, "k_anonymity"] == 6
 
+    mask4_gdf = gpd.GeoDataFrame({"geometry": [Point(-1, 0)]}, crs="EPSG:32630")
+    results4 = analysis._calculate_k(
+        sensitive_gdf=sens_gdf, candidate_gdf=mask4_gdf, address_gdf=addr_gdf
+    )
+    assert results4.loc[0, "k_anonymity"] == 2
+
+    sens_gdf = gpd.GeoDataFrame({"geometry": [Point(-7, 0)]}, crs="EPSG:32630")
+    mask5_gdf = gpd.GeoDataFrame({"geometry": [Point(0, 0)]}, crs="EPSG:32630")
+    results5 = analysis._calculate_k(
+        sensitive_gdf=sens_gdf, candidate_gdf=mask5_gdf, address_gdf=addr_gdf
+    )
+    assert results5.loc[0, "k_anonymity"] == 8
 
 def test_estimate_k_polygon():
     poly1 = Polygon([(0, 0), (0, 1), (1, 1), (1, 0), (0, 0)])
@@ -87,16 +99,14 @@ def test_estimate_k_polygon():
     results1 = analysis._estimate_k(
         sensitive_gdf=sens1_gdf, candidate_gdf=mask1_gdf, population_gdf=pop_gdf
     )
-    assert results1.loc[0, "k_anonymity"] == sum(census_poly["pop"]) - 1
+    assert results1.loc[0, "k_anonymity"] == sum(census_poly["pop"])
 
     # uncertainty area only covers part of the 1000 pop area. As pop = 1000, and
     # coverage is bottom right quadrant of a buffer centered on top left corner
-    # of top left quadrant, k should roughly equal ((population * pi * radius)/4) - 1
+    # of top left quadrant, k should roughly equal ((population * pi * radius)/4)
     sens2_gdf = gpd.GeoDataFrame({"geometry": [Point(0, 1)]}, crs="EPSG:32630")
     mask2_gdf = gpd.GeoDataFrame({"geometry": [Point(-1, 1)]}, crs="EPSG:32630")
-    expected_k = (
-        ((mask2_gdf.buffer(mask2_gdf.distance(sens2_gdf)).area * 1000) / 4).apply(floor)
-    ) - 1
+    expected_k = ((mask2_gdf.buffer(mask2_gdf.distance(sens2_gdf)).area * 1000) / 4).apply(floor)
 
     results2 = analysis._estimate_k(
         sensitive_gdf=sens2_gdf, candidate_gdf=mask2_gdf, population_gdf=pop_gdf
@@ -112,7 +122,7 @@ def test_estimate_k_polygon():
     )
 
     area = mask3_gdf.buffer(mask3_gdf.distance(sens3_gdf)).area / 4
-    expected_k = ((1 * area) + (10 * area) + (100 * area) + (1000 * area)).apply(floor) - 1
+    expected_k = ((1 * area) + (10 * area) + (100 * area) + (1000 * area)).apply(floor)
     assert results3.loc[0, "k_anonymity"] == expected_k[0]
 
 

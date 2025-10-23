@@ -1,6 +1,5 @@
 import inspect
 import json
-import pprint
 import tracemalloc
 from dataclasses import dataclass, field
 from pathlib import Path

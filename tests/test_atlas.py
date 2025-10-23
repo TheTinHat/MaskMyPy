@@ -3,7 +3,7 @@ import time
 
 import pytest
 
-from maskmypy import Atlas, analysis, donut, tools, voronoi
+from maskmypy import Atlas, analysis, donut, tools, voronoi, street_k
 
 
 def test_atlas_mask(points):
@@ -58,6 +58,24 @@ def test_atlas_restore_from_json(points_small):
 
     with pytest.raises(ValueError):
         atlas3.gen_gdf(checksum="aaaaaa")
+
+def test_atlas_reproduces_street_k(points, address):
+    atlas = Atlas(points)
+
+    atlas.mask(street_k, population_gdf=address, start=1, spread=4, min_k=5, suppression=0.8, seed=12345)
+
+    check_1a = atlas[0]["checksum"]
+
+    atlas.to_json("/tmp/tmp_test.json")
+    del atlas
+
+    # Test by index value
+    atlas2 = Atlas.from_json(points, "/tmp/tmp_test.json")
+    atlas2.add_layers(address)
+
+    gdf_0 = atlas2.gen_gdf(0)
+    check_1b = tools.checksum(gdf_0)
+    assert check_1a == check_1b
 
 
 def test_atlas_context_hydration(points, container):
