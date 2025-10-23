@@ -3,7 +3,7 @@ from statistics import mean
 import osmnx
 import pytest
 
-from maskmypy import analysis, street, tools
+from maskmypy import analysis, street, street_k, tools
 
 
 def test_street_displacement(points_small):
@@ -63,3 +63,20 @@ def test_street_higher_values_displace_further(points_small):
         masked_small = analysis.displacement(street(points_small, 1, 3), points_small)
         masked_large = analysis.displacement(street(points_small, 4, 5), points_small)
         assert mean(masked_small.loc[:, "_distance"]) < mean(masked_large.loc[:, "_distance"])
+
+
+def test_street_k(points, address):
+    target_k = 5
+    suppression = 0.80
+
+    masked = street(points, low=1, high=5, max_length=2000)
+    masked_k = analysis.k_anonymity(points, masked, address)
+    k_sat = analysis.k_satisfaction(masked_k, target_k)
+    assert k_sat < suppression
+
+    masked = street_k(points, address, start=1, spread=4, min_k=target_k, suppression=suppression)
+    k_sat = analysis.k_satisfaction(masked, target_k)
+    assert k_sat >= suppression
+    assert len(masked.loc[masked["SUPPRESSED"] == "TRUE", :]) > 1
+    assert len(masked.loc[masked["SUPPRESSED"] == "FALSE", :]) > 1
+

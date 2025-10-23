@@ -11,6 +11,7 @@ from osmnx.utils_graph import remove_isolated_nodes
 from shapely import Point
 
 from .. import tools
+from .. import analysis
 
 
 def street(
@@ -76,6 +77,119 @@ def street(
     masked_gdf = _Street(**args).run()
 
     return masked_gdf
+
+
+def street_k(
+    gdf: GeoDataFrame,
+    population_gdf: GeoDataFrame,
+    population_column: str = "pop",
+    min_k: int = 30,
+    start: int = 10,
+    stop: int = 60,
+    spread: int = 2,
+    increment: int = 2,
+    suppression: float = 0.99,
+    max_length: float = 1000,
+    seed: int = None,
+    padding: float = 0.2,
+) -> GeoDataFrame:
+    """
+    Applies street masking to a GeoDataFrame, iteratively increasing the low/high node values
+    until a given k-satisfaction threshold is reached. This provides a much more robust privacy
+    promise, but requires population data.
+
+    For instance, if `min_k=30` and `suppression=0.99`, then street masking will be repeated with 
+    progressively higher values until 99% of points have a k-anonymity of at least 30. 
+    Suppressed points are displaced to the center of the point distribution and labeled as such 
+    in a `SUPPRESSED` column.
+
+    Example
+    -------
+    ```python
+    from maskmypy import street_k
+
+    masked = street(
+        gdf=sensitive_points,
+        population_gdf=addresses,
+        start=20,
+        spread=5,
+        min_k=30,
+        suppression=0.95
+    )
+    ```
+
+    This will perform street masking starting with `street(gdf, low=20, high=25)` and slowly increment
+    values until 95% of points achieve a k-anonymity of at least 30, with the rest being suppressed.
+
+    Parameters
+    ----------
+    gdf : GeoDataFrame
+        GeoDataFrame containing sensitive points.
+    population_gdf : GeoDataFrame
+        A GeoDataFrame containing either address points or polygons with a population column
+        (see `population_column`). Used to calculate k-anonymity metrics. Note that
+        address points tend to provide more accurate results.
+    population_column : str
+        If a polygon-based `population_gdf` is provided, the name of the column containing
+        population counts.
+    min_k: int
+        Points that do not reach this k-anonymity value will be suppressed.
+    start: int
+        Initial value of `low` in `street()`.
+    stop: int
+        Maximum value of `low` in `street()` before exiting. Used to prevent endless searches.
+    spread: int
+        Used to calculate the `high` value in `street()`. High = `start + spread`.
+    increment: int
+        Amounted incremented in each iteration until `min_k` is met
+    suppression: float
+        Percent of points that must satisfy `min_k`.
+    max_length : float
+        When locating the closest node to each point on the street network, MaskMyPy verifies
+        that its immediate neighbours are no more than `max_length` away, in meters. This prevents
+        extremely large masking distances, such as those caused by long highways.
+    seed : int
+        Used to seed the random number generator so that masked datasets are reproducible.
+        Randomly generated if left undefined.
+    padding : float
+        OSM network data is retrieved based on the bounding box of the sensitive GeoDataFrame.
+        Padding is used to expand this bounding box slightly to reduce unwanted edge-effects.
+        A value of `0.2` would add 20% of the x and y extent to *each side* of the bounding box.
+
+    Returns
+    -------
+    GeoDataFrame
+        A GeoDataFrame containing masked points.
+    """
+
+    k_sat = 0
+
+    while k_sat < suppression:
+        if start > stop:
+            raise RuntimeError(
+                "Reached maximum network depth (stop value). Unable to achieve min_k."
+            )
+
+        masked = street(
+            gdf=gdf,
+            low=start,
+            high=start + spread,
+            max_length=max_length,
+            seed=seed,
+            padding=padding,
+        )
+        masked_k = analysis.k_anonymity(
+            gdf, masked, population_gdf=population_gdf, population_column=population_column
+        )
+
+        k_sat = analysis.k_satisfaction(masked_k, min_k=min_k)
+
+        if k_sat >= suppression:
+            masked_k = tools.suppress(masked_k, min_k=min_k)
+
+        start += increment
+
+    return masked_k
 
 
 def _validate_street(gdf, low, high):
