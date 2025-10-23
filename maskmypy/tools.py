@@ -16,7 +16,7 @@ from pyproj.crs.crs import CRS
 def suppress(gdf, min_k, col: str = "k_anonymity", label: bool = True):
     """
     Suppresses points that do not meet a minimum k-anonymity value by displacing them
-    to the mean center of the overall point pattern and (optionally) labelling them.
+    to the mean center of the overall masked point pattern and (optionally) labelling them.
 
     Parameters
     ----------
@@ -32,7 +32,7 @@ def suppress(gdf, min_k, col: str = "k_anonymity", label: bool = True):
     Returns
     -------
     gdf
-        A GeoDataFrame containing the result of the suppression
+        A GeoDataFrame containing the result of the suppression.
     """
     sgdf = gdf.copy()
     centroid = sgdf.dissolve().centroid[0]
