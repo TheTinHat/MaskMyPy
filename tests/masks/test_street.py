@@ -69,12 +69,12 @@ def test_street_k(points, address):
     target_k = 5
     suppression = 0.80
 
-    masked = street(points, low=1, high=5, max_length=2000)
+    masked = street(points, low=1, high=5, seed=12345)
     masked_k = analysis.k_anonymity(points, masked, address)
     k_sat = analysis.k_satisfaction(masked_k, target_k)
     assert k_sat < suppression
 
-    masked = street_k(points, address, start=1, spread=4, min_k=target_k, suppression=suppression)
+    masked = street_k(points, address, start=1, spread=4, min_k=target_k, suppression=suppression, seed=12345)
     k_sat = analysis.k_satisfaction(masked, target_k)
     assert k_sat >= suppression
     assert len(masked.loc[masked["SUPPRESSED"] == "TRUE", :]) > 1

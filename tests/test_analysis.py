@@ -68,6 +68,18 @@ def test_estimate_k_address():
     )
     assert results3.loc[0, "k_anonymity"] == 6
 
+    mask4_gdf = gpd.GeoDataFrame({"geometry": [Point(-1, 0)]}, crs="EPSG:32630")
+    results4 = analysis._calculate_k(
+        sensitive_gdf=sens_gdf, candidate_gdf=mask4_gdf, address_gdf=addr_gdf
+    )
+    assert results4.loc[0, "k_anonymity"] == 2
+
+    sens_gdf = gpd.GeoDataFrame({"geometry": [Point(-7, 0)]}, crs="EPSG:32630")
+    mask5_gdf = gpd.GeoDataFrame({"geometry": [Point(0, 0)]}, crs="EPSG:32630")
+    results5 = analysis._calculate_k(
+        sensitive_gdf=sens_gdf, candidate_gdf=mask5_gdf, address_gdf=addr_gdf
+    )
+    assert results5.loc[0, "k_anonymity"] == 8
 
 def test_estimate_k_polygon():
     poly1 = Polygon([(0, 0), (0, 1), (1, 1), (1, 0), (0, 0)])
