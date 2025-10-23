@@ -342,6 +342,30 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Street Masking">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#maskmypy.street.street" class="md-nav__link">
+    <span class="md-ellipsis">
+      <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;street
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#maskmypy.street.street_k" class="md-nav__link">
+    <span class="md-ellipsis">
+      <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;street_k
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -476,6 +500,30 @@
       Street Masking
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Street Masking">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#maskmypy.street.street" class="md-nav__link">
+    <span class="md-ellipsis">
+      <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;street
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#maskmypy.street.street_k" class="md-nav__link">
+    <span class="md-ellipsis">
+      <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;street_k
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -943,12 +991,43 @@ This can reduce the chance of false-attribution.</p>
 
 
 
-<div class="doc doc-object doc-function">
+<div class="doc doc-object doc-module">
 
 
 
 
     <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="maskmypy.street.street" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">street</span><span class="p">(</span><span class="n">gdf</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span></code>
+
+<a href="#maskmypy.street.street" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
 
         <p>Apply street masking to a GeoDataFrame, displacing points along the OpenStreetMap street
 network. This helps account for variations in population density, and reduces the likelihood
@@ -1244,9 +1323,13 @@ A value of <code>0.2</code> would add 20% of the x and y extent to <em>each side
 <div class="doc doc-object doc-function">
 
 
+<h3 id="maskmypy.street.street_k" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">street_k</span><span class="p">(</span><span class="n">gdf</span><span class="p">,</span> <span class="n">population_gdf</span><span class="p">,</span> <span class="n">population_column</span><span class="o">=</span><span class="s1">&#39;pop&#39;</span><span class="p">,</span> <span class="n">min_k</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">spread</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">increment</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">suppression</span><span class="o">=</span><span class="mf">0.99</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span></code>
+
+<a href="#maskmypy.street.street_k" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
-    <div class="doc doc-contents first">
+    <div class="doc doc-contents ">
 
         <p>Iteratively applies street masking to a GeoDataFrame, incrementally increasing the low/high node values
 until a given k-satisfaction threshold is reached. This provides a much more robust privacy
@@ -1737,6 +1820,14 @@ A value of <code>0.2</code> would add 20% of the x and y extent to <em>each side
 <a id="__codelineno-0-192" name="__codelineno-0-192"></a>    <span class="k">return</span> <span class="n">masked_k</span>
 </code></pre></div></td></tr></table></div>
             </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
     </div>
 
 </div><hr />
